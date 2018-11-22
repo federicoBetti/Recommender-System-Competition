@@ -1,0 +1,15 @@
+On recommender <class 'KNN.ItemKNNCFRecommender.ItemKNNCFRecommender'> Exception daemonic processes are not allowed to have children
+On recommender <class 'KNN.UserKNNCFRecommender.UserKNNCFRecommender'> Exception daemonic processes are not allowed to have children
+On recommender <class 'KNN.ItemKNNCFRecommender.ItemKNNCFRecommender'> Exception daemonic processes are not allowed to have children
+On recommender <class 'KNN.UserKNNCFRecommender.UserKNNCFRecommender'> Exception daemonic processes are not allowed to have children
+On recommender <class 'KNN.ItemKNNCFRecommender.ItemKNNCFRecommender'> Exception daemonic processes are not allowed to have children
+On recommender <class 'KNN.UserKNNCFRecommender.UserKNNCFRecommender'> Exception daemonic processes are not allowed to have children
+On recommender <class 'KNN.ItemKNNCFRecommender.ItemKNNCFRecommender'> Exception daemonic processes are not allowed to have children
+On recommender <class 'KNN.UserKNNCFRecommender.UserKNNCFRecommender'> Exception daemonic processes are not allowed to have children
+On recommender <class 'KNN.ItemKNNCFRecommender.ItemKNNCFRecommender'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').

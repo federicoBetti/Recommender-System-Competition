@@ -229,7 +229,7 @@ class BayesianSearch(AbstractClassSearch):
                             **paramether_dictionary)
 
             #return recommender.evaluateRecommendations(self.URM_validation, at=5, mode="sequential")
-            result_dict, _  = self.evaluator_validation.evaluateRecommender(recommender, paramether_dictionary)
+            result_dict, _, _  = self.evaluator_validation.evaluateRecommender(recommender, paramether_dictionary)
             result_dict = result_dict[list(result_dict.keys())[0]]
 
 

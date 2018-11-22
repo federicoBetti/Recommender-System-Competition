@@ -69,10 +69,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
     def recommend(self, user_id, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
 
-        if len(user_id) > 1:
-            print("User_id length is above 1")
-            raise TypeError
-
         weights = self.weights
         if cutoff == None:
             # noinspection PyUnresolvedReferences
@@ -90,7 +86,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 scores_batch = recommender.compute_item_score(user_id)[0]
 
                 if remove_seen_flag:
-                    scores_batch = self._remove_seen_on_scores(user_id[0], scores_batch)
+                    scores_batch = self._remove_seen_on_scores(user_id, scores_batch)
 
                 if remove_top_pop_flag:
                     scores_batch = self._remove_TopPop_on_scores(scores_batch)

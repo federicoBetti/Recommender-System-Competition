@@ -12,6 +12,7 @@ from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 from Base.IR_feature_weighting import okapi_BM_25, TF_IDF
 
 import numpy as np
+import os, pickle
 
 from Base.Similarity.Compute_Similarity import Compute_Similarity
 
@@ -34,10 +35,23 @@ class ItemKNNCBFRecommender(SimilarityMatrixRecommender, Recommender):
         self.sparse_weights = sparse_weights
 
 
-    def fit(self, topK=50, shrink=100, similarity='cosine', normalize=True, feature_weighting = "none", **similarity_args):
+    def fit(self, topK=50, shrink=100, similarity='cosine', normalize=True, force_compute_sim=True, feature_weighting = "none", **similarity_args):
 
         self.topK = topK
         self.shrink = shrink
+
+        if not force_compute_sim:
+            found = True
+            try:
+                with open(os.path.join("IntermediateComputations", "ItemCBFSimMatrix.pkl"), 'rb') as handle:
+                    (topK_new, shrink_new, W_sparse_new) = pickle.load(handle)
+            except FileNotFoundError:
+                found = False
+
+            if found and self.topK == topK_new and self.shrink == shrink_new:
+                self.W_sparse = W_sparse_new
+                print("Saved CBF Similarity Matrix Used!")
+                return
 
         if feature_weighting not in self.FEATURE_WEIGHTING_VALUES:
             raise ValueError("Value for 'feature_weighting' not recognized. Acceptable values are {}, provided was '{}'".format(self.FEATURE_WEIGHTING_VALUES, feature_weighting))
@@ -54,9 +68,11 @@ class ItemKNNCBFRecommender(SimilarityMatrixRecommender, Recommender):
 
         similarity = Compute_Similarity(self.ICM.T, shrink=shrink, topK=topK, normalize=normalize, similarity = similarity, **similarity_args)
 
-
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
+
+            with open(os.path.join("IntermediateComputations", "ItemCBFSimMatrix.pkl"), 'wb') as handle:
+                pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
         else:
             self.W = similarity.compute_similarity()
             self.W = self.W.toarray()

@@ -81,11 +81,13 @@ class BayesianOptimization(object):
         """
         # Concatenate new random points to possible existing
         # points from self.explore method.
+
         rand_points = self.space.random_points(init_points)
         self.init_points.extend(rand_points)
 
         # Evaluate target function at all initialization points
         for x in self.init_points:
+            print("E' QUI CHE CICLA!!!!!!")
             y = self._observe_point(x)
 
         # Add the points from `self.initialize` to the observations
@@ -230,6 +232,7 @@ class BayesianOptimization(object):
         >>>                           pbounds={"x": (0, len(f)-1)})
         >>> bo.maximize(init_points=2, n_iter=25, acq="ucb", kappa=1)
         """
+
         # Reset timer
         self.plog.reset_timer()
 
@@ -238,6 +241,7 @@ class BayesianOptimization(object):
 
         # Initialize x, y and find current y_max
         if not self.initialized:
+            print("Dentro Initialized!")
             if self.verbose:
                 self.plog.print_header()
             self.init(init_points)
@@ -268,12 +272,14 @@ class BayesianOptimization(object):
         # The arg_max of the acquisition function is found and this will be
         # the next probed value of the target function in the next round.
         for i in range(n_iter):
+            print("NUOVA ITERAZIONE!!!!!!")
             # Test if x_max is repeated, if it is, draw another one at random
             # If it is repeated, print a warning
             pwarning = False
             while x_max in self.space:
                 x_max = self.space.random_points(1)[0]
                 pwarning = True
+                print("NUOVA ITERAZIONE!!!!!!")
 
             # Append most recently generated values to X and Y arrays
             y = self.space.observe_point(x_max)
@@ -301,7 +307,7 @@ class BayesianOptimization(object):
                             **self._acqkw)
 
             # Keep track of total number of iterations
-            self.i += 1
+            self.i = i
 
         # Print a final report if verbose active.
         if self.verbose:

@@ -5,11 +5,16 @@ Created on 22/11/17
 
 @author: Maurizio Ferrari Dacrema
 """
+import glob
 
+from Base.Evaluation.Evaluator import SequentialEvaluator
 from Base.NonPersonalizedRecommender import TopPop, Random
 from Dataset.RS_Data_Loader import RS_Data_Loader
+from KNN.HybridRecommender import HybridRecommender
+from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
 from KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
+from ParameterTuning.RandomSearch import RandomSearch
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 from GraphBased.P3alphaRecommender import P3alphaRecommender
@@ -31,6 +36,40 @@ from ParameterTuning.AbstractClassSearch import DictionaryKeys
 
 def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, URM_train, n_cases, output_root_path,
                                             metric_to_optimize):
+    # pay attention that it doesn't finish (it should after n_cases, but now it doens't work)
+    # it saves best results in the txt file
+    hyperparamethers_range_dictionary = {}
+    hyperparamethers_range_dictionary["topK"] = [5, 10, 20, 50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
+    hyperparamethers_range_dictionary["shrink"] = [0, 10, 50, 100, 200, 300, 500, 1000]
+    hyperparamethers_range_dictionary["similarity"] = [similarity_type]
+    hyperparamethers_range_dictionary["normalize"] = [True, False]
+
+    if similarity_type == "asymmetric":
+        hyperparamethers_range_dictionary["asymmetric_alpha"] = range(0, 2)
+        hyperparamethers_range_dictionary["normalize"] = [True]
+
+    elif similarity_type == "tversky":
+        hyperparamethers_range_dictionary["tversky_alpha"] = range(0, 2)
+        hyperparamethers_range_dictionary["tversky_beta"] = range(0, 2)
+        hyperparamethers_range_dictionary["normalize"] = [True]
+
+    recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
+                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
+                             DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
+                             DictionaryKeys.FIT_KEYWORD_ARGS: dict(),
+                             DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
+
+    output_root_path_similarity = output_root_path + "_" + similarity_type
+
+    best_parameters = parameterSearch.search(recommenderDictionary,
+                                             n_cases=n_cases,
+                                             output_root_path=output_root_path_similarity,
+                                             metric=metric_to_optimize)
+
+
+def run_HybridRecommender_on_similarity_type(similarity_type, parameterSearch, URM_train, ICM, n_cases,
+                                             output_root_path,
+                                             metric_to_optimize):
     # pay attention that it doesn't finish (it should after n_cases, but now it doens't work)
     # it saves best results in the txt file
     hyperparamethers_range_dictionary = {}
@@ -103,11 +142,7 @@ def runParameterSearch_Content(recommender_class, URM_train, ICM_object, ICM_nam
     if not os.path.exists(output_root_path):
         os.makedirs(output_root_path)
 
-
-
-
-
-        ##########################################################################################################
+    ##########################################################################################################
 
     this_output_root_path = output_root_path + recommender_class.RECOMMENDER_NAME + "_{}".format(ICM_name)
 
@@ -134,7 +169,64 @@ def runParameterSearch_Content(recommender_class, URM_train, ICM_object, ICM_nam
             run_KNNCBFRecommender_on_similarity_type_partial(similarity_type)
 
 
-def runParameterSearch_Collaborative(recommender_class, URM_train, metric_to_optimize="PRECISION",
+def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recommender_list, n_cases=30,
+                                      evaluator_validation=None, evaluator_test=None, metric_to_optimize="MAP",
+                                      output_root_path="result_experiments/", parallelizeKNN=False, URM_test=None):
+    # If directory does not exist, create
+    if not os.path.exists(output_root_path):
+        os.makedirs(output_root_path)
+
+    ##########################################################################################################
+
+    this_output_root_path = output_root_path + recommender_class.RECOMMENDER_NAME + "_{}".format(recommender_list)
+
+    # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
+    parameterSearch = BayesianSearch(recommender_class, evaluator_validation=evaluator_validation)
+
+    similarity_type_list = ['cosine', 'jaccard', "asymmetric", "dice", "tversky"]
+
+    hyperparamethers_range_dictionary = {}
+    hyperparamethers_range_dictionary["topK1"] = [60]
+    hyperparamethers_range_dictionary["topK2"] = [200]
+    hyperparamethers_range_dictionary["topK3"] = [200]
+    hyperparamethers_range_dictionary["shrink1"] = [5]
+    hyperparamethers_range_dictionary["shrink2"] = [15]
+    hyperparamethers_range_dictionary["shrink3"] = [5]
+    hyperparamethers_range_dictionary["force_compute_sim"] = [False]
+    # per fare testare tutti i weights devo per ora passarli separati e metterli separati nella fit funtion
+    hyperparamethers_range_dictionary["weights1"] = [0, 0.1, 0.2, 0.4, 0.5]
+    hyperparamethers_range_dictionary["weights2"] = [0.5, 0.7, 0.9, 1, 1.2, 1.5]
+    hyperparamethers_range_dictionary["weights3"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+    hyperparamethers_range_dictionary["normalize"] = [True, False]
+    hyperparamethers_range_dictionary["epochs"] = [30000]
+
+    # if similarity_type == "asymmetric":
+    #     hyperparamethers_range_dictionary["asymmetric_alpha"] = range(0, 2)
+    #     hyperparamethers_range_dictionary["normalize"] = [True]
+    #
+    # elif similarity_type == "tversky":
+    #     hyperparamethers_range_dictionary["tversky_alpha"] = range(0, 2)
+    #     hyperparamethers_range_dictionary["tversky_beta"] = range(0, 2)
+    #     hyperparamethers_range_dictionary["normalize"] = [True]
+    #
+    # if similarity_type in ["cosine", "asymmetric"]:
+    #     hyperparamethers_range_dictionary["feature_weighting"] = ["none", "BM25", "TF-IDF"]
+
+    recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
+                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test},
+                             DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
+                             DictionaryKeys.FIT_KEYWORD_ARGS: dict(),
+                             DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
+
+    output_root_path_similarity = this_output_root_path
+
+    best_parameters = parameterSearch.search(recommenderDictionary,
+                                             n_cases=n_cases,
+                                             output_root_path=output_root_path_similarity,
+                                             metric=metric_to_optimize)
+
+
+def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, metric_to_optimize="PRECISION",
                                      evaluator_validation=None, evaluator_test=None,
                                      evaluator_validation_earlystopping=None,
                                      output_root_path="result_experiments/", parallelizeKNN=True, n_cases=30):
@@ -200,7 +292,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, metric_to_opt
 
             return
 
-        ##########################################################################################################
+            ##########################################################################################################
 
         if recommender_class is ItemKNNCFRecommender:
 
@@ -210,6 +302,31 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, metric_to_opt
             run_KNNCFRecommender_on_similarity_type_partial = partial(run_KNNCFRecommender_on_similarity_type,
                                                                       parameterSearch=parameterSearch,
                                                                       URM_train=URM_train,
+                                                                      n_cases=1,  # = n_cases
+                                                                      output_root_path=output_root_path_rec_name,
+                                                                      metric_to_optimize=metric_to_optimize)
+
+            if parallelizeKNN:
+                pool = PoolWithSubprocess(processes=int(4), maxtasksperchild=1)
+                resultList = pool.map(run_KNNCFRecommender_on_similarity_type_partial, similarity_type_list)
+
+            else:
+
+                for similarity_type in similarity_type_list:
+                    run_KNNCFRecommender_on_similarity_type_partial(similarity_type)
+
+            return
+
+        ##########################################################################################################
+
+        if recommender_class is HybridRecommender:
+
+            similarity_type_list = ['cosine']  # , 'jaccard', "asymmetric", "dice", "tversky"]
+
+            run_KNNCFRecommender_on_similarity_type_partial = partial(run_HybridRecommender_on_similarity_type(),
+                                                                      parameterSearch=parameterSearch,
+                                                                      URM_train=URM_train,
+                                                                      ICM=ICM,
                                                                       n_cases=1,  # = n_cases
                                                                       output_root_path=output_root_path_rec_name,
                                                                       metric_to_optimize=metric_to_optimize)
@@ -365,9 +482,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, metric_to_opt
                                      DictionaryKeys.FIT_KEYWORD_ARGS: dict(),
                                      DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
-
-
-            #########################################################################################################
+        #########################################################################################################
 
         ## Final step, after the hyperparameter range has been defined for each type of algorithm
         best_parameters = parameterSearch.search(recommenderDictionary,
@@ -388,10 +503,18 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, metric_to_opt
         error_file.close()
 
 
+def delete_previous_intermediate_computations():
+    '''
+    this function is used to remove intermediate old computations that are a problem in new runs
+    '''
+    files = glob.glob(os.path.join("IntermediateComputations", "*"))
+    for f in files:
+        print("Removing file: {}...".format(f))
+        os.remove(f)
+
+
 import os, multiprocessing
 from functools import partial
-
-from data.Movielens_10M.Movielens10MReader import Movielens10MReader
 
 
 def read_data_split_and_search():
@@ -406,11 +529,14 @@ def read_data_split_and_search():
         - A _best_result_test file which contains a dictionary with the results, on the test set, of the best solution chosen using the validation set
     """
 
+
+    delete_previous_intermediate_computations()
     dataReader = RS_Data_Loader(top10k=True)
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()
     URM_test = dataReader.get_URM_test()
+    ICM = dataReader.get_ICM()
     output_root_path = "result_experiments/"
 
     # If directory does not exist, create
@@ -426,11 +552,12 @@ def read_data_split_and_search():
         # RP3betaRecommender,
         # ItemKNNCFRecommender#,
         # UserKNNCFRecommender#,
-        MatrixFactorization_BPR_Cython,
+        # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender
+        # SLIMElasticNetRecommender,
+        HybridRecommender
     ]
 
     from ParameterTuning.AbstractClassSearch import EvaluatorWrapper
@@ -444,6 +571,7 @@ def read_data_split_and_search():
 
     runParameterSearch_Collaborative_partial = partial(runParameterSearch_Collaborative,
                                                        URM_train=URM_train,
+                                                       ICM=ICM,
                                                        metric_to_optimize="MAP",
                                                        evaluator_validation_earlystopping=evaluator_validation_earlystopping,
                                                        evaluator_validation=evaluator_validation,
@@ -461,7 +589,28 @@ def read_data_split_and_search():
 
             try:
 
-                runParameterSearch_Collaborative_partial(recommender_class)
+                if recommender_class is HybridRecommender:
+                    print("Recommender is an HybridRecommender")
+                    recommender_list = [
+                        # Random,
+                        # TopPop,
+                        # P3alphaRecommender,
+                        # RP3betaRecommender,
+                        ItemKNNCBFRecommender,
+                        ItemKNNCFRecommender,
+                        #UserKNNCFRecommender,
+                        MatrixFactorization_BPR_Cython,
+                        # MatrixFactorization_FunkSVD_Cython,
+                        # PureSVDRecommender,
+                        # SLIM_BPR_Cython,
+                        # SLIMElasticNetRecommender
+                    ]
+
+                    runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recommender_list,
+                                                      evaluator_validation=evaluator_validation,
+                                                      evaluator_test=evaluator_test, URM_test=URM_test)
+                else:
+                    runParameterSearch_Collaborative_partial(recommender_class)
 
             except Exception as e:
 

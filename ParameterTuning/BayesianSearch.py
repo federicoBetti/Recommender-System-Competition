@@ -12,7 +12,7 @@ import traceback, pickle
 import numpy as np
 
 try:
-    #from bayes_opt import BayesianOptimization
+    # from bayes_opt import BayesianOptimization
     from ParameterTuning.BayesianOptimization_master.bayes_opt.bayesian_optimization import BayesianOptimization
 except ImportError as importError:
     print("Unable to load BayesianOptimization module. Please install it using 'pip install bayesian-optimization' "
@@ -21,20 +21,15 @@ except ImportError as importError:
     raise importError
 
 
-
 def writeLog(string, logFile):
-
     print(string)
 
-    if logFile!=None:
+    if logFile != None:
         logFile.write(string)
         logFile.flush()
 
 
-
-
 class BayesianSearch(AbstractClassSearch):
-
     ALGORITHM_NAME = "BayesianSearch"
 
     """
@@ -44,16 +39,14 @@ class BayesianSearch(AbstractClassSearch):
     pip install bayesian-optimization
     """
 
-    def __init__(self, recommender_class, evaluator_validation=None, evaluator_test = None):
+    def __init__(self, recommender_class, evaluator_validation=None, evaluator_test=None):
 
         super(BayesianSearch, self).__init__(recommender_class,
-                                             evaluator_validation= evaluator_validation, evaluator_test=evaluator_test)
+                                             evaluator_validation=evaluator_validation, evaluator_test=evaluator_test)
 
-
-
-
-    def search(self, dictionary, metric ="MAP", init_points = 5, n_cases = 20, output_root_path = None, parallelPoolSize = 2, parallelize = True,
-               save_model = "best"):
+    def search(self, dictionary, metric="MAP", init_points=5, n_cases=20, output_root_path=None, parallelPoolSize=2,
+               parallelize=True,
+               save_model="best"):
 
         # Associate the params that will be returned by BayesianOpt object to those you want to save
         # E.g. with early stopping you know which is the optimal number of epochs only afterwards
@@ -96,36 +89,29 @@ class BayesianSearch(AbstractClassSearch):
                 num_vaues = len(categorical_mapper_dict_case_to_index_current)
 
                 min_val = 0
-                max_val = num_vaues-1
+                max_val = num_vaues - 1
 
                 self.categorical_mapper_dict_case_to_index[key] = categorical_mapper_dict_case_to_index_current.copy()
                 self.categorical_mapper_dict_index_to_case[key] = categorical_mapper_dict_index_to_case_current.copy()
 
             else:
-                raise TypeError("BayesianSearch: for every parameter a range may be specified either by a 'range' object or by a list."
-                                "Provided object type for parameter '{}' was '{}'".format(key, type(current_range)))
-
+                raise TypeError(
+                    "BayesianSearch: for every parameter a range may be specified either by a 'range' object or by a list."
+                    "Provided object type for parameter '{}' was '{}'".format(key, type(current_range)))
 
             hyperparamethers_range_dictionary[key] = [min_val, max_val]
 
-
-
         self.runSingleCase_partial = partial(self.runSingleCase,
-                                             dictionary = dictionary,
-                                             metric = metric)
-
-
-
-
-
+                                             dictionary=dictionary,
+                                             metric=metric)
 
         self.bayesian_optimizer = BayesianOptimization(self.runSingleCase_partial, hyperparamethers_range_dictionary)
 
         self.best_solution_val = None
         self.best_solution_parameters = None
-        #self.best_solution_object = None
+        # self.best_solution_object = None
 
-
+        print("Starting the Maximize function!")
         self.bayesian_optimizer.maximize(init_points=init_points, n_iter=n_cases, kappa=2)
 
         best_solution = self.bayesian_optimizer.res['max']
@@ -133,8 +119,8 @@ class BayesianSearch(AbstractClassSearch):
         self.best_solution_val = best_solution["max_val"]
         self.best_solution_parameters = best_solution["max_params"].copy()
         self.best_solution_parameters = self.parameter_bayesian_to_token(self.best_solution_parameters)
-        self.best_solution_parameters = self.from_fit_params_to_saved_params[frozenset(self.best_solution_parameters.items())]
-
+        self.best_solution_parameters = self.from_fit_params_to_saved_params[
+            frozenset(self.best_solution_parameters.items())]
 
         writeLog("BayesianSearch: Best config is: Config {}, {} value is {:.4f}\n".format(
             self.best_solution_parameters, metric, self.best_solution_val), self.logFile)
@@ -148,7 +134,6 @@ class BayesianSearch(AbstractClassSearch):
 
 
         return self.best_solution_parameters.copy()
-
 
     #
     # def evaluate_on_test(self):
@@ -186,7 +171,6 @@ class BayesianSearch(AbstractClassSearch):
         for key in paramether_dictionary.keys():
 
             if key in self.categorical_mapper_dict_index_to_case:
-
                 float_value = paramether_dictionary[key]
                 index = int(round(float_value, 0))
 
@@ -194,25 +178,15 @@ class BayesianSearch(AbstractClassSearch):
 
                 paramether_dictionary[key] = categorical
 
-
         return paramether_dictionary
 
-
-
-
-
     def runSingleCase(self, dictionary, metric, **paramether_dictionary_input):
-
 
         paramether_dictionary = self.parameter_bayesian_to_token(paramether_dictionary_input)
 
         return self.runSingleCase_param_parsed(dictionary, metric, paramether_dictionary)
 
-
-
-
     def runSingleCase_param_parsed(self, dictionary, metric, paramether_dictionary):
-
 
         try:
 
@@ -221,97 +195,79 @@ class BayesianSearch(AbstractClassSearch):
             recommender = self.recommender_class(*dictionary[DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS],
                                                  **dictionary[DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS])
 
-
             print("BayesianSearch: Testing config: {}".format(paramether_dictionary))
 
             recommender.fit(*dictionary[DictionaryKeys.FIT_POSITIONAL_ARGS],
                             **dictionary[DictionaryKeys.FIT_KEYWORD_ARGS],
                             **paramether_dictionary)
 
-            #return recommender.evaluateRecommendations(self.URM_validation, at=5, mode="sequential")
-            result_dict, _, _  = self.evaluator_validation.evaluateRecommender(recommender, paramether_dictionary)
+            # return recommender.evaluateRecommendations(self.URM_validation, at=5, mode="sequential")
+            result_dict, _, _ = self.evaluator_validation.evaluateRecommender(recommender, paramether_dictionary)
             result_dict = result_dict[list(result_dict.keys())[0]]
 
+            paramether_dictionary_to_save = self.from_fit_params_to_saved_params_function(recommender,
+                                                                                          paramether_dictionary)
 
-            paramether_dictionary_to_save = self.from_fit_params_to_saved_params_function(recommender, paramether_dictionary)
-
-            self.from_fit_params_to_saved_params[frozenset(paramether_dictionary.items())] = paramether_dictionary_to_save
+            self.from_fit_params_to_saved_params[
+                frozenset(paramether_dictionary.items())] = paramether_dictionary_to_save
 
             self.model_counter += 1
-
 
             # Always save best model separately
             if self.save_model == "all":
                 print(self.ALGORITHM_NAME + ": Saving model in {}\n".format(self.output_root_path))
-                recommender.saveModel(self.output_root_path, file_name= "_model_{}".format(self.model_counter))
+                recommender.saveModel(self.output_root_path, file_name="_model_{}".format(self.model_counter))
 
                 pickle.dump(paramether_dictionary_to_save.copy(),
                             open(self.output_root_path + "_parameters_{}".format(self.model_counter), "wb"),
                             protocol=pickle.HIGHEST_PROTOCOL)
 
+            if self.best_solution_val == None or self.best_solution_val < result_dict[metric]:
 
-            if self.best_solution_val == None or self.best_solution_val<result_dict[metric]:
+                writeLog("BayesianSearch: New best config found. Config: {} - results: {}\n".format(
+                    paramether_dictionary_to_save, result_dict), self.logFile)
 
-                writeLog("BayesianSearch: New best config found. Config: {} - results: {}\n".format(paramether_dictionary_to_save, result_dict), self.logFile)
-
-                pickle.dump(paramether_dictionary_to_save.copy(),
-                            open(self.output_root_path + "_best_parameters", "wb"),
-                            protocol=pickle.HIGHEST_PROTOCOL)
-
-                pickle.dump(result_dict.copy(),
-                            open(self.output_root_path + "_best_result_validation", "wb"),
-                            protocol=pickle.HIGHEST_PROTOCOL)
-
-                self.best_solution_val = result_dict[metric]
-                self.best_solution_parameters = paramether_dictionary_to_save.copy()
-                #self.best_solution_object = recommender
-
-                if self.save_model != "no":
-                    print("BayesianSearch: Saving model in {}\n".format(self.output_root_path))
-                    recommender.saveModel(self.output_root_path, file_name = "_best_model")
+                # REMOVED IN ORDER NOT TO SAVE MODEL PARAMETERS
+                # pickle.dump(paramether_dictionary_to_save.copy(),
+                #             open(self.output_root_path + "_best_parameters", "wb"),
+                #             protocol=pickle.HIGHEST_PROTOCOL)
+                #
+                # pickle.dump(result_dict.copy(),
+                #             open(self.output_root_path + "_best_result_validation", "wb"),
+                #             protocol=pickle.HIGHEST_PROTOCOL)
+                #
+                # self.best_solution_val = result_dict[metric]
+                # self.best_solution_parameters = paramether_dictionary_to_save.copy()
+                # # self.best_solution_object = recommender
+                #
+                # if self.save_model != "no":
+                #     print("BayesianSearch: Saving model in {}\n".format(self.output_root_path))
+                #     recommender.saveModel(self.output_root_path, file_name="_best_model")
 
                 if self.evaluator_test is not None:
                     self.evaluate_on_test()
 
             else:
-                writeLog("BayesianSearch: Config is suboptimal. Config: {} - results: {}\n".format(paramether_dictionary_to_save, result_dict), self.logFile)
-
+                writeLog("BayesianSearch: Config is suboptimal. Config: {} - results: {}\n".format(
+                    paramether_dictionary_to_save, result_dict), self.logFile)
 
             return result_dict[metric]
 
 
         except Exception as e:
 
-            writeLog("BayesianSearch: Testing config: {} - Exception {}\n".format(paramether_dictionary, str(e)), self.logFile)
+            writeLog("BayesianSearch: Testing config: {} - Exception {}\n".format(paramether_dictionary, str(e)),
+                     self.logFile)
             traceback.print_exc()
 
             return - np.inf
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def function_interface(x, y):
-
     return -x ** 2 - (y - 1) ** 2 + 1
 
 
-
 if __name__ == '__main__':
-
     # Lets find the maximum of a simple quadratic function of two variables
     # We create the bayes_opt object and pass the function to be maximized
     # together with the parameters names and their bounds.

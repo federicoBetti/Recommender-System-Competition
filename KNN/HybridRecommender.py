@@ -22,7 +22,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     RECOMMENDER_NAME = "ItemKNNCFRecommender"
 
-    def __init__(self, URM_train, ICM, recommeder_list, weights, URM_validation=None, sparse_weights=True):
+    def __init__(self, URM_train, ICM, recommeder_list, weights=None, URM_validation=None, sparse_weights=True):
         super(Recommender, self).__init__()
 
         # CSR is faster during evaluation
@@ -33,11 +33,9 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         self.sparse_weights = sparse_weights
 
-        assert len(recommeder_list) == len(weights)
         self.recommender_list = []
         self.weights = weights
 
-        assert abs(sum(weights) - 1) < 0.001
 
         for recommender in recommeder_list:
             if recommender in [SLIM_BPR_Cython, MatrixFactorization_BPR_Cython]:
@@ -48,23 +46,42 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             else:
                 self.recommender_list.append(recommender(URM_train))
 
-    def fit(self, topK=[350], shrink=[10], similarity='cosine', normalize=True, old_similrity_matrix=None, epochs=1,
+    def fit(self, topK=None, shrink=None, weights=None, topK1=None, topK2=None, topK3=None, shrink1=None, shrink2=None, shrink3=None, weights1=None, weights2=None, weights3=None, similarity='cosine', normalize=True, old_similrity_matrix=None, epochs=1, force_compute_sim=False,
             **similarity_args):
 
-        self.normalize = normalize
+        if shrink is None:
+            shrink = [shrink1, shrink2, shrink3]
+            shrink = [x for x in shrink if x is not None]
+        if topK is None:
+            topK = [topK1, topK2, topK3]
+            topK = [x for x in topK if x is not None]
+        if weights is None:
+            weights = [weights1, weights2, weights3]
+            weights = [x for x in weights if x is not None]
 
-        assert len(topK) == len(shrink) == len(self.recommender_list)
+        if self.weights is None:
+            self.weights = weights
+
+        assert self.weights is not None, "Weights Are None!"
+
+        assert len(self.recommender_list) == len(self.weights), "Weights and recommender list have different lenghts"
+
+        assert len(topK) == len(shrink) == len(self.recommender_list), "Knns, Shrinks and recommender list have " \
+                                                                       "different lenghts "
+
+        self.normalize = normalize
         self.topK = topK
         self.shrink = shrink
 
-        self.similarities = []
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
             if recommender.__class__ is SLIM_BPR_Cython:
                 recommender.fit(old_similrity_matrix=old_similrity_matrix, epochs=epochs)
+
             elif recommender.__class__ is MatrixFactorization_BPR_Cython:
-                recommender.fit(old_similrity_matrix=old_similrity_matrix, epochs=epochs)
-            else:
-                recommender.fit(knn, shrink)
+                recommender.fit(epochs=epochs, force_compute_sim=force_compute_sim)
+
+            else:  # ItemCF, UserCF, ItemCBF
+                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
 
     def recommend(self, user_id, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
@@ -83,7 +100,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             user_profile = self.URM_train[user_id]
             # noinspection PyUnresolvedReferences
             for recommender in self.recommender_list:
-                scores_batch = recommender.compute_item_score(user_id)[0]
+                scores_batch = recommender.compute_item_score(user_id)
 
                 if remove_seen_flag:
                     scores_batch = self._remove_seen_on_scores(user_id, scores_batch)
@@ -103,6 +120,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                                                                                                           len(weights)))
                 raise TypeError
 
+            # QUA È DOVE VENGONO APPLICATI I WEIGHTS AGLI SCORE, QUINDI NEL CASO SI VOLESSE MODFICIARE È QUA!!
             final_score = np.zeros(scores[0].shape)
             for score, weight in zip(scores, weights):
                 final_score += (score * weight)

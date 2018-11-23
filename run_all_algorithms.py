@@ -22,12 +22,13 @@ from data.Movielens_10M.Movielens10MReader import Movielens10MReader
 import traceback, os
 
 import Support_functions.manage_data as md
+from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
 
-
+    delete_previous_intermediate_computations()
     evaluate_algorithm = True
-    filename = "first_attempt_slim.csv"
+    filename = "hybrid_new_params_withMF.csv"
 
     dataReader = RS_Data_Loader(top10k=True, all_train=not evaluate_algorithm)
 
@@ -43,8 +44,8 @@ if __name__ == '__main__':
         # RP3betaRecommender,
         ItemKNNCBFRecommender,
         ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        # MatrixFactorization_BPR_Cython,
+        # UserKNNCFRecommender,
+        MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
@@ -52,9 +53,9 @@ if __name__ == '__main__':
     ]
 
     weights = [
-        0.1,
-        0.8,
-        0.1
+        0.5,
+        1.2,
+        0.2
     ]
 
     topK = [
@@ -85,18 +86,18 @@ if __name__ == '__main__':
     recommender_IB.fit(200, 15)
     transfer_matrix = recommender_IB.W_sparse
 
-
     try:
         recommender_class = HybridRecommender
         print("Algorithm: {}".format(recommender_class))
 
         recommender = recommender_class(URM_train, ICM, recommender_list, weights, URM_validation=URM_validation)
-        recommender.fit(topK=topK, shrink=shrinks, old_similrity_matrix=transfer_matrix, epochs=30)
+        recommender.fit(topK=topK, shrink=shrinks, old_similrity_matrix=transfer_matrix, epochs=10000)
 
         print("Starting Evaluations...")
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender)
 
-        print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list], results_run_string))
+        print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
+                                                    results_run_string))
         logFile.write("Algorithm: {}, results: \n{}\n".format(recommender.__class__, results_run_string))
         logFile.flush()
 
@@ -111,3 +112,5 @@ if __name__ == '__main__':
         traceback.print_exc()
         logFile.write("Algorithm: {} - Exception: {}\n".format(recommender_class, str(e)))
         logFile.flush()
+
+    delete_previous_intermediate_computations()

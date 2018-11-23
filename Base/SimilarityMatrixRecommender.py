@@ -31,7 +31,7 @@ class SimilarityMatrixRecommender(object):
         if self.sparse_weights:
             user_profile = self.URM_train[user_id]
 
-            return user_profile.dot(self.W_sparse).toarray()
+            return user_profile.dot(self.W_sparse).toarray()[0]
 
         else:
 
@@ -78,7 +78,10 @@ class SimilarityMatrixRecommender(object):
 
 
         if self.sparse_weights:
-            dictionary_to_save["W_sparse"] = self.W_sparse
+            try:
+                dictionary_to_save["W_sparse"] = self.W_sparse
+            except AttributeError:
+                print("I'm an hybrid recommender, so I don't have a similarity to save!")
 
         else:
             dictionary_to_save["W"] = self.W

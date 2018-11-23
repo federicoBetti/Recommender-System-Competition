@@ -108,7 +108,6 @@ class Evaluator(object):
         self.exclude_seen = exclude_seen
 
         if not isinstance(URM_test_list, list):
-            print(URM_test_list)
             self.URM_test = URM_test_list.copy()
             URM_test_list = [URM_test_list]
         else:
@@ -343,7 +342,7 @@ class SequentialEvaluator(Evaluator):
         # Start from -block_size to ensure it to be 0 at the first block
         user_batch_start = 0
         user_batch_end = 0
-        # todo mettere che fa un user alla volta sempre
+
         for user_id in self.usersToEvaluate:
 
             user_batch_end = user_batch_start + block_size

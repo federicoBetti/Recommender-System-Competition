@@ -166,13 +166,19 @@ class AbstractClassSearch(object):
         recommender = self.recommender_class(*self.dictionary_input[DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS],
                                              **self.dictionary_input[DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS])
 
-        if self.save_model != "no":
-            recommender.loadModel(self.output_root_path, file_name="_best_model")
+        # if self.save_model != "no":
+        #     recommender.loadModel(self.output_root_path, file_name="_best_model")
+        #
+        # else:
+        #     recommender.fit(*self.dictionary_input[DictionaryKeys.FIT_POSITIONAL_ARGS],
+        #                     **self.dictionary_input[DictionaryKeys.FIT_KEYWORD_ARGS],
+        #                     **self.best_solution_parameters)
 
-        else:
-            recommender.fit(*self.dictionary_input[DictionaryKeys.FIT_POSITIONAL_ARGS],
-                            **self.dictionary_input[DictionaryKeys.FIT_KEYWORD_ARGS],
-                            **self.best_solution_parameters)
+        # I must do that with hybrid because since I haven't saved the model due to lot of inner recommender,
+        # I can neither load it here, so I must fit it again
+        recommender.fit(*self.dictionary_input[DictionaryKeys.FIT_POSITIONAL_ARGS],
+                                            **self.dictionary_input[DictionaryKeys.FIT_KEYWORD_ARGS],
+                                            **self.best_solution_parameters)
 
         result_dict, result_string, _ = self.evaluator_test.evaluateRecommender(recommender,
                                                                                 self.best_solution_parameters)

@@ -16,18 +16,13 @@ import time, pickle
 import numpy as np
 
 
-
-
 class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stopping):
-
     RECOMMENDER_NAME = "MatrixFactorization_Cython_Recommender"
 
-
-    def __init__(self, URM_train, positive_threshold=1, URM_validation = None, recompile_cython = False, algorithm = "MF_BPR"):
-
+    def __init__(self, URM_train, positive_threshold=1, URM_validation=None, recompile_cython=False,
+                 algorithm="MF_BPR"):
 
         super(MatrixFactorization_Cython, self).__init__()
-
 
         self.URM_train = URM_train
         self.URM_validation = URM_validation
@@ -46,31 +41,23 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
 
         self.compute_item_score = self.compute_score_MF
 
-
         if recompile_cython:
             print("Compiling in Cython")
             self.runCompilationScript()
             print("Compilation Complete")
 
-
-
     def compute_score_MF(self, user_id):
-
         scores_array = np.dot(self.W[user_id], self.H.T)
 
         return scores_array
 
-
-
-
-    def fit(self, epochs=5000, batch_size = 1000, num_factors=10,
-            learning_rate = 0.001, sgd_mode='adagrad', user_reg = 0.0, positive_reg = 0.0, negative_reg = 0.0,
-            stop_on_validation = False, lower_validatons_allowed = 5, validation_metric = "MAP",
-            evaluator_object = None, validation_every_n = 1000):
+    def fit(self, epochs=5000, batch_size=1000, num_factors=10,
+            learning_rate=0.001, sgd_mode='adagrad', user_reg=0.0, positive_reg=0.0, negative_reg=0.0,
+            stop_on_validation=False, lower_validatons_allowed=5, validation_metric="MAP",
+            evaluator_object=None, validation_every_n=1000, force_compute_sim=True):
 
         if evaluator_object is None:
             SequentialEvaluator(self.URM_validation)
-
 
         self.num_factors = num_factors
         self.sgd_mode = sgd_mode
@@ -80,36 +67,32 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
         if evaluator_object is None and stop_on_validation:
             evaluator_object = SequentialEvaluator(self.URM_validation, [5])
 
-
         # Import compiled module
         from MatrixFactorization.Cython.MatrixFactorization_Cython_Epoch import MatrixFactorization_Cython_Epoch
 
-
         if self.algorithm == "FUNK_SVD":
 
-
             self.cythonEpoch = MatrixFactorization_Cython_Epoch(self.URM_train,
-                                                     algorithm = self.algorithm,
-                                                     n_factors = self.num_factors,
-                                                     learning_rate = learning_rate,
-                                                     batch_size = 1,
-                                                     sgd_mode = sgd_mode,
-                                                     user_reg = user_reg,
-                                                     positive_reg = positive_reg,
-                                                     negative_reg = 0.0)
+                                                                algorithm=self.algorithm,
+                                                                n_factors=self.num_factors,
+                                                                learning_rate=learning_rate,
+                                                                batch_size=1,
+                                                                sgd_mode=sgd_mode,
+                                                                user_reg=user_reg,
+                                                                positive_reg=positive_reg,
+                                                                negative_reg=0.0)
 
         elif self.algorithm == "ASY_SVD":
 
-
             self.cythonEpoch = MatrixFactorization_Cython_Epoch(self.URM_train,
-                                                     algorithm = self.algorithm,
-                                                     n_factors = self.num_factors,
-                                                     learning_rate = learning_rate,
-                                                     batch_size = 1,
-                                                     sgd_mode = sgd_mode,
-                                                     user_reg = user_reg,
-                                                     positive_reg = positive_reg,
-                                                     negative_reg = 0.0)
+                                                                algorithm=self.algorithm,
+                                                                n_factors=self.num_factors,
+                                                                learning_rate=learning_rate,
+                                                                batch_size=1,
+                                                                sgd_mode=sgd_mode,
+                                                                user_reg=user_reg,
+                                                                positive_reg=positive_reg,
+                                                                negative_reg=0.0)
 
         elif self.algorithm == "MF_BPR":
 
@@ -122,37 +105,40 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
             assert URM_train_positive.nnz > 0, "MatrixFactorization_Cython: URM_train_positive is empty, positive threshold is too high"
 
             self.cythonEpoch = MatrixFactorization_Cython_Epoch(URM_train_positive,
-                                                     algorithm = self.algorithm,
-                                                     n_factors = self.num_factors,
-                                                     learning_rate=learning_rate,
-                                                     batch_size=batch_size,
-                                                     sgd_mode = sgd_mode,
-                                                     user_reg=user_reg,
-                                                     positive_reg=positive_reg,
-                                                     negative_reg=negative_reg)
+                                                                algorithm=self.algorithm,
+                                                                n_factors=self.num_factors,
+                                                                learning_rate=learning_rate,
+                                                                batch_size=batch_size,
+                                                                sgd_mode=sgd_mode,
+                                                                user_reg=user_reg,
+                                                                positive_reg=positive_reg,
+                                                                negative_reg=negative_reg)
 
+        if not force_compute_sim:
+            found = True
+            try:
+                with open(os.path.join("IntermediateComputations", "MFMatrix.pkl"), 'rb') as handle:
+                    (W_new, H_new) = pickle.load(handle)
+            except FileNotFoundError:
+                found = False
 
-
-
-
+            if found:
+                self.W = W_new
+                self.H = H_new
+                print("Saved MF Matrix Used!")
+                return
 
         self._train_with_early_stopping(epochs, validation_every_n, stop_on_validation,
-                                    validation_metric, lower_validatons_allowed, evaluator_object,
-                                    algorithm_name = self.algorithm)
-
-
-
-
+                                        validation_metric, lower_validatons_allowed, evaluator_object,
+                                        algorithm_name=self.algorithm)
 
         self.W = self.W_best
         self.H = self.H_best
 
+        with open(os.path.join("IntermediateComputations", "MFMatrix.pkl"), 'wb') as handle:
+            pickle.dump((self.W, self.H), handle, protocol=pickle.HIGHEST_PROTOCOL)
+
         sys.stdout.flush()
-
-
-
-
-
 
     def _initialize_incremental_model(self):
 
@@ -162,8 +148,6 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
         self.H_incremental = self.cythonEpoch.get_H()
         self.H_best = self.H_incremental.copy()
 
-
-
     def _update_incremental_model(self):
 
         self.W_incremental = self.cythonEpoch.get_W()
@@ -172,41 +156,13 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
         self.W = self.W_incremental
         self.H = self.H_incremental
 
-
     def _update_best_model(self):
 
         self.W_best = self.W_incremental.copy()
         self.H_best = self.H_incremental.copy()
 
-
-
     def _run_epoch(self, num_epoch):
-       self.cythonEpoch.epochIteration_Cython()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        self.cythonEpoch.epochIteration_Cython()
 
     def runCompilationScript(self):
 
@@ -225,7 +181,6 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
                        '--inplace'
                        ]
 
-
             output = subprocess.check_output(' '.join(command), shell=True, cwd=os.getcwd() + compiledModuleSubfolder)
 
             try:
@@ -235,11 +190,11 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
                            '-a'
                            ]
 
-                output = subprocess.check_output(' '.join(command), shell=True, cwd=os.getcwd() + compiledModuleSubfolder)
+                output = subprocess.check_output(' '.join(command), shell=True,
+                                                 cwd=os.getcwd() + compiledModuleSubfolder)
 
             except:
                 pass
-
 
         print("Compiled module saved in subfolder: {}".format(compiledModuleSubfolder))
 
@@ -248,11 +203,6 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
 
         # Command to generate html report
         # cython -a MatrixFactorization_Cython_Epoch.pyx
-
-
-
-
-
 
     def writeCurrentConfig(self, currentEpoch, results_run, logFile):
 
@@ -269,12 +219,7 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
             logFile.write("Test case: {}, Results {}\n".format(current_config, results_run))
             logFile.flush()
 
-
-
-
-
-
-    def saveModel(self, folder_path, file_name = None):
+    def saveModel(self, folder_path, file_name=None):
 
         if file_name is None:
             file_name = self.RECOMMENDER_NAME
@@ -284,18 +229,11 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
         dictionary_to_save = {"W": self.W,
                               "H": self.H}
 
-
         pickle.dump(dictionary_to_save,
                     open(folder_path + file_name, "wb"),
                     protocol=pickle.HIGHEST_PROTOCOL)
 
-
         print("{}: Saving complete")
-
-
-
-
-
 
 
 class MatrixFactorization_BPR_Cython(MatrixFactorization_Cython):
@@ -312,9 +250,6 @@ class MatrixFactorization_BPR_Cython(MatrixFactorization_Cython):
         super(MatrixFactorization_BPR_Cython, self).fit(**key_args)
 
 
-
-
-
 class MatrixFactorization_FunkSVD_Cython(MatrixFactorization_Cython):
     """
     Subclas allowing only for FunkSVD
@@ -325,16 +260,12 @@ class MatrixFactorization_FunkSVD_Cython(MatrixFactorization_Cython):
     def __init__(self, *pos_args, **key_args):
         super(MatrixFactorization_FunkSVD_Cython, self).__init__(*pos_args, algorithm="FUNK_SVD", **key_args)
 
-
     def fit(self, **key_args):
-
         if "reg" in key_args:
             key_args["positive_reg"] = key_args["reg"]
             del key_args["reg"]
 
         super(MatrixFactorization_FunkSVD_Cython, self).fit(**key_args)
-
-
 
 
 class MatrixFactorization_AsySVD_Cython(MatrixFactorization_Cython):

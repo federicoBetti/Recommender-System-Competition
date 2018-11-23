@@ -134,7 +134,7 @@ class RS_Data_Loader(object):
         # test_songs_per_playlist = make_series(test)
         # all_playlist_to_predict['playlist_id'] = pd.Series(range(len(all_playlist_to_predict.index)),
         #                                                    index=all_playlist_to_predict.index)
-        self.ICM = None
+        self.ICM = get_icm_matrix(self.tracks)
 
         print("RS_Data_Loader: loading complete")
 

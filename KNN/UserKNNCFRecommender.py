@@ -5,7 +5,8 @@ Created on 23/10/17
 
 @author: Maurizio Ferrari Dacrema
 """
-
+import os
+import pickle
 
 from Base.Recommender import Recommender
 from Base.Recommender_utils import check_matrix
@@ -33,15 +34,31 @@ class UserKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
 
 
 
-    def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, **similarity_args):
+    def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True, **similarity_args):
 
         self.topK = topK
         self.shrink = shrink
+
+        if not force_compute_sim:
+            found = True
+            try:
+                with open(os.path.join("IntermediateComputations", "UserCFSimMatrix.pkl"), 'rb') as handle:
+                    (topK_new, shrink_new, W_sparse_new) = pickle.load(handle)
+            except FileNotFoundError:
+                found = False
+
+            if found and self.topK == topK_new and self.shrink == shrink_new:
+                self.W_sparse = W_sparse_new
+                print("Saved User CF Similarity Matrix Used!")
+                return
 
         similarity = Compute_Similarity(self.URM_train.T, shrink=shrink, topK=topK, normalize=normalize, similarity = similarity, **similarity_args)
 
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
+
+            with open(os.path.join("IntermediateComputations", "UserCFSimMatrix.pkl"), 'wb') as handle:
+                pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
         else:
             self.W = similarity.compute_similarity()
             self.W = self.W.toarray()

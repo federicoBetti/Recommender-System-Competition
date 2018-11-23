@@ -90,8 +90,10 @@ class RandomSearch(AbstractClassSearch):
 
     def __init__(self, recommender_class, URM_test = None, evaluation_function_validation=None):
 
-        super(RandomSearch, self).__init__(recommender_class, URM_test = URM_test, evaluation_function_validation= evaluation_function_validation)
-
+        super(RandomSearch, self).__init__(recommender_class, evaluator_validation=evaluation_function_validation)
+        self.URM_validation = URM_test
+        self.URM_test = URM_test
+        self.evaluation_function = evaluation_function_validation
 
     def build_all_cases_to_evaluate(self, n_cases):
 
@@ -281,7 +283,7 @@ class RandomSearch(AbstractClassSearch):
 
             process_object = Process_object_data_and_evaluation(self.recommender_class, self.dictionary_input,
                                                                 paramether_dictionary_list[num_cases_evaluated],
-                                                                self.ALGORITHM_NAME, self.URM_validation, self.evaluation_function_validation)
+                                                                self.ALGORITHM_NAME, self.URM_validation, self.evaluation_function)
 
             process_object.run("main")
 

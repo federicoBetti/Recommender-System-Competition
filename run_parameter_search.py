@@ -197,6 +197,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     hyperparamethers_range_dictionary["weights1"] = [0, 0.1, 0.2, 0.4, 0.5]
     hyperparamethers_range_dictionary["weights2"] = [0.5, 0.7, 0.9, 1, 1.2, 1.5]
     hyperparamethers_range_dictionary["weights3"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+    # hyperparamethers_range_dictionary["soglia1"] = [100,200,300]
+    # hyperparamethers_range_dictionary["soglia2"] = [400,500,600]
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
     # if similarity_type == "asymmetric":
@@ -215,7 +217,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {"old_similrity_matrix": old_similrity_matrix,
-                                                               "epochs": 100},
+                                                               "epochs": 100,
+                                                               "weights": [1,2,3,4,5,6]},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
@@ -530,7 +533,7 @@ def read_data_split_and_search():
     """
 
     # this line removes old matrixes saved, comment it if testing only the weights of hybrid
-    # delete_previous_intermediate_computations()
+    delete_previous_intermediate_computations()
     dataReader = RS_Data_Loader(top10k=True)
 
     URM_train = dataReader.get_URM_train()
@@ -605,6 +608,7 @@ def read_data_split_and_search():
                         SLIM_BPR_Cython,
                         # SLIMElasticNetRecommender
                     ]
+
                     if SLIM_BPR_Cython in recommender_list:
                         recommender_IB = ItemKNNCFRecommender(URM_train)
                         recommender_IB.fit(200, 15)

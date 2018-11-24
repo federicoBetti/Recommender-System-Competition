@@ -46,8 +46,10 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             else:
                 self.recommender_list.append(recommender(URM_train))
 
-    def fit(self, topK=None, shrink=None, weights=None, topK1=None, topK2=None, topK3=None, shrink1=None, shrink2=None, shrink3=None, weights1=None, weights2=None, weights3=None, similarity='cosine', normalize=True, old_similrity_matrix=None, epochs=1, force_compute_sim=False,
-            **similarity_args):
+    # topk1,2,3 e shrink e weights1,2,3 sono quelli del dizionario, aggiungerli per il test
+    def fit(self, topK=None, shrink=None, weights=None, topK1=None, topK2=None, topK3=None, shrink1=None, shrink2=None,
+            shrink3=None, weights1=None, weights2=None, weights3=None, similarity='cosine', normalize=True,
+            old_similrity_matrix=None, epochs=1, force_compute_sim=False, **similarity_args):
 
         if shrink is None:
             shrink = [shrink1, shrink2, shrink3]

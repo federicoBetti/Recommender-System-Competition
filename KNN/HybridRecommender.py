@@ -75,7 +75,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
             if recommender.__class__ is SLIM_BPR_Cython:
-                recommender.fit(old_similrity_matrix=old_similrity_matrix, epochs=epochs)
+                recommender.fit(old_similrity_matrix=old_similrity_matrix, epochs=epochs, force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ is MatrixFactorization_BPR_Cython:
                 recommender.fit(epochs=epochs, force_compute_sim=force_compute_sim)

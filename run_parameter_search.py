@@ -171,7 +171,7 @@ def runParameterSearch_Content(recommender_class, URM_train, ICM_object, ICM_nam
 
 def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recommender_list, n_cases=30,
                                       evaluator_validation=None, evaluator_test=None, metric_to_optimize="MAP",
-                                      output_root_path="result_experiments/", parallelizeKNN=False, URM_test=None):
+                                      output_root_path="result_experiments/", parallelizeKNN=False, URM_test=None, old_similrity_matrix=None):
     # If directory does not exist, create
     if not os.path.exists(output_root_path):
         os.makedirs(output_root_path)
@@ -199,6 +199,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     hyperparamethers_range_dictionary["weights3"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
     hyperparamethers_range_dictionary["normalize"] = [True, False]
     hyperparamethers_range_dictionary["epochs"] = [30000]
+    hyperparamethers_range_dictionary["old_similrity_matrix"] = [old_similrity_matrix]
 
     # if similarity_type == "asymmetric":
     #     hyperparamethers_range_dictionary["asymmetric_alpha"] = range(0, 2)
@@ -507,7 +508,7 @@ def delete_previous_intermediate_computations():
     '''
     this function is used to remove intermediate old computations that are a problem in new runs
     '''
-    files = glob.glob(os.path.join("IntermediateComputations", "*"))
+    files = glob.glob(os.path.join("IntermediateComputations", "*.pkl"))
     for f in files:
         print("Removing file: {}...".format(f))
         os.remove(f)
@@ -530,7 +531,7 @@ def read_data_split_and_search():
     """
 
 
-    delete_previous_intermediate_computations()
+    # delete_previous_intermediate_computations()
     dataReader = RS_Data_Loader(top10k=True)
 
     URM_train = dataReader.get_URM_train()
@@ -606,9 +607,10 @@ def read_data_split_and_search():
                         # SLIMElasticNetRecommender
                     ]
 
+                    # old similarity matrix is the starting matrix for the SLIM recommender
                     runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recommender_list,
                                                       evaluator_validation=evaluator_validation,
-                                                      evaluator_test=evaluator_test, URM_test=URM_test)
+                                                      evaluator_test=evaluator_test, URM_test=URM_test, old_similrity_matrix=None)
                 else:
                     runParameterSearch_Collaborative_partial(recommender_class)
 

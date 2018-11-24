@@ -26,8 +26,10 @@ from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
 
-    delete_previous_intermediate_computations()
     evaluate_algorithm = True
+    if not evaluate_algorithm:
+        delete_previous_intermediate_computations()
+
     filename = "hybrid_new_params_withMF.csv"
 
     dataReader = RS_Data_Loader(top10k=True, all_train=not evaluate_algorithm)

@@ -15,6 +15,7 @@ from Base.Incremental_Training_Early_Stopping import Incremental_Training_Early_
 
 import subprocess
 import os, sys, time
+import pickle
 
 import numpy as np
 from Base.Evaluation.Evaluator import SequentialEvaluator
@@ -93,7 +94,21 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
             batch_size = 1000, lambda_i = 0.0, lambda_j = 0.0, learning_rate = 1e-4, topK = 200,
             sgd_mode='adagrad', gamma=0.995, beta_1=0.9, beta_2=0.999,
             stop_on_validation = False, lower_validatons_allowed = 5, validation_metric = "MAP",
-            evaluator_object = SequentialEvaluator, validation_every_n = 50, old_similrity_matrix=None):
+            evaluator_object = SequentialEvaluator, validation_every_n = 50, old_similrity_matrix=None, force_compute_sim=True):
+
+
+        if not force_compute_sim:
+            found = True
+            try:
+                with open(os.path.join("IntermediateComputations", "SLIM_BPR_Matrix.pkl"), 'rb') as handle:
+                    (W_sparse_new) = pickle.load(handle)
+            except FileNotFoundError:
+                found = False
+
+            if found:
+                self.W_sparse = W_sparse_new
+                print("Saved Item CF Similarity Matrix Used!")
+                return
 
         evaluator_object = SequentialEvaluator(self.URM_validation)
 
@@ -156,6 +171,10 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
 
 
         self.get_S_incremental_and_set_W()
+
+        with open(os.path.join("IntermediateComputations", "SLIM_BPR_Matrix.pkl"), 'wb') as handle:
+            pickle.dump(self.W_sparse, handle,
+                        protocol=pickle.HIGHEST_PROTOCOL)
 
         sys.stdout.flush()
 

@@ -118,7 +118,7 @@ class Recommender(object):
             user_id = user_id_array[user_index]
 
             if remove_seen_flag:
-                scores_batch[user_index,:] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
+                scores_batch = self._remove_seen_on_scores(user_id, scores_batch)
 
             # Sorting is done in three steps. Faster then plain np.argsort for higher number of items
             # - Partition the data to extract the set of relevant items
@@ -131,33 +131,33 @@ class Recommender(object):
             # ranking_list.append(ranking)
 
 
-        if remove_top_pop_flag:
-            scores_batch = self._remove_TopPop_on_scores(scores_batch)
+            if remove_top_pop_flag:
+                scores_batch = self._remove_TopPop_on_scores(scores_batch)
 
-        if remove_CustomItems_flag:
-            scores_batch = self._remove_CustomItems_on_scores(scores_batch)
+            if remove_CustomItems_flag:
+                scores_batch = self._remove_CustomItems_on_scores(scores_batch)
 
-        # scores_batch = np.arange(0,3260).reshape((1, -1))
-        # scores_batch = np.repeat(scores_batch, 1000, axis = 0)
+            # scores_batch = np.arange(0,3260).reshape((1, -1))
+            # scores_batch = np.repeat(scores_batch, 1000, axis = 0)
 
-        # relevant_items_partition is block_size x cutoff
-        relevant_items_partition = (-scores_batch).argpartition(cutoff, axis=1)[:,0:cutoff]
+            # relevant_items_partition is block_size x cutoff
+            relevant_items_partition = (-scores_batch).argpartition(cutoff)[0:cutoff]
 
-        # Get original value and sort it
-        # [:, None] adds 1 dimension to the array, from (block_size,) to (block_size,1)
-        # This is done to correctly get scores_batch value as [row, relevant_items_partition[row,:]]
-        relevant_items_partition_original_value = scores_batch[np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
-        relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-        ranking = relevant_items_partition[np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
+            # Get original value and sort it
+            # [:, None] adds 1 dimension to the array, from (block_size,) to (block_size,1)
+            # This is done to correctly get scores_batch value as [row, relevant_items_partition[row,:]]
+            relevant_items_partition_original_value = scores_batch[relevant_items_partition]
+            relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value)
+            ranking = relevant_items_partition[relevant_items_partition_sorting]
+            # print("Score batch: {}, Relevenat items parition: {}, Ranking: {}".format(scores_batch, relevant_items_partition, ranking))
+            ranking_list = ranking.tolist()
 
-        ranking_list = ranking.tolist()
 
+            # # Return single list for one user, instead of list of lists
+            # if single_user:
+            #     ranking_list = ranking_list[0]
 
-        # Return single list for one user, instead of list of lists
-        if single_user:
-            ranking_list = ranking_list[0]
-
-        return ranking_list
+            return ranking_list
 
 
 

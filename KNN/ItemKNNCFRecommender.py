@@ -39,12 +39,12 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
         if not force_compute_sim:
             found = True
             try:
-                with open(os.path.join("IntermediateComputations", "ItemCFSimMatrix.pkl"), 'rb') as handle:
-                    (topK_new, shrink_new, similarity_new, normalize_new, W_sparse_new) = pickle.load(handle)
+                with open(os.path.join("IntermediateComputations", "ItemCFMatrix.pkl"), 'rb') as handle:
+                    (topK_new, shrink_new, W_sparse_new) = pickle.load(handle)
             except FileNotFoundError:
                 found = False
 
-            if found and self.topK == topK_new and self.shrink == shrink_new and self.normalize == normalize_new and similarity == similarity_new:
+            if found and self.topK == topK_new and self.shrink == shrink_new:
                 self.W_sparse = W_sparse_new
                 print("Saved Item CF Similarity Matrix Used!")
                 return
@@ -54,9 +54,9 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
 
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
-
-            with open(os.path.join("IntermediateComputations", "ItemCFSimMatrix.pkl"), 'wb') as handle:
-                pickle.dump((self.topK, self.shrink, similarity, self.normalize, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
+            print(type(self.W_sparse))
+            with open(os.path.join("IntermediateComputations", "ItemCFMatrix.pkl"), 'wb') as handle:
+                pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
         else:
             self.W = similarity.compute_similarity()
             self.W = self.W.toarray()

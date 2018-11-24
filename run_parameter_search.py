@@ -198,8 +198,6 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     hyperparamethers_range_dictionary["weights2"] = [0.5, 0.7, 0.9, 1, 1.2, 1.5]
     hyperparamethers_range_dictionary["weights3"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
     hyperparamethers_range_dictionary["normalize"] = [True, False]
-    hyperparamethers_range_dictionary["epochs"] = [30000]
-    hyperparamethers_range_dictionary["old_similrity_matrix"] = [old_similrity_matrix]
 
     # if similarity_type == "asymmetric":
     #     hyperparamethers_range_dictionary["asymmetric_alpha"] = range(0, 2)
@@ -216,7 +214,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                             DictionaryKeys.FIT_KEYWORD_ARGS: dict(),
+                             DictionaryKeys.FIT_KEYWORD_ARGS: {"old_similrity_matrix": old_similrity_matrix,
+                                                               "epochs": 100},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
@@ -227,7 +226,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                                              metric=metric_to_optimize)
 
 
-def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, metric_to_optimize="PRECISION",
+def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, metric_to_optimize="MAP",
                                      evaluator_validation=None, evaluator_test=None,
                                      evaluator_validation_earlystopping=None,
                                      output_root_path="result_experiments/", parallelizeKNN=True, n_cases=30):
@@ -530,7 +529,7 @@ def read_data_split_and_search():
         - A _best_result_test file which contains a dictionary with the results, on the test set, of the best solution chosen using the validation set
     """
 
-
+    # this line removes old matrixes saved, comment it if testing only the weights of hybrid
     # delete_previous_intermediate_computations()
     dataReader = RS_Data_Loader(top10k=True)
 
@@ -600,17 +599,24 @@ def read_data_split_and_search():
                         ItemKNNCBFRecommender,
                         ItemKNNCFRecommender,
                         #UserKNNCFRecommender,
-                        MatrixFactorization_BPR_Cython,
+                        # MatrixFactorization_BPR_Cython,
                         # MatrixFactorization_FunkSVD_Cython,
                         # PureSVDRecommender,
-                        # SLIM_BPR_Cython,
+                        SLIM_BPR_Cython,
                         # SLIMElasticNetRecommender
                     ]
+                    if SLIM_BPR_Cython in recommender_list:
+                        recommender_IB = ItemKNNCFRecommender(URM_train)
+                        recommender_IB.fit(200, 15)
+                        transfer_matrix = recommender_IB.W_sparse
+                    else:
+                        transfer_matrix = None
 
                     # old similarity matrix is the starting matrix for the SLIM recommender
                     runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recommender_list,
                                                       evaluator_validation=evaluator_validation,
-                                                      evaluator_test=evaluator_test, URM_test=URM_test, old_similrity_matrix=None)
+                                                      evaluator_test=evaluator_test, URM_test=URM_test,
+                                                      old_similrity_matrix=transfer_matrix)
                 else:
                     runParameterSearch_Collaborative_partial(recommender_class)
 

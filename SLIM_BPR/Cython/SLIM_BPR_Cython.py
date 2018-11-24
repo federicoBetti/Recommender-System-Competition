@@ -96,6 +96,8 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
             stop_on_validation = False, lower_validatons_allowed = 5, validation_metric = "MAP",
             evaluator_object = SequentialEvaluator, validation_every_n = 50, old_similrity_matrix=None, force_compute_sim=True):
 
+        # remove this line otherwise no validation is done!
+        validation_every_n = epochs + 1
 
         if not force_compute_sim:
             found = True
@@ -107,7 +109,7 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
 
             if found:
                 self.W_sparse = W_sparse_new
-                print("Saved Item CF Similarity Matrix Used!")
+                print("Saved SLIM Matrix Used!")
                 return
 
         evaluator_object = SequentialEvaluator(self.URM_validation)

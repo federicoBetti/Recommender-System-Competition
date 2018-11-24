@@ -96,21 +96,31 @@ class RS_Data_Loader(object):
             self.URM_validation = get_fake_test()
         else:
             if top10k:
-                start_mask = np.asarray([False] * len(train))
-                with open(os.path.join("Dataset", 'top10_playlist.pkl'), 'rb') as handle:
-                    top10k_playlist = pickle.load(handle)
+                try:
+                    self.URM_train = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_train.npz"))
+                    self.URM_test = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_test.npz"))
+                    self.URM_validation = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_test.npz"))
+                except FileNotFoundError:
 
-                for top_play in top10k_playlist:
-                    my_train = train[train.playlist_id == top_play]
-                    to_take = random.sample(list(my_train.index), 10)
-                    start_mask[to_take] = True
+                    start_mask = np.asarray([False] * len(train))
+                    with open(os.path.join("Dataset", 'top10_playlist.pkl'), 'rb') as handle:
+                        top10k_playlist = pickle.load(handle)
 
-                new_train = train[~start_mask]
-                new_test = train[start_mask]
+                    for top_play in top10k_playlist:
+                        my_train = train[train.playlist_id == top_play]
+                        to_take = random.sample(list(my_train.index), 10)
+                        start_mask[to_take] = True
 
-                self.URM_train = create_URM_matrix(new_train)
-                self.URM_test = create_URM_matrix(new_test)
-                self.URM_validation = create_URM_matrix(new_test)
+                    new_train = train[~start_mask]
+                    new_test = train[start_mask]
+
+                    self.URM_train = create_URM_matrix(new_train)
+                    self.URM_test = create_URM_matrix(new_test)
+                    self.URM_validation = create_URM_matrix(new_test)
+
+                    scipy.sparse.save_npz(os.path.join("IntermediateComputations", "URM_train.npz"), self.URM_train)
+                    scipy.sparse.save_npz(os.path.join("IntermediateComputations", "URM_test.npz"), self.URM_test)
+
                 # here we use the same train and test
 
             else:

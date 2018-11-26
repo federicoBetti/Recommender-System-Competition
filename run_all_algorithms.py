@@ -47,10 +47,10 @@ if __name__ == '__main__':
         # RP3betaRecommender,
         ItemKNNCBFRecommender,
         ItemKNNCFRecommender,
-        UserKNNCFRecommender
-        #MatrixFactorization_BPR_Cython,
+        UserKNNCFRecommender,
+        #MatrixFactorization_BPR_Cython
         # MatrixFactorization_FunkSVD_Cython,
-        # PureSVDRecommender,
+        #PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
     ]
@@ -58,7 +58,8 @@ if __name__ == '__main__':
     weights = [
         1,
         5,
-        4
+        4,
+
     ]
 
     topK = [
@@ -74,9 +75,10 @@ if __name__ == '__main__':
     ]
 
     # For hybrid with weighted estimated rating
-    # d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.5, 0.5]]
+    # d_weights = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
-    d_weights = [[5, 5, 0], [1, 7, 2], [2, 4, 4]]
+    # Dynamics for Hybrid with Top_N. usefull for testing where each recommender works better
+    d_weights = [[5, 5, 0], [1, 4, 5], [0, 4, 6]]
 
     from Base.Evaluation.Evaluator import SequentialEvaluator
 
@@ -100,7 +102,7 @@ if __name__ == '__main__':
 
         recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=True, d_weights=d_weights,
                                         weights=weights, URM_validation=URM_validation)
-        recommender.fit(topK=topK, shrink=shrinks, epochs=10)
+        recommender.fit(topK=topK, shrink=shrinks, epochs=10000)
 
         print("Starting Evaluations...")
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,

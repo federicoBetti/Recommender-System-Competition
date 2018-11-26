@@ -161,6 +161,13 @@ class HybridRecommenderTopNapproach(HybridRecommender):
                 threshold = int(ged.playlist_popularity(user_profile_pop, dict_pop))
                 weights = self.change_weights(threshold, pop)
 
+                # needed since we have to take first the more important recommendations from more important recommender
+                # if we don't reach the aimed number of songs
+                sorted_scores = [x for _, x in sorted(zip(weights, scores), key=lambda pair: pair[0])]
+                weights.sort(reverse=True)
+                scores = sorted_scores
+
+
             for score, weight in zip(scores, weights):
                 relevant_items_partition = (-score).argpartition(n)[0:n]
                 relevant_items_partition_sorting = np.argsort(-score[relevant_items_partition])

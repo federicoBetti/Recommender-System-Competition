@@ -3,7 +3,6 @@
 """
 Created on 23/11/18
 
-@author: Federico Betti
 """
 
 from Base.Recommender import Recommender
@@ -12,32 +11,32 @@ from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 import numpy as np
 
 from Base.Similarity.Compute_Similarity import Compute_Similarity
+from KNN.HybridRecommender import HybridRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 import Support_functions.get_evaluate_data as ged
 
 
-class HybridRecommender(SimilarityMatrixRecommender, Recommender):
+class HybridRecommenderTopNapproach(HybridRecommender):
     """ Hybrid recommender"""
 
-    RECOMMENDER_NAME = "ItemKNNCFRecommender"
+    RECOMMENDER_NAME = "HybridRecommenderTopNapproach"
 
-    def __init__(self, URM_train, ICM, recommeder_list, dynamic=False, d_weights=None, weights=None, URM_validation=None, sparse_weights=True):
+    def __init__(self, URM_train, ICM, recommeder_list, d_weights=None, dynamic=False, weights=None,
+                 URM_validation=None, sparse_weights=True):
         super(Recommender, self).__init__()
 
         # CSR is faster during evaluation
         self.URM_train = check_matrix(URM_train, 'csr')
         self.URM_validation = URM_validation
         self.dynamic = dynamic
-        self.d_weights = d_weights
         self.dataset = None
-
+        self.d_weights = d_weights
         self.sparse_weights = sparse_weights
 
         self.recommender_list = []
         self.weights = weights
-
 
         for recommender in recommeder_list:
             if recommender in [SLIM_BPR_Cython, MatrixFactorization_BPR_Cython]:
@@ -47,6 +46,16 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 self.recommender_list.append(recommender(ICM, URM_train))
             else:
                 self.recommender_list.append(recommender(URM_train))
+
+    def change_weights(self, threshold, pop):
+        if threshold < pop[0]:
+            return self.d_weights[0]
+
+        elif pop[0] < threshold < pop[1]:
+            return self.d_weights[1]
+
+        else:
+            return self.d_weights[2]
 
     # topk1,2,3 e shrink e weights1,2,3 sono quelli del dizionario, aggiungerli per il test
     def fit(self, topK=None, shrink=None, weights=None, topK1=None, topK2=None, topK3=None, shrink1=None, shrink2=None,
@@ -79,7 +88,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
             if recommender.__class__ is SLIM_BPR_Cython:
-                recommender.fit(old_similrity_matrix=old_similrity_matrix, epochs=epochs, force_compute_sim=force_compute_sim)
+                recommender.fit(old_similrity_matrix=old_similrity_matrix, epochs=epochs,
+                                force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ is MatrixFactorization_BPR_Cython:
                 recommender.fit(epochs=epochs, force_compute_sim=force_compute_sim)
@@ -87,11 +97,27 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             else:  # ItemCF, UserCF, ItemCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
 
+    def add_non_present_items(self, final_ranking, current_ranking, weight, n):
+        count = 0
+        for item in current_ranking:
+            if item in final_ranking:
+                continue
+            final_ranking.append(item)
+            count += 1
+            if count == weight or len(final_ranking) == n:
+                return final_ranking
+        return final_ranking
+
+    def fill_missing_items(self, final_ranking, rankings, n):
+        for ranking in rankings:
+            final_ranking = self.add_non_present_items(final_ranking, ranking, 10, n)
+        return final_ranking
+
     def recommend(self, user_id, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
 
         weights = self.weights
-        if cutoff == None:
+        if cutoff is None:
             # noinspection PyUnresolvedReferences
             n = self.URM_train.shape[1] - 1
         else:
@@ -124,8 +150,10 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                                                                                                           len(weights)))
                 raise TypeError
 
-            # QUA È DOVE VENGONO APPLICATI I WEIGHTS AGLI SCORE, QUINDI NEL CASO SI VOLESSE MODFICIARE È QUA!!
-            final_score = np.zeros(scores[0].shape)
+            # Weight is the number of items to extract for each ranking
+            final_ranking = []
+            rankings = []
+
             if self.dynamic:
                 pop = [150, 400]
                 user_profile_pop = self.URM_train.indices[
@@ -134,7 +162,14 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 weights = self.change_weights(threshold, pop)
 
             for score, weight in zip(scores, weights):
-                final_score += (score * weight)
+                relevant_items_partition = (-score).argpartition(n)[0:n]
+                relevant_items_partition_sorting = np.argsort(-score[relevant_items_partition])
+                ranking = relevant_items_partition[relevant_items_partition_sorting]
+                rankings.append(ranking)
+                final_ranking = self.add_non_present_items(final_ranking, ranking, weight, n)
+
+            if len(final_ranking) != n:
+                final_ranking = self.fill_missing_items(final_ranking, rankings, n)
 
         else:
             raise NotImplementedError
@@ -145,20 +180,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             relevant_weights = self.W[user_profile]
             scores = relevant_weights.T.dot(user_ratings)
 
-        scores = final_score
-        # rank items and mirror column to obtain a ranking in descending score
-        # ranking = scores.argsort()
-        # ranking = np.flip(ranking, axis=0)
-
-        # Sorting is done in three steps. Faster then plain np.argsort for higher number of items
-        # - Partition the data to extract the set of relevant items
-        # - Sort only the relevant items
-        # - Get the original item index
-        relevant_items_partition = (-scores).argpartition(n)[0:n]
-        relevant_items_partition_sorting = np.argsort(-scores[relevant_items_partition])
-        ranking = relevant_items_partition[relevant_items_partition_sorting]
-
-        return ranking
+        return final_ranking
 
         # If is a scalar transform it in a 1-cell array
         if np.isscalar(user_id_array):
@@ -187,7 +209,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         #         den = rated.dot(self.W).ravel()
         #     den[np.abs(den) < 1e-6] = 1.0  # to avoid NaNs
         #     scores /= den
-
 
         for user_index in range(len(user_id_array)):
 
@@ -234,13 +255,3 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             ranking_list = ranking_list[0]
 
         return ranking_list
-
-    def change_weights(self, threshold, pop):
-        if threshold < pop[0]:
-            return self.d_weights[0]
-
-        elif pop[0] < threshold < pop[1]:
-            return self.d_weights[1]
-
-        else:
-            return self.d_weights[2]

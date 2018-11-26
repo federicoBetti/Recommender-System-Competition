@@ -68,6 +68,8 @@ class ItemKNNCBFRecommender(SimilarityMatrixRecommender, Recommender):
 
         similarity = Compute_Similarity(self.ICM.T, shrink=shrink, topK=topK, normalize=normalize, similarity = similarity, **similarity_args)
 
+        print('HERE')
+        print(similarity)
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
 

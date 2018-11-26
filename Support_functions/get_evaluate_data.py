@@ -18,6 +18,26 @@ def make_series(test):
     return test_songs_per_playlist
 
 
+def tracks_popularity():
+    all_train, train, test, tracks, target_playlist, all_playlist_to_predict, test_songs_per_playlist, validation = get_data()
+    scores = all_train.groupby('track_id').count()
+    scores.columns = ['scores']
+    return scores.to_dict()['scores']
+
+
+def playlist_popularity(playlist_songs, pop_dict):
+    pop = 0
+    count = 0
+    for track in playlist_songs:
+        pop += pop_dict[track]
+        count += 1
+
+    if count == 0:
+        return 0
+
+    return pop / count
+
+
 def get_data():
     train = pd.read_csv(os.path.join("Dataset", "train.csv"))
     all_playlist_to_predict = pd.DataFrame(index=train.playlist_id.unique())
@@ -84,7 +104,7 @@ def evaluate_algorithm(all_playlist_to_predict, test_songs_per_playlist, users_n
             relevant_items = np.asarray(test_songs_per_playlist[user_id])
 
             recommended_items = train_series[user_id]
-            #recommended_items = [int(x) for x in recommended_items.split(" ")]
+            # recommended_items = [int(x) for x in recommended_items.split(" ")]
             recommended_items = np.asarray(recommended_items)
             num_eval += 1
 

@@ -11,9 +11,11 @@ from MatrixFactorization.PureSVD import PureSVDRecommender
 from Base.NonPersonalizedRecommender import TopPop, Random
 
 from KNN.UserKNNCFRecommender import UserKNNCFRecommender
+from KNN.HybridRecommenderTopNapproach import HybridRecommenderTopNapproach
 from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from KNN.HybridRecommender import HybridRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
+import Support_functions.get_evaluate_data as ged
 from GraphBased.RP3betaRecommender import RP3betaRecommender
 from GraphBased.P3alphaRecommender import P3alphaRecommender
 
@@ -25,7 +27,6 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-
     evaluate_algorithm = True
     if not evaluate_algorithm:
         delete_previous_intermediate_computations()
@@ -46,8 +47,8 @@ if __name__ == '__main__':
         # RP3betaRecommender,
         ItemKNNCBFRecommender,
         ItemKNNCFRecommender,
-        # UserKNNCFRecommender,
-        MatrixFactorization_BPR_Cython,
+        UserKNNCFRecommender
+        #MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
@@ -55,13 +56,13 @@ if __name__ == '__main__':
     ]
 
     weights = [
-        0.5,
-        1.2,
-        0.2
+        1,
+        5,
+        4
     ]
 
     topK = [
-        60,
+         60,
         200,
         200
     ]
@@ -72,9 +73,14 @@ if __name__ == '__main__':
         5
     ]
 
+    # For hybrid with weighted estimated rating
+    # d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.5, 0.5]]
+
+    d_weights = [[5, 5, 0], [1, 7, 2], [2, 4, 4]]
+
     from Base.Evaluation.Evaluator import SequentialEvaluator
 
-    evaluator = SequentialEvaluator(URM_test, exclude_seen=True)
+    evaluator = SequentialEvaluator(URM_test, URM_train, exclude_seen=True)
 
     output_root_path = "result_experiments/"
 
@@ -83,20 +89,22 @@ if __name__ == '__main__':
         os.makedirs(output_root_path)
 
     logFile = open(output_root_path + "result_all_algorithms.txt", "a")
-
-    recommender_IB = ItemKNNCFRecommender(URM_train)
-    recommender_IB.fit(200, 15)
-    transfer_matrix = recommender_IB.W_sparse
+    #
+    # recommender_IB = ItemKNNCFRecommender(URM_train)
+    # recommender_IB.fit(200, 15)
+    # transfer_matrix = recommender_IB.W_sparse
 
     try:
-        recommender_class = HybridRecommender
+        recommender_class = HybridRecommenderTopNapproach
         print("Algorithm: {}".format(recommender_class))
 
-        recommender = recommender_class(URM_train, ICM, recommender_list, weights, URM_validation=URM_validation)
-        recommender.fit(topK=topK, shrink=shrinks, old_similrity_matrix=transfer_matrix, epochs=10000)
+        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=True, d_weights=d_weights,
+                                        weights=weights, URM_validation=URM_validation)
+        recommender.fit(topK=topK, shrink=shrinks, epochs=10)
 
         print("Starting Evaluations...")
-        results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender)
+        results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
+                                                                                                plot_stats=True)
 
         print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
                                                     results_run_string))

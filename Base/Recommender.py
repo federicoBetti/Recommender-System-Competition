@@ -28,13 +28,11 @@ class Recommender(object):
         self.items_to_ignore_flag = False
         self.items_to_ignore_ID = np.array([], dtype=np.int)
 
-
     def fit(self):
         pass
 
     def get_URM_train(self):
         return self.URM_train.copy()
-
 
     def set_items_to_ignore(self, items_to_ignore):
 
@@ -46,16 +44,13 @@ class Recommender(object):
         self.items_to_ignore_flag = False
         self.items_to_ignore_ID = np.array([], dtype=np.int)
 
-
     def _remove_TopPop_on_scores(self, scores_batch):
         scores_batch[:, self.filterTopPop_ItemsID] = -np.inf
         return scores_batch
 
-
     def _remove_CustomItems_on_scores(self, scores_batch):
         scores_batch[:, self.items_to_ignore_ID] = -np.inf
         return scores_batch
-
 
     def _remove_seen_on_scores(self, user_id, scores):
 
@@ -66,21 +61,12 @@ class Recommender(object):
         scores[seen] = -np.inf
         return scores
 
-
-
-
-
-
-
     def compute_item_score(self, user_id):
-        raise NotImplementedError("Recommender: compute_item_score not assigned for current recommender, unable to compute prediction scores")
+        raise NotImplementedError(
+            "Recommender: compute_item_score not assigned for current recommender, unable to compute prediction scores")
 
-
-
-
-
-
-    def recommend(self, user_id_array, cutoff = None, remove_seen_flag=True, remove_top_pop_flag = False, remove_CustomItems_flag = False):
+    def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
+                  remove_CustomItems_flag=False):
 
         # If is a scalar transform it in a 1-cell array
         if np.isscalar(user_id_array):
@@ -89,14 +75,12 @@ class Recommender(object):
         else:
             single_user = False
 
-
         if cutoff is None:
             cutoff = self.URM_train.shape[1] - 1
 
         # Compute the scores using the model-specific function
         # Vectorize over all users in user_id_array
         scores_batch = self.compute_item_score(user_id_array)
-
 
         # if self.normalize:
         #     # normalization will keep the scores in the same range
@@ -111,7 +95,6 @@ class Recommender(object):
         #         den = rated.dot(self.W).ravel()
         #     den[np.abs(den) < 1e-6] = 1.0  # to avoid NaNs
         #     scores /= den
-
 
         for user_index in range(len(user_id_array)):
 
@@ -129,7 +112,6 @@ class Recommender(object):
             # ranking = relevant_items_partition[relevant_items_partition_sorting]
             #
             # ranking_list.append(ranking)
-
 
             if remove_top_pop_flag:
                 scores_batch = self._remove_TopPop_on_scores(scores_batch)
@@ -152,21 +134,15 @@ class Recommender(object):
             # print("Score batch: {}, Relevenat items parition: {}, Ranking: {}".format(scores_batch, relevant_items_partition, ranking))
             ranking_list = ranking.tolist()
 
-
             # # Return single list for one user, instead of list of lists
             # if single_user:
             #     ranking_list = ranking_list[0]
 
             return ranking_list
 
-
-
-
-
-
     def evaluateRecommendations(self, URM_test, at=5, minRatingsPerUser=1, exclude_seen=True,
-                                filterCustomItems = np.array([], dtype=np.int),
-                                filterCustomUsers = np.array([], dtype=np.int)):
+                                filterCustomItems=np.array([], dtype=np.int),
+                                filterCustomUsers=np.array([], dtype=np.int)):
         """
         Speed info:
         - Sparse weighgs: batch mode is 2x faster than sequential
@@ -187,12 +163,12 @@ class Recommender(object):
 
         import warnings
 
-        warnings.warn("DEPRECATED! Use Base.Evaluation.SequentialEvaluator.evaluateRecommendations()", DeprecationWarning)
-
+        warnings.warn("DEPRECATED! Use Base.Evaluation.SequentialEvaluator.evaluateRecommendations()",
+                      DeprecationWarning)
 
         from Base.Evaluation.Evaluator import SequentialEvaluator
 
-        evaluator = SequentialEvaluator(URM_test, [at], exclude_seen= exclude_seen,
+        evaluator = SequentialEvaluator(URM_test, [at], exclude_seen=exclude_seen,
                                         minRatingsPerUser=minRatingsPerUser,
                                         ignore_items=filterCustomItems, ignore_users=filterCustomUsers)
 
@@ -205,40 +181,21 @@ class Recommender(object):
         for key in results_run.keys():
             results_run_lowercase[key.lower()] = results_run[key]
 
-
         return results_run_lowercase
 
-
-
-
-
-
-
-
-
-
-
-
-
-    def saveModel(self, folder_path, file_name = None):
+    def saveModel(self, folder_path, file_name=None):
         raise NotImplementedError("Recommender: saveModel not implemented")
 
-
-
-
-    def loadModel(self, folder_path, file_name = None):
+    def loadModel(self, folder_path, file_name=None):
 
         if file_name is None:
             file_name = self.RECOMMENDER_NAME
 
         print("{}: Loading model from file '{}'".format(self.RECOMMENDER_NAME, folder_path + file_name))
 
-
         data_dict = pickle.load(open(folder_path + file_name, "rb"))
 
         for attrib_name in data_dict.keys():
-             self.__setattr__(attrib_name, data_dict[attrib_name])
-
+            self.__setattr__(attrib_name, data_dict[attrib_name])
 
         print("{}: Loading complete".format(self.RECOMMENDER_NAME))
-

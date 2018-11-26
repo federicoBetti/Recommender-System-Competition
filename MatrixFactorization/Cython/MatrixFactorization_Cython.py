@@ -19,7 +19,7 @@ import numpy as np
 class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stopping):
     RECOMMENDER_NAME = "MatrixFactorization_Cython_Recommender"
 
-    def __init__(self, URM_train, positive_threshold=1, URM_validation=None, recompile_cython=False,
+    def __init__(self, URM_train, positive_threshold=1, URM_validation=None, recompile_cython=True,
                  algorithm="MF_BPR"):
 
         super(MatrixFactorization_Cython, self).__init__()
@@ -57,7 +57,7 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
             evaluator_object=None, validation_every_n=1000, force_compute_sim=True):
 
         if evaluator_object is None:
-            SequentialEvaluator(self.URM_validation)
+            SequentialEvaluator(self.URM_validation, self.URM_train)
 
         self.num_factors = num_factors
         self.sgd_mode = sgd_mode

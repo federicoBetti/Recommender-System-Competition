@@ -50,7 +50,7 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
                 return
 
         similarity = Compute_Similarity(self.URM_train, shrink=shrink, topK=topK, normalize=normalize, similarity = similarity, **similarity_args)
-
+        print('similarity item based')
 
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()

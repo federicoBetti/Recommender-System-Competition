@@ -56,15 +56,17 @@ def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, UR
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                             DictionaryKeys.FIT_KEYWORD_ARGS: dict(),
-                             DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
+                             DictionaryKeys.FIT_KEYWORD_ARGS: dict(), # questi sono quelli fissi
+                             DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary} # questi sono quelli che stai testando
 
     output_root_path_similarity = output_root_path + "_" + similarity_type
 
+    # questo runna fit del recommender
     best_parameters = parameterSearch.search(recommenderDictionary,
                                              n_cases=n_cases,
                                              output_root_path=output_root_path_similarity,
                                              metric=metric_to_optimize)
+    print(best_parameters)
 
 
 def run_HybridRecommender_on_similarity_type(similarity_type, parameterSearch, URM_train, ICM, n_cases,
@@ -171,7 +173,8 @@ def runParameterSearch_Content(recommender_class, URM_train, ICM_object, ICM_nam
 
 def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recommender_list, n_cases=30,
                                       evaluator_validation=None, evaluator_test=None, metric_to_optimize="MAP",
-                                      output_root_path="result_experiments/", parallelizeKNN=False, URM_test=None, old_similrity_matrix=None):
+                                      output_root_path="result_experiments/", parallelizeKNN=False, URM_test=None,
+                                      old_similrity_matrix=None):
     # If directory does not exist, create
     if not os.path.exists(output_root_path):
         os.makedirs(output_root_path)
@@ -217,8 +220,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {"old_similrity_matrix": old_similrity_matrix,
-                                                               "epochs": 100,
-                                                               "weights": [1,2,3,4,5,6]},
+                                                               "epochs": 100},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
@@ -232,7 +234,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
 def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, metric_to_optimize="MAP",
                                      evaluator_validation=None, evaluator_test=None,
                                      evaluator_validation_earlystopping=None,
-                                     output_root_path="result_experiments/", parallelizeKNN=True, n_cases=30):
+                                     output_root_path="result_experiments/", parallelizeKNN=True, n_cases=30,
+                                     URM_validation=None):
     from ParameterTuning.AbstractClassSearch import DictionaryKeys
 
     # If directory does not exist, create
@@ -456,19 +459,21 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
             hyperparamethers_range_dictionary["topK"] = [5, 10, 20, 50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
             # hyperparamethers_range_dictionary["epochs"] = [1, 5, 10, 20, 30, 50, 70, 90, 110]
             hyperparamethers_range_dictionary["sgd_mode"] = ["adagrad", "adam"]
-            hyperparamethers_range_dictionary["lambda_i"] = [0.0, 1e-3, 1e-6, 1e-9]
-            hyperparamethers_range_dictionary["lambda_j"] = [0.0, 1e-3, 1e-6, 1e-9]
+            hyperparamethers_range_dictionary["lambda_i"] = [0.0, 0.1, 0.01, 1e-3, 1e-6, 1e-9]
+            hyperparamethers_range_dictionary["lambda_j"] = [0.0, 0.1, 0.01, 1e-3, 1e-6, 1e-9]
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
-                                     DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {'train_with_sparse_weights': True,
+                                     DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {'train_with_sparse_weights': False,
                                                                                'symmetric': True,
-                                                                               'positive_threshold': 0},
+                                                                               'positive_threshold': 1,
+                                                                               "URM_validation": URM_validation},
                                      DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                                      DictionaryKeys.FIT_KEYWORD_ARGS: {"validation_every_n": 5,
-                                                                       "stop_on_validation": True,
+                                                                       "stop_on_validation": False,
                                                                        "evaluator_object": evaluator_validation_earlystopping,
                                                                        "lower_validatons_allowed": 10,
-                                                                       "validation_metric": metric_to_optimize},
+                                                                       "validation_metric": metric_to_optimize,
+                                                                       "epochs": 10},
                                      DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
         ##########################################################################################################
@@ -553,37 +558,39 @@ def read_data_split_and_search():
         # TopPop,
         # P3alphaRecommender,
         # RP3betaRecommender,
-        # ItemKNNCFRecommender#,
+        # ItemKNNCFRecommender,
         # UserKNNCFRecommender#,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # PureSVDRecommender,
-        # SLIM_BPR_Cython,
+        SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
-        HybridRecommender
+        # HybridRecommender
     ]
 
     from ParameterTuning.AbstractClassSearch import EvaluatorWrapper
     from Base.Evaluation.Evaluator import SequentialEvaluator
 
-    evaluator_validation_earlystopping = SequentialEvaluator(URM_validation, cutoff_list=[10])
-    evaluator_test = SequentialEvaluator(URM_test, cutoff_list=[10])
+    evaluator_validation_earlystopping = SequentialEvaluator(URM_validation, URM_train, cutoff_list=[10])
+    evaluator_test = SequentialEvaluator(URM_test, URM_train, cutoff_list=[10])
 
     evaluator_validation = EvaluatorWrapper(evaluator_validation_earlystopping)
     evaluator_test = EvaluatorWrapper(evaluator_test)
 
-    runParameterSearch_Collaborative_partial = partial(runParameterSearch_Collaborative,
-                                                       URM_train=URM_train,
-                                                       ICM=ICM,
-                                                       metric_to_optimize="MAP",
-                                                       evaluator_validation_earlystopping=evaluator_validation_earlystopping,
-                                                       evaluator_validation=evaluator_validation,
-                                                       evaluator_test=evaluator_test,
-                                                       output_root_path=output_root_path,
-                                                       n_cases=30)
 
     multiprocessing_choice = False
     if multiprocessing_choice:
+
+        runParameterSearch_Collaborative_partial = partial(runParameterSearch_Collaborative,
+                                                           URM_train=URM_train,
+                                                           ICM=ICM,
+                                                           metric_to_optimize="MAP",
+                                                           evaluator_validation_earlystopping=evaluator_validation_earlystopping,
+                                                           evaluator_validation=evaluator_validation,
+                                                           evaluator_test=evaluator_test,
+                                                           output_root_path=output_root_path,
+                                                           n_cases=30)
+
         pool = multiprocessing.Pool(processes=int(multiprocessing.cpu_count()))
         resultList = pool.map(runParameterSearch_Collaborative_partial, collaborative_algorithm_list)
     else:
@@ -622,6 +629,17 @@ def read_data_split_and_search():
                                                       evaluator_test=evaluator_test, URM_test=URM_test,
                                                       old_similrity_matrix=transfer_matrix)
                 else:
+
+                    runParameterSearch_Collaborative_partial = partial(runParameterSearch_Collaborative,
+                                                                       URM_train=URM_train,
+                                                                       ICM=ICM,
+                                                                       metric_to_optimize="MAP",
+                                                                       evaluator_validation_earlystopping=evaluator_validation_earlystopping,
+                                                                       evaluator_validation=evaluator_validation,
+                                                                       evaluator_test=evaluator_test,
+                                                                       output_root_path=output_root_path,
+                                                                       n_cases=30,
+                                                                       URM_validation=URM_validation)
                     runParameterSearch_Collaborative_partial(recommender_class)
 
             except Exception as e:

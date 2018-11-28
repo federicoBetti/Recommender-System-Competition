@@ -43,6 +43,7 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
 
         if recompile_cython:
             print("Compiling in Cython")
+            print("HERE")
             self.runCompilationScript()
             print("Compilation Complete")
 
@@ -51,10 +52,10 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
 
         return scores_array
 
-    def fit(self, epochs=5000, batch_size=1000, num_factors=10,
-            learning_rate=0.001, sgd_mode='adagrad', user_reg=0.0, positive_reg=0.0, negative_reg=0.0,
+    def fit(self, epochs=5000, batch_size=1000, num_factors=80,
+            learning_rate=0.001, sgd_mode='adagrad', user_reg=0.0, positive_reg=0.01, negative_reg=0.01,
             stop_on_validation=False, lower_validatons_allowed=5, validation_metric="MAP",
-            evaluator_object=None, validation_every_n=1000, force_compute_sim=True):
+            evaluator_object=None, validation_every_n=5, force_compute_sim=True):
 
         if evaluator_object is None:
             SequentialEvaluator(self.URM_validation, self.URM_train)
@@ -65,7 +66,7 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
         self.learning_rate = learning_rate
 
         if evaluator_object is None and stop_on_validation:
-            evaluator_object = SequentialEvaluator(self.URM_validation, [5])
+            evaluator_object = SequentialEvaluator(self.URM_validation, [10])
 
         # Import compiled module
         from MatrixFactorization.Cython.MatrixFactorization_Cython_Epoch import MatrixFactorization_Cython_Epoch
@@ -88,7 +89,7 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
                                                                 algorithm=self.algorithm,
                                                                 n_factors=self.num_factors,
                                                                 learning_rate=learning_rate,
-                                                                batch_size=1,
+                                                                batch_size=32,
                                                                 sgd_mode=sgd_mode,
                                                                 user_reg=user_reg,
                                                                 positive_reg=positive_reg,

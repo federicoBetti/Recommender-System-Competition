@@ -5,7 +5,7 @@ from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython, \
-    MatrixFactorization_FunkSVD_Cython
+    MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
 from MatrixFactorization.PureSVD import PureSVDRecommender
 
 from Base.NonPersonalizedRecommender import TopPop, Random
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     if not evaluate_algorithm:
         delete_previous_intermediate_computations()
 
-    filename = "hybrid_new_params_withMF.csv"
+    filename = "hybrid_Average_withNewThreshold.csv"
 
     dataReader = RS_Data_Loader(top10k=True, all_train=not evaluate_algorithm)
 
@@ -45,40 +45,44 @@ if __name__ == '__main__':
         # TopPop,
         # P3alphaRecommender,
         # RP3betaRecommender,
-        ItemKNNCBFRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        #MatrixFactorization_BPR_Cython
+        # ItemKNNCBFRecommender,
+        # ItemKNNCFRecommender,
+        # UserKNNCFRecommender,
+        # MatrixFactorization_BPR_Cython
         # MatrixFactorization_FunkSVD_Cython,
+        # MatrixFactorization_AsySVD_Cython,
         #PureSVDRecommender,
-        # SLIM_BPR_Cython,
+        SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
     ]
 
     weights = [
         1,
-        5,
-        4,
+        # 5,
+        # 4,
 
     ]
 
     topK = [
-         60,
-        200,
-        200
+         200,
+        # 200,
+        # 200
     ]
 
     shrinks = [
-        5,
         15,
-        5
+        # 15,
+        # 5
     ]
 
     # For hybrid with weighted estimated rating
-    # d_weights = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
+
+
+    # BEST RESULT : d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
 
     # Dynamics for Hybrid with Top_N. usefull for testing where each recommender works better
-    d_weights = [[5, 5, 0], [1, 4, 5], [0, 4, 6]]
+    #d_weights = [[2, 4, 0], [1, 4, 5], [0, 2, 8]]
 
     from Base.Evaluation.Evaluator import SequentialEvaluator
 
@@ -91,18 +95,22 @@ if __name__ == '__main__':
         os.makedirs(output_root_path)
 
     logFile = open(output_root_path + "result_all_algorithms.txt", "a")
-    #
-    # recommender_IB = ItemKNNCFRecommender(URM_train)
-    # recommender_IB.fit(200, 15)
-    # transfer_matrix = recommender_IB.W_sparse
+
+    transfer_learning = False
+    if transfer_learning:
+        recommender_IB = ItemKNNCFRecommender(URM_train)
+        recommender_IB.fit(200, 15)
+        transfer_matrix = recommender_IB.W_sparse
+    else:
+        transfer_matrix = None
 
     try:
-        recommender_class = HybridRecommenderTopNapproach
+        recommender_class = HybridRecommender
         print("Algorithm: {}".format(recommender_class))
 
-        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=True, d_weights=d_weights,
+        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=False, d_weights=d_weights,
                                         weights=weights, URM_validation=URM_validation)
-        recommender.fit(topK=topK, shrink=shrinks, epochs=10000)
+        recommender.fit(topK=topK, shrink=shrinks, epochs=100, old_similrity_matrix=transfer_matrix)
 
         print("Starting Evaluations...")
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,

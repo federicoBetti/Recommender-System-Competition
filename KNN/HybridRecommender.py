@@ -13,7 +13,8 @@ import numpy as np
 
 from Base.Similarity.Compute_Similarity import Compute_Similarity
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
-from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython
+from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython, \
+    MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 import Support_functions.get_evaluate_data as ged
 
@@ -40,7 +41,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
 
         for recommender in recommeder_list:
-            if recommender in [SLIM_BPR_Cython, MatrixFactorization_BPR_Cython]:
+            if recommender in [SLIM_BPR_Cython, MatrixFactorization_BPR_Cython, MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython]:
                 print("class recognized")
                 self.recommender_list.append(recommender(URM_train, URM_validation=URM_validation))
             elif recommender is ItemKNNCBFRecommender:
@@ -81,7 +82,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             if recommender.__class__ is SLIM_BPR_Cython:
                 recommender.fit(old_similrity_matrix=old_similrity_matrix, epochs=epochs, force_compute_sim=force_compute_sim)
 
-            elif recommender.__class__ is MatrixFactorization_BPR_Cython:
+            elif recommender.__class__ in [MatrixFactorization_BPR_Cython, MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython]:
                 recommender.fit(epochs=epochs, force_compute_sim=force_compute_sim)
 
             else:  # ItemCF, UserCF, ItemCBF
@@ -127,13 +128,14 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             # QUA È DOVE VENGONO APPLICATI I WEIGHTS AGLI SCORE, QUINDI NEL CASO SI VOLESSE MODFICIARE È QUA!!
             final_score = np.zeros(scores[0].shape)
             if self.dynamic:
-                pop = [150, 400]
+                pop = [150, 400, 575]
                 user_profile_pop = self.URM_train.indices[
                                    self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
                 threshold = int(ged.playlist_popularity(user_profile_pop, dict_pop))
                 weights = self.change_weights(threshold, pop)
 
             for score, weight in zip(scores, weights):
+                print(score[:30])
                 final_score += (score * weight)
 
         else:
@@ -235,12 +237,15 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         return ranking_list
 
-    def change_weights(self, threshold, pop):
-        if threshold < pop[0]:
+    def change_weights(self, level, pop):
+        if level < pop[0]:
             return self.d_weights[0]
 
-        elif pop[0] < threshold < pop[1]:
+        elif pop[0] < level < pop[1]:
             return self.d_weights[1]
 
-        else:
+        elif pop[1] < level < pop[2]:
             return self.d_weights[2]
+
+        else:
+            return self.d_weights[3]

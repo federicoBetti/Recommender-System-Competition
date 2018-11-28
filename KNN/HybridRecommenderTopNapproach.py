@@ -47,15 +47,18 @@ class HybridRecommenderTopNapproach(HybridRecommender):
             else:
                 self.recommender_list.append(recommender(URM_train))
 
-    def change_weights(self, threshold, pop):
-        if threshold < pop[0]:
+    def change_weights(self, level, pop):
+        if level < pop[0]:
             return self.d_weights[0]
 
-        elif pop[0] < threshold < pop[1]:
+        elif pop[0] < level < pop[1]:
             return self.d_weights[1]
 
-        else:
+        elif pop[1] < level < pop[2]:
             return self.d_weights[2]
+
+        else:
+            return self.d_weights[3]
 
     # topk1,2,3 e shrink e weights1,2,3 sono quelli del dizionario, aggiungerli per il test
     def fit(self, topK=None, shrink=None, weights=None, topK1=None, topK2=None, topK3=None, shrink1=None, shrink2=None,
@@ -155,18 +158,17 @@ class HybridRecommenderTopNapproach(HybridRecommender):
             rankings = []
 
             if self.dynamic:
-                pop = [150, 400]
+                pop = [100, 200]
                 user_profile_pop = self.URM_train.indices[
                                    self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                threshold = int(ged.playlist_popularity(user_profile_pop, dict_pop))
-                weights = self.change_weights(threshold, pop)
+                level = int(ged.playlist_popularity(user_profile_pop, dict_pop))
+                weights = self.change_weights(level, pop)
 
                 # needed since we have to take first the more important recommendations from more important recommender
                 # if we don't reach the aimed number of songs
                 sorted_scores = [x for _, x in sorted(zip(weights, scores), key=lambda pair: pair[0])]
                 weights.sort(reverse=True)
                 scores = sorted_scores
-
 
             for score, weight in zip(scores, weights):
                 relevant_items_partition = (-score).argpartition(n)[0:n]

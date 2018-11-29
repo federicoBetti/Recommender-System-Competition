@@ -567,8 +567,8 @@ def read_data_split_and_search():
     collaborative_algorithm_list = [
         # Random,
         # TopPop,
-        P3alphaRecommender,
-        # RP3betaRecommender,
+        # P3alphaRecommender,
+        RP3betaRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender#,
         # MatrixFactorization_BPR_Cython,
@@ -616,10 +616,10 @@ def read_data_split_and_search():
                     recommender_list = [
                         # Random,
                         # TopPop,
-                        # P3alphaRecommender,
-                        # RP3betaRecommender,
                         ItemKNNCBFRecommender,
                         ItemKNNCFRecommender,
+                        # P3alphaRecommender,
+                        # RP3betaRecommender,
                         # UserKNNCFRecommender,
                         # MatrixFactorization_BPR_Cython,
                         # MatrixFactorization_FunkSVD_Cython,

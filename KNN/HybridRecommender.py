@@ -15,6 +15,7 @@ from Base.Similarity.Compute_Similarity import Compute_Similarity
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython, \
     MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
+from MatrixFactorization.PureSVD import PureSVDRecommender
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 import Support_functions.get_evaluate_data as ged
 
@@ -51,6 +52,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 self.recommender_list.append(recommender(URM_train, URM_validation=URM_validation))
             elif recommender is ItemKNNCBFRecommender:
                 self.recommender_list.append(recommender(ICM, URM_train))
+            elif recommender.__class__ in [PureSVDRecommender]:
+                self.recommender_list.append(recommender(URM_train))
             else:
                 self.recommender_list.append(recommender(URM_train))
 
@@ -77,12 +80,20 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
             if recommender.__class__ is SLIM_BPR_Cython:
-                recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
-                                force_compute_sim=force_compute_sim)
+                if "lambda_i" in list(similarity_args.keys()):  # lambda i and j provided in args
+                    recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
+                                    force_compute_sim=force_compute_sim, topK=knn, lambda_i=similarity_args["lambda_i"],
+                                    lambda_j=similarity_args["lambda_j"])
+                else:
+                    recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
+                                    force_compute_sim=force_compute_sim, topK=knn)
 
             elif recommender.__class__ in [MatrixFactorization_BPR_Cython, MatrixFactorization_FunkSVD_Cython,
                                            MatrixFactorization_AsySVD_Cython]:
                 recommender.fit(epochs=epochs, force_compute_sim=force_compute_sim)
+
+            elif recommender.__class__ in [PureSVDRecommender]:
+                recommender.fit(num_factors=similarity_args["num_factors"], force_compute_sim=force_compute_sim)
 
             else:  # ItemCF, UserCF, ItemCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
@@ -105,6 +116,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             # noinspection PyUnresolvedReferences
             for recommender in self.recommender_list:
                 scores_batch = recommender.compute_item_score(user_id)
+                scores_batch = np.ravel(scores_batch) # because i'm not using batch
 
                 if remove_seen_flag:
                     scores_batch = self._remove_seen_on_scores(user_id, scores_batch)
@@ -129,7 +141,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 weights = self.change_weights(threshold, pop)
 
             for score, weight in zip(scores, weights):
-                print(score[:30])
                 final_score += (score * weight)
 
         else:

@@ -32,7 +32,7 @@ import traceback, pickle
 from Utils.PoolWithSubprocess import PoolWithSubprocess
 
 from ParameterTuning.AbstractClassSearch import DictionaryKeys
-
+import numpy as np
 
 def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, URM_train, n_cases, output_root_path,
                                             metric_to_optimize):
@@ -202,11 +202,15 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
 
     hyperparamethers_range_dictionary["weights1"] = [0, 0.1, 0.2, 0.4, 0.5]
     hyperparamethers_range_dictionary["weights2"] = [0.5, 0.7, 0.9, 1, 1.2, 1.5]
-    hyperparamethers_range_dictionary["weights3"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
-    # hyperparamethers_range_dictionary["weights4"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+    hyperparamethers_range_dictionary["weights3"] = list(np.linspace(0,1,11))
+    hyperparamethers_range_dictionary["weights4"] = list(np.linspace(0,1,11))
     # hyperparamethers_range_dictionary["weights5"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
+    lambda_i = 0.01
+    lambda_j = 0.01
+    old_similrity_matrix = None
+    num_factors = 165
     # if similarity_type == "asymmetric":
     #     hyperparamethers_range_dictionary["asymmetric_alpha"] = range(0, 2)
     #     hyperparamethers_range_dictionary["normalize"] = [True]
@@ -222,10 +226,11 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 200, 200], "shrink": [5, 15, 5],
+                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 200, 50, -1], "shrink": [5, 15, -1, -1], # put -1 where useless in order to force you to change when the became useful
                                                                "force_compute_sim": False,
                                                                "old_similarity_matrix": old_similrity_matrix,
-                                                               "epochs": 100},
+                                                               "epochs": 40, "lambda_i": lambda_i, "lambda_j": lambda_j,
+                                                               "num_factors": num_factors},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
@@ -543,7 +548,7 @@ def read_data_split_and_search():
         - A _best_result_test file which contains a dictionary with the results, on the test set, of the best solution chosen using the validation set
     """
 
-    # this line removes old matrixes saved, comment it if testing only the weights of hybrid
+    # this line removes old matrices saved, comment it if testing only the weights of hybrid
     delete_previous_intermediate_computations()
     dataReader = RS_Data_Loader(top10k=True)
 
@@ -568,10 +573,10 @@ def read_data_split_and_search():
         # UserKNNCFRecommender#,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        PureSVDRecommender,
+        # PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
-        # HybridRecommender
+        HybridRecommender
     ]
 
     from ParameterTuning.AbstractClassSearch import EvaluatorWrapper
@@ -618,9 +623,9 @@ def read_data_split_and_search():
                         # UserKNNCFRecommender,
                         # MatrixFactorization_BPR_Cython,
                         # MatrixFactorization_FunkSVD_Cython,
-                        # PureSVDRecommender,
                         SLIM_BPR_Cython,
                         # SLIMElasticNetRecommender
+                        PureSVDRecommender
                     ]
 
                     if SLIM_BPR_Cython in recommender_list:

@@ -201,7 +201,6 @@ class Evaluator(object):
 
             n_users_evaluated += 1
 
-
             recommended_items = recommender_object.recommend(test_user, remove_seen_flag=self.exclude_seen,
                                                              cutoff=self.max_cutoff, remove_top_pop_flag=False,
                                                              remove_CustomItems_flag=self.ignore_items_flag)
@@ -284,7 +283,7 @@ class SequentialEvaluator(Evaluator):
                                                   ignore_items=ignore_items, ignore_users=ignore_users)
 
     # do not change the block_size!
-    def _run_evaluation_on_selected_users(self, recommender_object, usersToEvaluate, block_size=1, plot_stats=True):
+    def _run_evaluation_on_selected_users(self, recommender_object, usersToEvaluate, block_size=1, plot_stats=False):
 
         to_ret = []
         start_time = time.time()
@@ -393,6 +392,19 @@ class SequentialEvaluator(Evaluator):
             else:
                 data_stats[key].append(current_map)
 
+            if time.time() - start_time_print > 30 or n_users_evaluated == len(self.usersToEvaluate):
+                print(
+                    "SequentialEvaluator: Processed {} ( {:.2f}% ) in {:.2f} seconds. Users per second: {:.0f}".format(
+                        n_users_evaluated,
+                        100.0 * float(n_users_evaluated) / len(self.usersToEvaluate),
+                        time.time() - start_time,
+                        float(n_users_evaluated) / (time.time() - start_time)))
+
+                sys.stdout.flush()
+                sys.stderr.flush()
+
+                start_time_print = time.time()
+
         if plot_stats:
             label = []
             for i in data_stats:
@@ -409,19 +421,6 @@ class SequentialEvaluator(Evaluator):
             for i, txt in enumerate(label):
                 ax.annotate(txt, (z[i], y[i]))
             fig.show()
-
-            if time.time() - start_time_print > 30 or n_users_evaluated == len(self.usersToEvaluate):
-                print(
-                    "SequentialEvaluator: Processed {} ( {:.2f}% ) in {:.2f} seconds. Users per second: {:.0f}".format(
-                        n_users_evaluated,
-                        100.0 * float(n_users_evaluated) / len(self.usersToEvaluate),
-                        time.time() - start_time,
-                        float(n_users_evaluated) / (time.time() - start_time)))
-
-                sys.stdout.flush()
-                sys.stderr.flush()
-
-                start_time_print = time.time()
 
         return results_dict, n_users_evaluated, to_ret
 
@@ -458,7 +457,7 @@ class SequentialEvaluator(Evaluator):
 
                 if precision_ + recall_ != 0:
                     results_current_cutoff[EvaluatorMetrics.F1.value] = 2 * (precision_ * recall_) / (
-                                precision_ + recall_)
+                        precision_ + recall_)
 
 
         else:
@@ -642,7 +641,7 @@ class ParallelEvaluator(Evaluator):
 
                 if precision_ + recall_ != 0:
                     results_current_cutoff[EvaluatorMetrics.F1.value] = 2 * (precision_ * recall_) / (
-                                precision_ + recall_)
+                        precision_ + recall_)
 
 
         else:
@@ -836,7 +835,7 @@ class LeaveOneOutEvaluator(Evaluator):
 
                 if precision_ + recall_ != 0:
                     results_current_cutoff[EvaluatorMetrics.F1.value] = 2 * (precision_ * recall_) / (
-                                precision_ + recall_)
+                        precision_ + recall_)
 
 
         else:

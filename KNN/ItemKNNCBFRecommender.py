@@ -33,9 +33,10 @@ class ItemKNNCBFRecommender(SimilarityMatrixRecommender, Recommender):
         self.URM_train = check_matrix(URM_train.copy(), 'csr')
 
         self.sparse_weights = sparse_weights
+        self.W_sparse = None
 
-
-    def fit(self, topK=50, shrink=100, similarity='cosine', normalize=True, force_compute_sim=True, feature_weighting = "none", **similarity_args):
+    def fit(self, topK=50, shrink=100, similarity='cosine', normalize=True, force_compute_sim=True,
+            feature_weighting="none", **similarity_args):
 
         self.topK = topK
         self.shrink = shrink
@@ -43,9 +44,10 @@ class ItemKNNCBFRecommender(SimilarityMatrixRecommender, Recommender):
         if not force_compute_sim:
             found = True
             try:
-                with open(os.path.join("IntermediateComputations", "ItemCBFMatrix.pkl"), 'rb') as handle:
+                with open(os.path.join("IntermediateComputations", "ContentBFMatrix.pkl"), 'rb') as handle:
                     (topK_new, shrink_new, W_sparse_new) = pickle.load(handle)
             except FileNotFoundError:
+                print("File {} not found".format(os.path.join("IntermediateComputations", "ContentBFMatrix.pkl")))
                 found = False
 
             if found and self.topK == topK_new and self.shrink == shrink_new:
@@ -54,8 +56,9 @@ class ItemKNNCBFRecommender(SimilarityMatrixRecommender, Recommender):
                 return
 
         if feature_weighting not in self.FEATURE_WEIGHTING_VALUES:
-            raise ValueError("Value for 'feature_weighting' not recognized. Acceptable values are {}, provided was '{}'".format(self.FEATURE_WEIGHTING_VALUES, feature_weighting))
-
+            raise ValueError(
+                "Value for 'feature_weighting' not recognized. Acceptable values are {}, provided was '{}'".format(
+                    self.FEATURE_WEIGHTING_VALUES, feature_weighting))
 
         if feature_weighting == "BM25":
             self.ICM = self.ICM.astype(np.float32)
@@ -65,17 +68,15 @@ class ItemKNNCBFRecommender(SimilarityMatrixRecommender, Recommender):
             self.ICM = self.ICM.astype(np.float32)
             self.ICM = TF_IDF(self.ICM)
 
+        similarity = Compute_Similarity(self.ICM.T, shrink=shrink, topK=topK, normalize=normalize,
+                                        similarity=similarity, **similarity_args)
 
-        similarity = Compute_Similarity(self.ICM.T, shrink=shrink, topK=topK, normalize=normalize, similarity = similarity, **similarity_args)
-
-        print('HERE')
-        print(similarity)
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
 
-            with open(os.path.join("IntermediateComputations", "ItemCBFMatrix.pkl"), 'wb') as handle:
+            with open(os.path.join("IntermediateComputations", "ContentBFMatrix.pkl"), 'wb') as handle:
                 pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
+                print("CBF similarity matrix saved")
         else:
             self.W = similarity.compute_similarity()
             self.W = self.W.toarray()
-

@@ -43,7 +43,6 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
 
         if recompile_cython:
             print("Compiling in Cython")
-            print("HERE")
             self.runCompilationScript()
             print("Compilation Complete")
 

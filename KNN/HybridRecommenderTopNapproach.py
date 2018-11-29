@@ -23,7 +23,7 @@ class HybridRecommenderTopNapproach(HybridRecommender):
 
     RECOMMENDER_NAME = "HybridRecommenderTopNapproach"
 
-    def __init__(self, URM_train, ICM, recommeder_list, d_weights=None, dynamic=False, weights=None,
+    def __init__(self, URM_train, ICM, recommender_list, d_weights=None, dynamic=False, weights=None,
                  URM_validation=None, sparse_weights=True):
         super(Recommender, self).__init__()
 
@@ -38,7 +38,7 @@ class HybridRecommenderTopNapproach(HybridRecommender):
         self.recommender_list = []
         self.weights = weights
 
-        for recommender in recommeder_list:
+        for recommender in recommender_list:
             if recommender in [SLIM_BPR_Cython, MatrixFactorization_BPR_Cython]:
                 print("class recognized")
                 self.recommender_list.append(recommender(URM_train, URM_validation=URM_validation))
@@ -63,7 +63,7 @@ class HybridRecommenderTopNapproach(HybridRecommender):
     # topk1,2,3 e shrink e weights1,2,3 sono quelli del dizionario, aggiungerli per il test
     def fit(self, topK=None, shrink=None, weights=None, topK1=None, topK2=None, topK3=None, shrink1=None, shrink2=None,
             shrink3=None, weights1=None, weights2=None, weights3=None, similarity='cosine', normalize=True,
-            old_similrity_matrix=None, epochs=1, force_compute_sim=False, **similarity_args):
+            old_similarity_matrix=None, epochs=1, force_compute_sim=False, **similarity_args):
 
         if shrink is None:
             shrink = [shrink1, shrink2, shrink3]
@@ -91,7 +91,7 @@ class HybridRecommenderTopNapproach(HybridRecommender):
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
             if recommender.__class__ is SLIM_BPR_Cython:
-                recommender.fit(old_similrity_matrix=old_similrity_matrix, epochs=epochs,
+                recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
                                 force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ is MatrixFactorization_BPR_Cython:

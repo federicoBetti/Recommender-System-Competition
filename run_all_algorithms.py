@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
         recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=False, d_weights=d_weights,
                                         weights=weights, URM_validation=URM_validation)
-        recommender.fit(topK=topK, shrink=shrinks, epochs=100, old_similrity_matrix=transfer_matrix)
+        recommender.fit(topK=topK, shrink=shrinks, epochs=100, old_similarity_matrix=transfer_matrix)
 
         print("Starting Evaluations...")
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,

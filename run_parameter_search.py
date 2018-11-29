@@ -56,8 +56,8 @@ def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, UR
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                             DictionaryKeys.FIT_KEYWORD_ARGS: dict(), # questi sono quelli fissi
-                             DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary} # questi sono quelli che stai testando
+                             DictionaryKeys.FIT_KEYWORD_ARGS: dict(),  # questi sono quelli fissi
+                             DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}  # questi sono quelli che stai testando
 
     output_root_path_similarity = output_root_path + "_" + similarity_type
 
@@ -181,7 +181,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
 
     ##########################################################################################################
 
-    this_output_root_path = output_root_path + recommender_class.RECOMMENDER_NAME + "_{}".format(recommender_list)
+    this_output_root_path = output_root_path + "Hybrid:" + "{}".format([x.RECOMMENDER_NAME for x in recommender_list])
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
     parameterSearch = BayesianSearch(recommender_class, evaluator_validation=evaluator_validation)
@@ -189,19 +189,22 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     similarity_type_list = ['cosine', 'jaccard', "asymmetric", "dice", "tversky"]
 
     hyperparamethers_range_dictionary = {}
+    '''
+    Those are not parameters to test so the can be passed directly as FIT_KEYWORD_ARGS
     hyperparamethers_range_dictionary["topK1"] = [60]
     hyperparamethers_range_dictionary["topK2"] = [200]
     hyperparamethers_range_dictionary["topK3"] = [200]
     hyperparamethers_range_dictionary["shrink1"] = [5]
     hyperparamethers_range_dictionary["shrink2"] = [15]
     hyperparamethers_range_dictionary["shrink3"] = [5]
-    hyperparamethers_range_dictionary["force_compute_sim"] = [False]
-    # per fare testare tutti i weights devo per ora passarli separati e metterli separati nella fit funtion
+    I left all the params in the hybrid fit function just in case we want to use those again
+    '''
+
     hyperparamethers_range_dictionary["weights1"] = [0, 0.1, 0.2, 0.4, 0.5]
     hyperparamethers_range_dictionary["weights2"] = [0.5, 0.7, 0.9, 1, 1.2, 1.5]
     hyperparamethers_range_dictionary["weights3"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
-    # hyperparamethers_range_dictionary["soglia1"] = [100,200,300]
-    # hyperparamethers_range_dictionary["soglia2"] = [400,500,600]
+    # hyperparamethers_range_dictionary["weights4"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+    # hyperparamethers_range_dictionary["weights5"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
     # if similarity_type == "asymmetric":
@@ -219,7 +222,9 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                             DictionaryKeys.FIT_KEYWORD_ARGS: {"old_similrity_matrix": old_similrity_matrix,
+                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 200, 200], "shrink": [5, 15, 5],
+                                                               "force_compute_sim": False,
+                                                               "old_similarity_matrix": old_similrity_matrix,
                                                                "epochs": 100},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
@@ -229,6 +234,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                                              n_cases=n_cases,
                                              output_root_path=output_root_path_similarity,
                                              metric=metric_to_optimize)
+    print(best_parameters)
 
 
 def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, metric_to_optimize="MAP",
@@ -577,7 +583,6 @@ def read_data_split_and_search():
     evaluator_validation = EvaluatorWrapper(evaluator_validation_earlystopping)
     evaluator_test = EvaluatorWrapper(evaluator_test)
 
-
     multiprocessing_choice = False
     if multiprocessing_choice:
 
@@ -610,7 +615,7 @@ def read_data_split_and_search():
                         # RP3betaRecommender,
                         ItemKNNCBFRecommender,
                         ItemKNNCFRecommender,
-                        #UserKNNCFRecommender,
+                        # UserKNNCFRecommender,
                         # MatrixFactorization_BPR_Cython,
                         # MatrixFactorization_FunkSVD_Cython,
                         # PureSVDRecommender,

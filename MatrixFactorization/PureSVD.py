@@ -13,6 +13,8 @@ from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 from sklearn.decomposition import TruncatedSVD
 import scipy.sparse as sps
 
+from ParameterTuning.BayesianSearch import writeLog
+
 
 class PureSVDRecommender(Recommender):
     """ PureSVDRecommender"""
@@ -59,8 +61,12 @@ class PureSVDRecommender(Recommender):
 
             item_weights = self.U[user_id_array, :].dot(self.s_Vt)
 
-        except:
-            pass
+        except Exception as e:
+
+            writeLog("PureSVD: Note able to retrieve item weights - Exception {}\n".format(str(e)),
+                     self.logFile)
+
+            return None
 
         return item_weights
 

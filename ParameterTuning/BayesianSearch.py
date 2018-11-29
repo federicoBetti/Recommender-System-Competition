@@ -222,12 +222,13 @@ class BayesianSearch(AbstractClassSearch):
                             open(self.output_root_path + "_parameters_{}".format(self.model_counter), "wb"),
                             protocol=pickle.HIGHEST_PROTOCOL)
 
-            if self.best_solution_val == None or self.best_solution_val < result_dict[metric]:
+            if self.best_solution_val is None or self.best_solution_val < result_dict[metric]:
 
                 writeLog("BayesianSearch: New best config found. Config: {} - results: {}\n".format(
                     paramether_dictionary_to_save, result_dict), self.logFile)
 
-                # REMOVED IN ORDER NOT TO SAVE MODEL PARAMETERS
+                '''REMOVED IN ORDER NOT TO SAVE MODEL PARAMETERS (problem with hybrid and for us useless because
+                we'll train with all the train at the end, just memory usage) '''
                 # pickle.dump(paramether_dictionary_to_save.copy(),
                 #             open(self.output_root_path + "_best_parameters", "wb"),
                 #             protocol=pickle.HIGHEST_PROTOCOL)
@@ -236,7 +237,7 @@ class BayesianSearch(AbstractClassSearch):
                 #             open(self.output_root_path + "_best_result_validation", "wb"),
                 #             protocol=pickle.HIGHEST_PROTOCOL)
                 #
-                # self.best_solution_val = result_dict[metric]
+                self.best_solution_val = result_dict[metric]
                 # self.best_solution_parameters = paramether_dictionary_to_save.copy()
                 # # self.best_solution_object = recommender
                 #

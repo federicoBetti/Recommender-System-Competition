@@ -24,7 +24,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     RECOMMENDER_NAME = "ItemKNNCFRecommender"
 
-    def __init__(self, URM_train, ICM, recommeder_list, dynamic=False, d_weights=None, weights=None,
+    def __init__(self, URM_train, ICM, recommender_list, dynamic=False, d_weights=None, weights=None,
                  URM_validation=None, sparse_weights=True):
         super(Recommender, self).__init__()
 
@@ -44,7 +44,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         self.topK = None
         self.shrink = None
 
-        for recommender in recommeder_list:
+        for recommender in recommender_list:
             if recommender in [SLIM_BPR_Cython, MatrixFactorization_BPR_Cython, MatrixFactorization_FunkSVD_Cython,
                                MatrixFactorization_AsySVD_Cython]:
                 print("class recognized")
@@ -54,22 +54,14 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             else:
                 self.recommender_list.append(recommender(URM_train))
 
-    # topk1,2,3 e shrink e weights1,2,3 sono quelli del dizionario, aggiungerli per il test
-    def fit(self, topK=None, shrink=None, weights=None, topK1=None, topK2=None, topK3=None, shrink1=None, shrink2=None,
-            shrink3=None, weights1=None, weights2=None, weights3=None, similarity='cosine', normalize=True,
-            old_similrity_matrix=None, epochs=1, force_compute_sim=False, **similarity_args):
-
-        if shrink is None:
-            shrink = [shrink1, shrink2, shrink3]
-            shrink = [x for x in shrink if x is not None]
-        if topK is None:
-            topK = [topK1, topK2, topK3]
-            topK = [x for x in topK if x is not None]
-        if weights is None:
-            weights = [weights1, weights2, weights3]
-            weights = [x for x in weights if x is not None]
+    def fit(self, topK=None, shrink=None, weights=None, weights1=None, weights2=None, weights3=None, weights4=None,
+            weights5=None, similarity='cosine', normalize=True, old_similarity_matrix=None, epochs=1,
+            force_compute_sim=False, **similarity_args):
 
         if self.weights is None:
+            if weights is None:
+                weights = [weights1, weights2, weights3, weights4, weights5]
+                weights = [x for x in weights if x is not None]
             self.weights = weights
 
         assert self.weights is not None, "Weights Are None!"
@@ -85,7 +77,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
             if recommender.__class__ is SLIM_BPR_Cython:
-                recommender.fit(old_similrity_matrix=old_similrity_matrix, epochs=epochs,
+                recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
                                 force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [MatrixFactorization_BPR_Cython, MatrixFactorization_FunkSVD_Cython,
@@ -125,14 +117,9 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
                 scores.append(scores_batch)
 
-            try:
-                assert (len(scores) == len(weights))
-            except:
-                print("Weights and scores from similarities have two different lenghts: {} and {}".format(len(scores),
-                                                                                                          len(weights)))
-                raise TypeError
+            assert (len(scores) == len(weights)), "Weights and scores from similarities have two different lenghts: {" \
+                                                  "} and {}".format(len(scores), len(weights))
 
-            # QUA È DOVE VENGONO APPLICATI I WEIGHTS AGLI SCORE, QUINDI NEL CASO SI VOLESSE MODFICIARE È QUA!!
             final_score = np.zeros(scores[0].shape)
             if self.dynamic:
                 pop = [150, 400, 575]
@@ -147,12 +134,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         else:
             raise NotImplementedError
-            #
-            # user_profile = self.URM_train.indices[self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-            # user_ratings = self.URM_train.data[self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-            #
-            # relevant_weights = self.W[user_profile]
-            # scores = relevant_weights.T.dot(user_ratings)
 
         scores = final_score
 

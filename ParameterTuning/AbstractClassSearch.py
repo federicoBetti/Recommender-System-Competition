@@ -118,6 +118,7 @@ class AbstractClassSearch(object):
 
             paramether_dictionary_to_save = self.from_fit_params_to_saved_params_function(recommender,
                                                                                           paramether_dictionary_to_evaluate)
+            print("Parameter to save: {}".format(paramether_dictionary_to_save))
 
             self.from_fit_params_to_saved_params[
                 frozenset(paramether_dictionary_to_evaluate.items())] = paramether_dictionary_to_save

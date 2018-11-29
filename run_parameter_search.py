@@ -171,7 +171,7 @@ def runParameterSearch_Content(recommender_class, URM_train, ICM_object, ICM_nam
             run_KNNCBFRecommender_on_similarity_type_partial(similarity_type)
 
 
-def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recommender_list, n_cases=30,
+def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recommender_list, n_cases=35,
                                       evaluator_validation=None, evaluator_test=None, metric_to_optimize="MAP",
                                       output_root_path="result_experiments/", parallelizeKNN=False, URM_test=None,
                                       old_similrity_matrix=None):
@@ -562,8 +562,8 @@ def read_data_split_and_search():
         # UserKNNCFRecommender#,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        # PureSVDRecommender,
-        SLIM_BPR_Cython,
+        PureSVDRecommender,
+        # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
         # HybridRecommender
     ]
@@ -587,7 +587,9 @@ def read_data_split_and_search():
                                                            metric_to_optimize="MAP",
                                                            evaluator_validation_earlystopping=evaluator_validation_earlystopping,
                                                            evaluator_validation=evaluator_validation,
-                                                           evaluator_test=evaluator_test,
+                                                           # evaluator_test=evaluator_test, # I'm not
+                                                           # passing it because validation and test for
+                                                           # us is the same
                                                            output_root_path=output_root_path,
                                                            n_cases=30)
 
@@ -636,7 +638,9 @@ def read_data_split_and_search():
                                                                        metric_to_optimize="MAP",
                                                                        evaluator_validation_earlystopping=evaluator_validation_earlystopping,
                                                                        evaluator_validation=evaluator_validation,
-                                                                       evaluator_test=evaluator_test,
+                                                                       # evaluator_test=evaluator_test, # I'm not
+                                                                       # passing it because validation and test for
+                                                                       # us is the same
                                                                        output_root_path=output_root_path,
                                                                        n_cases=30,
                                                                        URM_validation=URM_validation)

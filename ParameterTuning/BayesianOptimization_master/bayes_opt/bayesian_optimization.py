@@ -87,7 +87,7 @@ class BayesianOptimization(object):
 
         # Evaluate target function at all initialization points
         for x in self.init_points:
-            print("E' QUI CHE CICLA!!!!!!")
+            print("Initial test to understand starting points...")
             y = self._observe_point(x)
 
         # Add the points from `self.initialize` to the observations
@@ -272,14 +272,13 @@ class BayesianOptimization(object):
         # The arg_max of the acquisition function is found and this will be
         # the next probed value of the target function in the next round.
         for i in range(n_iter):
-            print("NUOVA ITERAZIONE!!!!!!")
+            print("New iterations for parameter testing, number {}".format(i))
             # Test if x_max is repeated, if it is, draw another one at random
             # If it is repeated, print a warning
             pwarning = False
             while x_max in self.space:
                 x_max = self.space.random_points(1)[0]
                 pwarning = True
-                print("NUOVA ITERAZIONE!!!!!!")
 
             # Append most recently generated values to X and Y arrays
             y = self.space.observe_point(x_max)

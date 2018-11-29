@@ -74,7 +74,7 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
             batch_size=1000, lambda_i=0.1, lambda_j=0.1, learning_rate=1e-3, topK=200,
             sgd_mode='adagrad', gamma=0.995, beta_1=0.9, beta_2=0.999,
             stop_on_validation=False, lower_validatons_allowed=5, validation_metric="MAP",
-            evaluator_object=SequentialEvaluator, validation_every_n=50, old_similrity_matrix=None,
+            evaluator_object=None, validation_every_n=50, old_similrity_matrix=None,
             force_compute_sim=True):
 
         # remove this line otherwise no validation is done!
@@ -93,7 +93,8 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
                 print("Saved SLIM Matrix Used!")
                 return
 
-        evaluator_object = SequentialEvaluator(self.URM_validation, self.URM_train)
+        if evaluator_object is None and stop_on_validation:
+            evaluator_object = SequentialEvaluator(self.URM_validation, self.URM_train)
 
         # Import compiled module
         from SLIM_BPR.Cython.SLIM_BPR_Cython_Epoch import SLIM_BPR_Cython_Epoch
@@ -132,9 +133,6 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
             self.validation_every_n = validation_every_n
         else:
             self.validation_every_n = np.inf
-
-        if evaluator_object is None and stop_on_validation:
-            evaluator_object = SequentialEvaluator(self.URM_validation, [5])
 
         self.batch_size = batch_size
         self.lambda_i = lambda_i

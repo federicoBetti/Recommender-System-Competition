@@ -78,6 +78,11 @@ class Recommender(object):
         if cutoff is None:
             cutoff = self.URM_train.shape[1] - 1
 
+        '''
+        Per come l'abbiamo noi dovrebbe arrivare sempre user_id_array con un solo elemento e quindi cosi funziona,
+        per impplementazioni future rifare funzionare il batch
+        Ho dovuto fare cosi un user alla volta per far funzionare l'hybrid!
+        '''
         # Compute the scores using the model-specific function
         # Vectorize over all users in user_id_array
         scores_batch = self.compute_item_score(user_id_array)
@@ -98,8 +103,10 @@ class Recommender(object):
 
         for user_index in range(len(user_id_array)):
 
+            assert len(user_id_array) == 1, "La lunghezza del user_id_array è {} ( > 1 ) e la versione batch non è " \
+                                            "ancora stata implementata".format(len(user_id_array))
             user_id = user_id_array[user_index]
-
+            scores_batch = scores_batch[0] # only because len(user_id_array) == 1
             if remove_seen_flag:
                 scores_batch = self._remove_seen_on_scores(user_id, scores_batch)
 

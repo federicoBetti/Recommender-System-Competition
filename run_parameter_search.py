@@ -200,10 +200,10 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     I left all the params in the hybrid fit function just in case we want to use those again
     '''
 
-    hyperparamethers_range_dictionary["weights1"] = [0, 0.1, 0.2, 0.4, 0.5]
-    hyperparamethers_range_dictionary["weights2"] = [0.5, 0.7, 0.9, 1, 1.2, 1.5]
-    hyperparamethers_range_dictionary["weights3"] = list(np.linspace(0,1,11))
-    hyperparamethers_range_dictionary["weights4"] = list(np.linspace(0,1,11))
+    hyperparamethers_range_dictionary["weights1"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights2"] = range(0.5, 1)
+    hyperparamethers_range_dictionary["weights3"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights4"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights5"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
@@ -491,7 +491,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         if recommender_class is SLIMElasticNetRecommender:
             hyperparamethers_range_dictionary = {}
-            hyperparamethers_range_dictionary["topK"] = [5, 10, 20, 50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
+            hyperparamethers_range_dictionary["topK"] = [50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
             hyperparamethers_range_dictionary["l1_penalty"] = [1.0, 0.0, 1e-2, 1e-4, 1e-6]
             hyperparamethers_range_dictionary["l2_penalty"] = [100.0, 1.0, 0.0, 1e-2, 1e-4, 1e-6]
 
@@ -567,7 +567,7 @@ def read_data_split_and_search():
     collaborative_algorithm_list = [
         # Random,
         # TopPop,
-        # P3alphaRecommender,
+        P3alphaRecommender,
         # RP3betaRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender#,
@@ -576,7 +576,7 @@ def read_data_split_and_search():
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
-        HybridRecommender
+        # HybridRecommender
     ]
 
     from ParameterTuning.AbstractClassSearch import EvaluatorWrapper

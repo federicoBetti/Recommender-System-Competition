@@ -41,7 +41,7 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
 
 
     def __str__(self):
-        return "SLIM (l1_penalty={},l2_penalty={},positive_only={})".format(
+        return "SLIM Elastic Net (l1_penalty={},l2_penalty={},positive_only={})".format(
             self.l1_penalty, self.l2_penalty, self.positive_only
         )
 
@@ -151,7 +151,7 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
             URM_train.data[start_pos:end_pos] = current_item_data_backup
 
 
-            if time.time() - start_time_printBatch > 300 or currentItem == n_items-1:
+            if time.time() - start_time_printBatch > 30 or currentItem == n_items-1:
                 print("Processed {} ( {:.2f}% ) in {:.2f} minutes. Items per second: {:.0f}".format(
                                   currentItem+1,
                                   100.0* float(currentItem+1)/n_items,

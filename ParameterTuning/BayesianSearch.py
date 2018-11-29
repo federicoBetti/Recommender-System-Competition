@@ -5,6 +5,7 @@ Created on 10/03/2018
 
 @author: Maurizio Ferrari Dacrema
 """
+import datetime
 
 from ParameterTuning.AbstractClassSearch import AbstractClassSearch, DictionaryKeys
 from functools import partial
@@ -44,9 +45,21 @@ class BayesianSearch(AbstractClassSearch):
         super(BayesianSearch, self).__init__(recommender_class,
                                              evaluator_validation=evaluator_validation, evaluator_test=evaluator_test)
 
-    def search(self, dictionary, metric="MAP", init_points=5, n_cases=20, output_root_path=None, parallelPoolSize=2,
+    def search(self, dictionary, metric="MAP", init_points=8, n_cases=20, output_root_path=None, parallelPoolSize=2,
                parallelize=True,
                save_model="best"):
+        '''
+
+        :param dictionary:
+        :param metric: metric to optimize
+        :param init_points: number of initial points to test before going down in the closes minimum
+        :param n_cases: number of cases starting from the best init_point to find the minimum
+        :param output_root_path:
+        :param parallelPoolSize:
+        :param parallelize:
+        :param save_model:
+        :return:
+        '''
 
         # Associate the params that will be returned by BayesianOpt object to those you want to save
         # E.g. with early stopping you know which is the optimal number of epochs only afterwards
@@ -224,8 +237,8 @@ class BayesianSearch(AbstractClassSearch):
 
             if self.best_solution_val is None or self.best_solution_val < result_dict[metric]:
 
-                writeLog("BayesianSearch: New best config found. Config: {} - results: {}\n".format(
-                    paramether_dictionary_to_save, result_dict), self.logFile)
+                writeLog("BayesianSearch: New best config found. Config: {} - results: {} - time: {}\n".format(
+                    paramether_dictionary_to_save, result_dict, datetime.datetime.now()), self.logFile)
 
                 '''REMOVED IN ORDER NOT TO SAVE MODEL PARAMETERS (problem with hybrid and for us useless because
                 we'll train with all the train at the end, just memory usage) '''
@@ -249,8 +262,8 @@ class BayesianSearch(AbstractClassSearch):
                     self.evaluate_on_test()
 
             else:
-                writeLog("BayesianSearch: Config is suboptimal. Config: {} - results: {}\n".format(
-                    paramether_dictionary_to_save, result_dict), self.logFile)
+                writeLog("BayesianSearch: Config is suboptimal. Config: {} - results: {} - time: {}\n".format(
+                    paramether_dictionary_to_save, result_dict, datetime.datetime.now()), self.logFile)
 
             return result_dict[metric]
 

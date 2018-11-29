@@ -106,7 +106,7 @@ class Recommender(object):
             assert len(user_id_array) == 1, "La lunghezza del user_id_array è {} ( > 1 ) e la versione batch non è " \
                                             "ancora stata implementata".format(len(user_id_array))
             user_id = user_id_array[user_index]
-            scores_batch = scores_batch[0] # only because len(user_id_array) == 1
+            scores_batch = np.ravel(scores_batch) # only because len(user_id_array) == 1
             if remove_seen_flag:
                 scores_batch = self._remove_seen_on_scores(user_id, scores_batch)
 

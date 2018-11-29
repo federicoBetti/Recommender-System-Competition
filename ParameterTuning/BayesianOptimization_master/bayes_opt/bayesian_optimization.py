@@ -241,7 +241,6 @@ class BayesianOptimization(object):
 
         # Initialize x, y and find current y_max
         if not self.initialized:
-            print("Dentro Initialized!")
             if self.verbose:
                 self.plog.print_header()
             self.init(init_points)

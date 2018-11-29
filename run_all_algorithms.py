@@ -27,11 +27,11 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = True
+    evaluate_algorithm = False
     if not evaluate_algorithm:
         delete_previous_intermediate_computations()
 
-    filename = "hybrid_Average_withNewThreshold.csv"
+    filename = "hybrid_4algorithms.csv"
 
     dataReader = RS_Data_Loader(top10k=True, all_train=not evaluate_algorithm)
 
@@ -45,35 +45,25 @@ if __name__ == '__main__':
         # TopPop,
         # P3alphaRecommender,
         # RP3betaRecommender,
-        # ItemKNNCBFRecommender,
-        # ItemKNNCFRecommender,
+        ItemKNNCBFRecommender,
+        ItemKNNCFRecommender,
         # UserKNNCFRecommender,
-        # MatrixFactorization_BPR_Cython
+        # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        # MatrixFactorization_AsySVD_Cython,
-        #PureSVDRecommender,
         SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
+        PureSVDRecommender
     ]
 
     weights = [
-        1,
-        # 5,
-        # 4,
-
+        0.5,
+        0.5,
+        0.6,
+        0.9
     ]
 
-    topK = [
-         200,
-        # 200,
-        # 200
-    ]
-
-    shrinks = [
-        15,
-        # 15,
-        # 5
-    ]
+    topK = [60, 200, 50, -1]
+    shrinks = [5, 15, -1, -1]
 
     # For hybrid with weighted estimated rating
     d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
@@ -109,8 +99,11 @@ if __name__ == '__main__':
         print("Algorithm: {}".format(recommender_class))
 
         recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=False, d_weights=d_weights,
-                                        weights=weights, URM_validation=URM_validation)
-        recommender.fit(topK=topK, shrink=shrinks, epochs=100, old_similarity_matrix=transfer_matrix)
+                                        URM_validation=URM_validation)
+        recommender.fit(**{"topK": [60, 200, 50, -1], "shrink": [5, 15, -1, -1], "force_compute_sim": False,
+                                                               "old_similarity_matrix": None,
+                                                               "epochs": 40, "lambda_i": 0.01, "lambda_j": 0.01,
+                                                               "num_factors": 165, "weights": weights})
 
         print("Starting Evaluations...")
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,

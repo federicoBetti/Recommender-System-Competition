@@ -52,7 +52,7 @@ class SimilarityMatrixRecommender(object):
 
         if self.sparse_weights:
 
-            to_ret = self.W_sparse[user_id].dot(self.URM_train).toarray()[0]
+            to_ret = self.W_sparse[user_id].dot(self.URM_train).toarray()
             return to_ret
 
         else:

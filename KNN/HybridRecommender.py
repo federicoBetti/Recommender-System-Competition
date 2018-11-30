@@ -12,6 +12,8 @@ from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 import numpy as np
 
 from Base.Similarity.Compute_Similarity import Compute_Similarity
+from GraphBased.P3alphaRecommender import P3alphaRecommender
+from GraphBased.RP3betaRecommender import RP3betaRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython, \
     MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
@@ -54,7 +56,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 self.recommender_list.append(recommender(ICM, URM_train))
             elif recommender.__class__ in [PureSVDRecommender]:
                 self.recommender_list.append(recommender(URM_train))
-            else:
+            else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
                 self.recommender_list.append(recommender(URM_train))
 
     def fit(self, topK=None, shrink=None, weights=None, weights1=None, weights2=None, weights3=None, weights4=None,
@@ -95,6 +97,12 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             elif recommender.__class__ in [PureSVDRecommender]:
                 recommender.fit(num_factors=similarity_args["num_factors"], force_compute_sim=force_compute_sim)
 
+            elif recommender.__class__ in [P3alphaRecommender]:
+                recommender.fit(self, topK=100, alpha=1., min_rating=0, implicit=False, normalize_similarity=False)
+
+            elif recommender.__class__ in [RP3betaRecommender]:
+                recommender.fit(self, alpha=1., beta=0.6, min_rating=0, topK=100, implicit=False, normalize_similarity=True)
+
             else:  # ItemCF, UserCF, ItemCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
 
@@ -122,7 +130,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             # noinspection PyUnresolvedReferences
             for recommender in self.recommender_list:
                 scores_batch = recommender.compute_item_score(user_id_array)
-                #scores_batch = np.ravel(scores_batch) # because i'm not using batch
+                # scores_batch = np.ravel(scores_batch) # because i'm not using batch
 
                 for user_index in range(len(user_id_array)):
 
@@ -139,7 +147,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
                 scores.append(scores_batch)
 
-
             final_score = np.zeros(scores[0].shape)
             if self.dynamic:
                 for user_index in range(len(user_id_array)):
@@ -152,7 +159,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
                     final_score_line = np.zeros(scores[0].shape[1])
                     for score, weight in zip(scores, weights):
-                        final_score_line += (score[user_id_array] * weight)
+                        final_score_line += (score[user_index] * weight)
                     final_score[user_index] = final_score_line
             else:
                 for score, weight in zip(scores, weights):
@@ -165,12 +172,13 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         # relevant_items_partition is block_size x cutoff
         relevant_items_partition = (-scores_batch).argpartition(cutoff, axis=1)[:, 0:cutoff]
 
-        relevant_items_partition_original_value = scores_batch[np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
+        relevant_items_partition_original_value = scores_batch[
+            np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
         relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-        ranking = relevant_items_partition[np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
+        ranking = relevant_items_partition[
+            np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
 
         ranking_list = ranking.tolist()
-
 
         # Return single list for one user, instead of list of lists
         if single_user:

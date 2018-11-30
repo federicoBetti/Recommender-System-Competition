@@ -6,6 +6,7 @@
 
 import numpy as np
 import scipy.sparse as sps
+import pickle, os
 
 from sklearn.preprocessing import normalize
 from Base.Recommender import Recommender
@@ -33,7 +34,7 @@ class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
                                                                                                         self.implicit,
                                                                                                         self.normalize_similarity)
 
-    def fit(self, topK=100, alpha=1., min_rating=0, implicit=False, normalize_similarity=False):
+    def fit(self, topK=100, alpha=1., min_rating=0, implicit=True, normalize_similarity=False, force_compute_sim=True):
 
         self.topK = topK
         self.alpha = alpha
@@ -41,6 +42,19 @@ class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
         self.implicit = implicit
         self.normalize_similarity = normalize_similarity
 
+        if not force_compute_sim:
+            found = True
+            try:
+                with open(os.path.join("IntermediateComputations", "P3alphaMatrix.pkl"), 'rb') as handle:
+                    (topK_new, W_sparse_new) = pickle.load(handle)
+            except FileNotFoundError:
+                print("File {} not found".format(os.path.join("IntermediateComputations", "P3alphaMatrix.pkl")))
+                found = False
+
+            if found and self.topK == topK_new:
+                self.W_sparse = W_sparse_new
+                print("Saved P3alpha Similarity Matrix Used!")
+                return
         #
         # if X.dtype != np.float32:
         #     print("P3ALPHA fit: For memory usage reasons, we suggest to use np.float32 as dtype for the dataset")
@@ -136,3 +150,7 @@ class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
         if self.topK != False:
             self.W_sparse = similarityMatrixTopK(self.W_sparse, forceSparseOutput=True, k=self.topK)
             self.sparse_weights = True
+
+        with open(os.path.join("IntermediateComputations", "P3alphaMatrix.pkl"), 'wb') as handle:
+            pickle.dump((self.topK, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
+            print("P3alpha similarity matrix saved")

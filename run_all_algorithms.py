@@ -44,14 +44,14 @@ if __name__ == '__main__':
     recommender_list = [
         # Random,
         # TopPop,
-        # P3alphaRecommender,
+        P3alphaRecommender,
         # RP3betaRecommender,
         # ItemKNNCBFRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
+        # SLIM_BPR_Cython,
         # # SLIMElasticNetRecommender
         # PureSVDRecommender
     ]

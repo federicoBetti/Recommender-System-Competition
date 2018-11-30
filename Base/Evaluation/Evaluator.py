@@ -525,7 +525,7 @@ class SequentialEvaluator(Evaluator):
 
         return results_dict, n_users_evaluated, to_ret
 
-    def evaluateRecommender(self, recommender_object, plot_stats=True):
+    def evaluateRecommender(self, recommender_object, plot_stats=False):
         """
         :param recommender_object: the trained recommender object, a Recommender subclass
         :param URM_test_list: list of URMs to test the recommender against, or a single URM object
@@ -536,7 +536,8 @@ class SequentialEvaluator(Evaluator):
             recommender_object.set_items_to_ignore(self.ignore_items_ID)
 
         results_dict, n_users_evaluated, to_ret_values = self._run_evaluation_on_selected_users(recommender_object,
-                                                                                                self.usersToEvaluate)
+                                                                                                self.usersToEvaluate,
+                                                                                                plot_stats=plot_stats)
 
         if (n_users_evaluated > 0):
 

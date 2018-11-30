@@ -64,7 +64,7 @@ if __name__ == '__main__':
     shrinks = [5, 15]
 
     # For hybrid with weighted estimated rating
-    d_weights = [[0.5], [0.4], [0.6]]
+    d_weights = [[1], [1], [1]]
 
 
     # BEST RESULT : d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]

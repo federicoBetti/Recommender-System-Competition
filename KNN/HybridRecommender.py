@@ -113,11 +113,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         elif pop[0] < level < pop[1]:
             return self.d_weights[1]
 
-        elif pop[1] < level < pop[2]:
-            return self.d_weights[2]
-
         else:
-            return self.d_weights[3]
+            return self.d_weights[2]
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
@@ -164,7 +161,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             if self.dynamic:
                 for user_index in range(len(user_id_array)):
                     user_id = user_id_array[user_index]
-                    pop = [150, 400, 575]
+                    pop = [150, 400]
                     user_profile_pop = self.URM_train.indices[
                                        self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
                     level = int(ged.playlist_popularity(user_profile_pop, dict_pop))

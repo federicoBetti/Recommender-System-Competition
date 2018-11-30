@@ -68,6 +68,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 weights = [weights1, weights2, weights3, weights4, weights5]
                 weights = [x for x in weights if x is not None]
             self.weights = weights
+            print(weights)
 
         assert self.weights is not None, "Weights Are None!"
 
@@ -108,13 +109,13 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     def change_weights(self, level, pop):
         if level < pop[0]:
-            return self.d_weights[0]
+            return self.weights
 
         elif pop[0] < level < pop[1]:
-            return self.d_weights[1]
+            return [0,0,0,0]
 
         else:
-            return self.d_weights[2]
+            return [0,0,0,0]
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
@@ -161,12 +162,11 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             if self.dynamic:
                 for user_index in range(len(user_id_array)):
                     user_id = user_id_array[user_index]
-                    pop = [150, 400]
+                    pop = [200, 400]
                     user_profile_pop = self.URM_train.indices[
                                        self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
                     level = int(ged.playlist_popularity(user_profile_pop, dict_pop))
                     weights = self.change_weights(level, pop)
-
                     final_score_line = np.zeros(scores[0].shape[1])
                     for score, weight in zip(scores, weights):
                         final_score_line += (score[user_index] * weight)
@@ -180,13 +180,23 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         scores = final_score
         # relevant_items_partition is block_size x cutoff
-        relevant_items_partition = (-scores_batch).argpartition(cutoff, axis=1)[:, 0:cutoff]
+        relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
 
-        relevant_items_partition_original_value = scores_batch[
-            np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
+        relevant_items_partition_original_value = final_score[
+            np.arange(final_score.shape[0])[:, None], relevant_items_partition]
         relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
         ranking = relevant_items_partition[
             np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
+
+        # scores = final_score
+        # # relevant_items_partition is block_size x cutoff
+        # relevant_items_partition = (-scores_batch).argpartition(cutoff, axis=1)[:, 0:cutoff]
+        #
+        # relevant_items_partition_original_value = scores_batch[
+        #     np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
+        # relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
+        # ranking = relevant_items_partition[
+        #     np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
 
         ranking_list = ranking.tolist()
 
@@ -195,16 +205,3 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             ranking_list = ranking_list[0]
 
         return ranking
-
-    def change_weights(self, level, pop):
-        if level < pop[0]:
-            return self.d_weights[0]
-
-        elif pop[0] < level < pop[1]:
-            return self.d_weights[1]
-
-        elif pop[1] < level < pop[2]:
-            return self.d_weights[2]
-
-        else:
-            return self.d_weights[3]

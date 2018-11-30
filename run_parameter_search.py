@@ -202,7 +202,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     '''
 
     hyperparamethers_range_dictionary["weights1"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights2"] = range(0.5, 1)
+    hyperparamethers_range_dictionary["weights2"] = range(0, 1)
     hyperparamethers_range_dictionary["weights3"] = range(0, 1)
     hyperparamethers_range_dictionary["weights4"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights5"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
@@ -225,9 +225,9 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     #     hyperparamethers_range_dictionary["feature_weighting"] = ["none", "BM25", "TF-IDF"]
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
-                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test},
+                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": True},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 200, 50, -1], "shrink": [5, 15, -1, -1],
+                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 100, 150, 50], "shrink": [5, 50, 10, 0],
                                                                # put -1 where useless in order to force you to change when the became useful
                                                                "force_compute_sim": False,
                                                                "old_similarity_matrix": old_similrity_matrix,
@@ -567,15 +567,15 @@ def read_data_split_and_search():
         # Random,
         # TopPop,
         # P3alphaRecommender,
-        RP3betaRecommender,
+        # RP3betaRecommender,
         # ItemKNNCFRecommender,
-        UserKNNCFRecommender,
+        # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
-        # HybridRecommender
+        HybridRecommender
     ]
 
     from ParameterTuning.AbstractClassSearch import EvaluatorWrapper
@@ -617,14 +617,14 @@ def read_data_split_and_search():
                         # TopPop,
                         ItemKNNCBFRecommender,
                         ItemKNNCFRecommender,
-                        # P3alphaRecommender,
                         # RP3betaRecommender,
-                        # UserKNNCFRecommender,
+                        UserKNNCFRecommender,
+                        P3alphaRecommender,
                         # MatrixFactorization_BPR_Cython,
                         # MatrixFactorization_FunkSVD_Cython,
-                        SLIM_BPR_Cython,
+                        # SLIM_BPR_Cython,
                         # SLIMElasticNetRecommender
-                        PureSVDRecommender
+                        # PureSVDRecommender
                     ]
 
                     if SLIM_BPR_Cython in recommender_list:

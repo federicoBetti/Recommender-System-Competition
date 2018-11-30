@@ -283,7 +283,7 @@ class SequentialEvaluator(Evaluator):
                                                   ignore_items=ignore_items, ignore_users=ignore_users)
 
     # do not change the block_size!
-    def _run_evaluation_on_selected_users(self, recommender_object, usersToEvaluate, block_size=1000, plot_stats=False):
+    def _run_evaluation_on_selected_users(self, recommender_object, usersToEvaluate, block_size=1000, plot_stats=True):
 
         to_ret = []
         start_time = time.time()
@@ -524,7 +524,8 @@ class SequentialEvaluator(Evaluator):
 
         return results_dict, n_users_evaluated, to_ret
 
-    def evaluateRecommender(self, recommender_object, plot_stats=False):
+    def evaluateRecommender(self, recommender_object, plot_stats=True):
+        print("2")
         """
         :param recommender_object: the trained recommender object, a Recommender subclass
         :param URM_test_list: list of URMs to test the recommender against, or a single URM object
@@ -596,7 +597,7 @@ class _ParallelEvaluator_batch(Evaluator):
         :param URM_test_list: list of URMs to test the recommender against, or a single URM object
         :param cutoff_list: list of cutoffs to be use to report the scores, or a single cutoff
         """
-
+        print("1")
         results_dict, n_users_evaluated = self._run_evaluation_on_selected_users(recommender_object,
                                                                                  self.usersToEvaluate)
 

@@ -320,7 +320,8 @@ class SequentialEvaluator(Evaluator):
                                                                         remove_seen_flag=self.exclude_seen,
                                                                         cutoff=self.max_cutoff,
                                                                         remove_top_pop_flag=False,
-                                                                        remove_CustomItems_flag=self.ignore_items_flag)
+                                                                        remove_CustomItems_flag=self.ignore_items_flag,
+                                                                        dict_pop=dict_song_pop)
 
             # Compute recommendation quality for each user in batch
             for batch_user_index in range(len(recommended_items_batch_list)):

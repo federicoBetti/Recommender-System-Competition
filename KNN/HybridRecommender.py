@@ -98,10 +98,10 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 recommender.fit(num_factors=similarity_args["num_factors"], force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [P3alphaRecommender]:
-                recommender.fit(self, topK=100, alpha=1., min_rating=0, implicit=False, normalize_similarity=False)
+                recommender.fit(self, topK=100, alpha=1., min_rating=0, implicit=True, normalize_similarity=False)
 
             elif recommender.__class__ in [RP3betaRecommender]:
-                recommender.fit(self, alpha=1., beta=0.6, min_rating=0, topK=100, implicit=False, normalize_similarity=True)
+                recommender.fit(self, alpha=1., beta=0.6, min_rating=0, topK=100, implicit=True, normalize_similarity=True)
 
             else:  # ItemCF, UserCF, ItemCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)

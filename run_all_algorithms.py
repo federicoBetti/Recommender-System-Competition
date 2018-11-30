@@ -28,8 +28,6 @@ from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
     evaluate_algorithm = True
-    if not evaluate_algorithm:
-        delete_previous_intermediate_computations()
     delete_previous_intermediate_computations()
 
     filename = "hybrid_4algorithms.csv"

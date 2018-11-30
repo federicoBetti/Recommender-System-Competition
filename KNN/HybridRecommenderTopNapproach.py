@@ -18,7 +18,7 @@ from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 import Support_functions.get_evaluate_data as ged
 
 
-class HybridRecommenderTopNapproach(HybridRecommender):
+class HybridRecommenderTopNapproach(Recommender):
     """ Hybrid recommender"""
 
     RECOMMENDER_NAME = "HybridRecommenderTopNapproach"
@@ -54,11 +54,8 @@ class HybridRecommenderTopNapproach(HybridRecommender):
         elif pop[0] < level < pop[1]:
             return self.d_weights[1]
 
-        elif pop[1] < level < pop[2]:
-            return self.d_weights[2]
-
         else:
-            return self.d_weights[3]
+            return self.d_weights[2]
 
     # topk1,2,3 e shrink e weights1,2,3 sono quelli del dizionario, aggiungerli per il test
     def fit(self, topK=None, shrink=None, weights=None, topK1=None, topK2=None, topK3=None, shrink1=None, shrink2=None,

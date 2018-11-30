@@ -31,6 +31,9 @@ class Recommender(object):
     def fit(self):
         pass
 
+    def change_weights(self, level, pop):
+        pass
+
     def get_URM_train(self):
         return self.URM_train.copy()
 

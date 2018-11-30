@@ -337,7 +337,7 @@ class SequentialEvaluator(Evaluator):
                 key = int(ged.playlist_popularity(user_profile, dict_song_pop))
 
                 #added to_ret here
-                to_ret.append((user_id, recommended_items[:self.max_cutoff]))
+                to_ret.append((user_id, recommended_items[user_id, :self.max_cutoff]))
                 n_users_evaluated += 1
 
                 for cutoff in self.cutoff_list:

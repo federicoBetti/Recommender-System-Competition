@@ -660,6 +660,8 @@ def read_data_split_and_search():
                 print("On recommender {} Exception {}".format(recommender_class, str(e)))
                 traceback.print_exc()
 
+            print("ciao")
+
 
 if __name__ == '__main__':
     read_data_split_and_search()

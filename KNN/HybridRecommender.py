@@ -142,14 +142,21 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
             final_score = np.zeros(scores[0].shape)
             if self.dynamic:
-                pop = [150, 400, 575]
-                user_profile_pop = self.URM_train.indices[
-                                   self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                threshold = int(ged.playlist_popularity(user_profile_pop, dict_pop))
-                weights = self.change_weights(threshold, pop)
+                for user_index in range(len(user_id_array)):
+                    user_id = user_id_array[user_index]
+                    pop = [150, 400, 575]
+                    user_profile_pop = self.URM_train.indices[
+                                       self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
+                    threshold = int(ged.playlist_popularity(user_profile_pop, dict_pop))
+                    weights = self.change_weights(threshold, pop)
 
-            for score, weight in zip(scores, weights):
-                final_score += (score * weight)
+                    final_score_line = np.zeros(scores[0].shape[1])
+                    for score, weight in zip(scores, weights):
+                        final_score_line += (score[user_id_array] * weight)
+                    final_score[user_index] = final_score_line
+            else:
+                for score, weight in zip(scores, weights):
+                    final_score += (score * weight)
 
         else:
             raise NotImplementedError

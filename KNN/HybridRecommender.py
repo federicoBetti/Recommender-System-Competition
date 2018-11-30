@@ -109,13 +109,13 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     def change_weights(self, level, pop):
         if level < pop[0]:
-            return self.weights
+            return self.d_weights[0]
 
         elif pop[0] < level < pop[1]:
-            return [0,0,0,0]
+            return self.d_weights[1]
 
         else:
-            return [0,0,0,0]
+            return self.d_weights[2]
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):

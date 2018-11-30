@@ -283,7 +283,7 @@ class SequentialEvaluator(Evaluator):
                                                   ignore_items=ignore_items, ignore_users=ignore_users)
 
     # do not change the block_size!
-    def _run_evaluation_on_selected_users(self, recommender_object, usersToEvaluate, block_size=1000, plot_stats=True):
+    def _run_evaluation_on_selected_users(self, recommender_object, usersToEvaluate, block_size=1000, plot_stats=False):
 
         to_ret = []
         start_time = time.time()
@@ -314,7 +314,8 @@ class SequentialEvaluator(Evaluator):
             test_user_batch_array = np.array(usersToEvaluate[user_batch_start:user_batch_end])
             user_batch_start = user_batch_end
 
-            # Compute predictions for a batch of users using vectorization, much more efficient than computing it one at a time
+            # Compute predictions for a batch of users using vectorization, much more efficient than computing it one
+            # at a time
             recommended_items_batch_list = recommender_object.recommend(test_user_batch_array,
                                                                         remove_seen_flag=self.exclude_seen,
                                                                         cutoff=self.max_cutoff,
@@ -335,6 +336,8 @@ class SequentialEvaluator(Evaluator):
                 user_profile = self.URM_train.indices[self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
                 key = int(ged.playlist_popularity(user_profile, dict_song_pop))
 
+                #added to_ret here
+                to_ret.append((user_id, recommended_items[:self.max_cutoff]))
                 n_users_evaluated += 1
 
                 for cutoff in self.cutoff_list:
@@ -538,6 +541,7 @@ class SequentialEvaluator(Evaluator):
         results_dict, n_users_evaluated, to_ret_values = self._run_evaluation_on_selected_users(recommender_object,
                                                                                                 self.usersToEvaluate,
                                                                                                 plot_stats=plot_stats)
+        print("to ret values: ", str(to_ret_values))
 
         if (n_users_evaluated > 0):
 

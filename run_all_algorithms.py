@@ -42,11 +42,11 @@ if __name__ == '__main__':
     recommender_list = [
         # Random,
         # TopPop,
-        P3alphaRecommender,
         # RP3betaRecommender,
-        # ItemKNNCBFRecommender,
-        # ItemKNNCFRecommender,
-        # UserKNNCFRecommender,
+        ItemKNNCBFRecommender,
+        ItemKNNCFRecommender,
+        UserKNNCFRecommender,
+        P3alphaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # SLIM_BPR_Cython,
@@ -55,16 +55,30 @@ if __name__ == '__main__':
     ]
 
     weights = [
-        1
-        # 0.6,
-        # 0.9
+        1,
+        2,
+        3,
+        4
     ]
 
-    topK = [60, 200]
-    shrinks = [5, 15]
+    topK = [
+        60,
+        100,
+        150,
+        50
+    ]
+
+    shrinks = [
+        5,
+        50,
+        10,
+        0
+    ]
 
     # For hybrid with weighted estimated rating
-    d_weights = [[1], [1], [1]]
+    d_weights = [[0.5036233341368713, 0.33188050208014197, 0.011954128257236074, 0.9989615570048721],
+                 [0.11103826438392561, 0.028116683377075735, 0.024329672375916767, 0.6743664705280373],
+                 [0.8451197847820727, 0.9253649964257065, 0.3313925225051185, 0.7574371680908533]]
 
 
     # BEST RESULT : d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
@@ -98,7 +112,7 @@ if __name__ == '__main__':
 
         recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=True, d_weights=d_weights,
                                         URM_validation=URM_validation)
-        recommender.fit(**{"topK": [50], "shrink": [5], "force_compute_sim": False,
+        recommender.fit(**{"topK": topK, "shrink": shrinks, "force_compute_sim": False,
                                                                "old_similarity_matrix": None,
                                                                "epochs": 150, "lambda_i": 0.01, "lambda_j": 0.01,
                                                                "num_factors": 165, "weights": weights})

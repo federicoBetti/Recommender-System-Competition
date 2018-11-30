@@ -27,7 +27,7 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = True
+    evaluate_algorithm = False
     delete_previous_intermediate_computations()
 
     filename = "hybrid_4algorithms.csv"

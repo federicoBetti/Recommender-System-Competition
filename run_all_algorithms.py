@@ -28,8 +28,7 @@ from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
     evaluate_algorithm = True
-    if not evaluate_algorithm:
-        delete_previous_intermediate_computations()
+
     delete_previous_intermediate_computations()
 
     filename = "hybrid_4algorithms.csv"
@@ -66,7 +65,7 @@ if __name__ == '__main__':
     shrinks = [5, 15]
 
     # For hybrid with weighted estimated rating
-    d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
+    d_weights = [[0.5], [0.4], [0.6]]
 
 
     # BEST RESULT : d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
@@ -98,7 +97,7 @@ if __name__ == '__main__':
         recommender_class = HybridRecommender
         print("Algorithm: {}".format(recommender_class))
 
-        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=False, d_weights=d_weights,
+        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=True, d_weights=d_weights,
                                         URM_validation=URM_validation)
         recommender.fit(**{"topK": [50], "shrink": [5], "force_compute_sim": False,
                                                                "old_similarity_matrix": None,

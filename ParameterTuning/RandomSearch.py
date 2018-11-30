@@ -37,8 +37,8 @@ def dump_garbage():
     pass
 
 
-gc.enable()
-gc.set_debug(gc.DEBUG_LEAK)
+# gc.enable()
+# gc.set_debug(gc.DEBUG_LEAK)
 
 
 import itertools, random, time

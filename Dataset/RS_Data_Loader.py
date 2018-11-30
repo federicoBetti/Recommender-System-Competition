@@ -84,7 +84,7 @@ def divide_train_test(train_old, threshold=0.8):
 
 class RS_Data_Loader(object):
 
-    def __init__(self, slim_after_hybrid, split_train_test_validation_quota=[0.8, 0.0, 0.2], top10k=True, all_train=False):
+    def __init__(self, slim_after_hybrid=False, split_train_test_validation_quota=[0.8, 0.0, 0.2], top10k=True, all_train=False):
 
         super(RS_Data_Loader, self).__init__()
 

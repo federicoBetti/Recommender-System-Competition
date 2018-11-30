@@ -60,13 +60,15 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
                 self.recommender_list.append(recommender(URM_train))
 
-    def fit(self, topK=None, shrink=None, weights=None, pop=None, weights1=None, weights2=None, weights3=None, weights4=None,
-            weights5=None, weights6=None, pop1=None, pop2=None, similarity='cosine', normalize=True, old_similarity_matrix=None, epochs=1,
+    def fit(self, topK=None, shrink=None, weights=None, pop=None, weights1=None, weights2=None, weights3=None,
+            weights4=None,
+            weights5=None, weights6=None, pop1=None, pop2=None, similarity='cosine', normalize=True,
+            old_similarity_matrix=None, epochs=1,
             force_compute_sim=False, **similarity_args):
 
         if self.weights is None:
             if weights is None:
-                weights = [weights1, weights2, weights3, weights4, weights5]
+                weights = [weights1, weights2, weights3, weights4, weights5, weights6]
                 weights = [x for x in weights if x is not None]
             self.weights = weights
 
@@ -75,7 +77,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 pop = [pop1, pop2]
                 pop = [x for x in pop if x is not None]
             self.pop = pop
-
 
         assert self.weights is not None, "Weights Are None!"
 
@@ -110,32 +111,26 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                                 normalize_similarity=True, force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [RP3betaRecommender]:
-                recommender.fit(alpha=similarity_args["alphaRP3"], beta=similarity_args["betaRP"], min_rating=0, topK=knn, implicit=True, normalize_similarity=True, force_compute_sim=force_compute_sim)
+                recommender.fit(alpha=similarity_args["alphaRP3"], beta=similarity_args["betaRP"], min_rating=0,
+                                topK=knn, implicit=True, normalize_similarity=True, force_compute_sim=force_compute_sim)
 
             else:  # ItemCF, UserCF, ItemCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
 
-
     def change_weights(self, level, pop):
         if level < pop[0]:
-            return self.weights
+            # return [0, 0, 0, 0, 0, 0]
+            # return self.weights
+            return [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731, 0.4112843940329439]
 
         elif pop[0] < level < pop[1]:
-            return [0,0,0,0]
+            # return [0, 0, 0, 0, 0, 0]
+            return [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388, 0.6888103295594851]
 
         else:
-            return [0,0,0,0]
-
-    #
-    # def change_weights(self, level, pop):
-    #     if level < pop[0]:
-    #         return self.d_weights[0]
-    #
-    #     elif pop[0] < level < pop[1]:
-    #         return self.d_weights[1]
-    #
-    #     else:
-    #         return self.d_weights[2]
+            # return self.weights
+            # return [0, 0, 0, 0, 0, 0]
+            return [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613, 0.5873532658846817]
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
@@ -166,7 +161,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 for user_index in range(len(user_id_array)):
 
                     user_id = user_id_array[user_index]
-
+                    # if recommender.__class__ is SLIM_BPR_Cython:
+                    #     print("SLIM values: min={}, max={}".format(scores_batch[user_index].min(), scores_batch[user_index].max()))
                     if remove_seen_flag:
                         scores_batch[user_index, :] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
 
@@ -187,6 +183,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                     level = int(ged.playlist_popularity(user_profile_pop, dict_pop))
                     weights = self.change_weights(level, self.pop)
                     final_score_line = np.zeros(scores[0].shape[1])
+
                     for score, weight in zip(scores, weights):
                         final_score_line += (score[user_index] * weight)
                     final_score[user_index] = final_score_line

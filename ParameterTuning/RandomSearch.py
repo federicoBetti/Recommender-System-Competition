@@ -30,28 +30,27 @@ def dump_garbage():
         x = gc.garbage[x_pos]
         s = str(x)
         if len(s) > 80: s = s[:80]
-        #print("type: {} \n\t s {} \n\t reffered by: {}".format(type(x), s, gc.get_referrers(x)))
+        # print("type: {} \n\t s {} \n\t reffered by: {}".format(type(x), s, gc.get_referrers(x)))
         print("POS: {}, type: {} \n\t s {} \n".format(x_pos, type(x), s))
 
     print("\nDONE")
     pass
 
-# gc.enable()
-# gc.set_debug(gc.DEBUG_LEAK)
+
+gc.enable()
+gc.set_debug(gc.DEBUG_LEAK)
 
 
 import itertools, random, time
 
-def get_RAM_status():
 
+def get_RAM_status():
     tot_m, used_m, free_m = map(int, os.popen('free -t -m').readlines()[-1].split()[1:])
 
     return tot_m, used_m, free_m
 
 
-
 def dereference_recommender_attributes(recommender_object):
-
     if recommender_object is None:
         return
 
@@ -61,17 +60,13 @@ def dereference_recommender_attributes(recommender_object):
         object_attributes[key] = None
 
 
-
-
-
 def get_memory_threshold_reached(max_ram_occupied_perc):
-
     if max_ram_occupied_perc is not None:
         tot_RAM, used_RAM, _ = get_RAM_status()
-        max_ram_occupied_bytes = tot_RAM*max_ram_occupied_perc
+        max_ram_occupied_bytes = tot_RAM * max_ram_occupied_perc
 
         memory_threshold_reached = used_RAM > max_ram_occupied_bytes
-        memory_used_quota = used_RAM/tot_RAM
+        memory_used_quota = used_RAM / tot_RAM
 
     else:
 
@@ -81,14 +76,13 @@ def get_memory_threshold_reached(max_ram_occupied_perc):
     return memory_threshold_reached, memory_used_quota
 
 
-
 import sys
 
-class RandomSearch(AbstractClassSearch):
 
+class RandomSearch(AbstractClassSearch):
     ALGORITHM_NAME = "RandomSearch"
 
-    def __init__(self, recommender_class, URM_test = None, evaluation_function_validation=None):
+    def __init__(self, recommender_class, URM_test=None, evaluation_function_validation=None):
 
         super(RandomSearch, self).__init__(recommender_class, evaluator_validation=evaluation_function_validation)
         self.URM_validation = URM_test
@@ -112,25 +106,18 @@ class RandomSearch(AbstractClassSearch):
             paramether_dictionary_to_evaluate = {}
 
             for index in range(len(key_list)):
-
                 paramether_dictionary_to_evaluate[key_list[index]] = current_case[index]
 
             paramether_dictionary_list.append(paramether_dictionary_to_evaluate)
 
         # Replicate list if necessary
-        paramether_dictionary_list = paramether_dictionary_list * math.ceil(n_cases/len(paramether_dictionary_list))
+        paramether_dictionary_list = paramether_dictionary_list * math.ceil(n_cases / len(paramether_dictionary_list))
 
         return paramether_dictionary_list
 
-
-
-
-
-
-
-
-    def search(self, dictionary_input, metric ="map", n_cases = 30, output_root_path = None, parallelPoolSize = None, parallelize = True,
-               save_model = "best", max_ram_occupied_perc = None):
+    def search(self, dictionary_input, metric="map", n_cases=60, output_root_path=None, parallelPoolSize=6,
+               parallelize=True,
+               save_model="best", max_ram_occupied_perc=None):
 
         # Associate the params that will be returned by BayesianOpt object to those you want to save
         # E.g. with early stopping you know which is the optimal number of epochs only afterwards
@@ -143,7 +130,6 @@ class RandomSearch(AbstractClassSearch):
         self.metric = metric
         self.model_counter = 0
 
-
         if max_ram_occupied_perc is None:
             self.max_ram_occupied_perc = 0.7
         else:
@@ -155,55 +141,41 @@ class RandomSearch(AbstractClassSearch):
                 writeLog(self.ALGORITHM_NAME + ": Unable to read RAM status, ignoring max RAM setting", self.logFile)
                 self.max_ram_occupied_perc = None
 
-
-
-
         if save_model in ["no", "best", "all"]:
-            self.save_model = save_model
+            # self.save_model = save_model
+            a = 1
         else:
-            raise ValueError(self.ALGORITHM_NAME + ": save_model not recognized, acceptable values are: {}, given is {}".format(
-                ["no", "best", "all"], save_model))
-
+            raise ValueError(
+                self.ALGORITHM_NAME + ": save_model not recognized, acceptable values are: {}, given is {}".format(
+                    ["no", "best", "all"], save_model))
 
         if parallelPoolSize is None:
             self.parallelPoolSize = 1
         else:
-            #self.parallelPoolSize = int(multiprocessing.cpu_count()/2)
+            # self.parallelPoolSize = int(multiprocessing.cpu_count()/2)
             self.parallelPoolSize = parallelPoolSize
 
         self.best_solution_val = None
         self.best_solution_parameters = None
         self.best_solution_object = None
 
-
         paramether_dictionary_list = self.build_all_cases_to_evaluate(n_cases)
 
         # Randomize ordering of cases
         random.shuffle(paramether_dictionary_list)
 
-
-
         self.runSingleCase_partial = partial(self.runSingleCase,
-                                             metric = metric)
-
+                                             metric=metric)
 
         if parallelize:
             self.run_multiprocess_search(paramether_dictionary_list, n_cases)
         else:
             self.run_singleprocess_search(paramether_dictionary_list, n_cases)
 
-
-
         writeLog(self.ALGORITHM_NAME + ": Best config is: Config {}, {} value is {:.4f}\n".format(
             self.best_solution_parameters, metric, self.best_solution_val), self.logFile)
 
-
-
-
         return self.best_solution_parameters.copy()
-
-
-
 
     def update_on_new_result(self, process_object, num_cases_evaluated):
 
@@ -211,12 +183,10 @@ class RandomSearch(AbstractClassSearch):
                                                                                       process_object.paramether_dictionary_to_evaluate)
 
         if process_object.exception is not None:
-
             writeLog(self.ALGORITHM_NAME + ": Exception for config {}: {}\n".format(
                 self.model_counter, paramether_dictionary_to_save, str(process_object.exception)), self.logFile)
 
             return
-
 
         if process_object.result_dict is None:
             writeLog(self.ALGORITHM_NAME + ": Result is None for config {}\n".format(
@@ -224,25 +194,23 @@ class RandomSearch(AbstractClassSearch):
 
             return
 
-
-
         self.model_counter += 1
 
-        # Always save best model separately
-        if self.save_model == "all":
-            print(self.ALGORITHM_NAME + ": Saving model in {}\n".format(self.output_root_path))
-            process_object.recommender.saveModel(self.output_root_path, file_name="_model_{}".format(self.model_counter))
+        # # Always save best model separately
+        # if self.save_model == "all":
+        #     # print(self.ALGORITHM_NAME + ": Saving model in {}\n".format(self.output_root_path))
+        #     # process_object.recommender.saveModel(self.output_root_path,
+        #     #                                      file_name="_model_{}".format(self.model_counter))
+        #     #
+        #     # pickle.dump(paramether_dictionary_to_save.copy(),
+        #     #             open(self.output_root_path + "_parameters_{}".format(self.model_counter), "wb"),
+        #     #             protocol=pickle.HIGHEST_PROTOCOL)
+        #     a = 1 # I DON'T WANT TO SAVE ANY MODEL
 
-            pickle.dump(paramether_dictionary_to_save.copy(),
-                        open(self.output_root_path + "_parameters_{}".format(self.model_counter), "wb"),
-                        protocol=pickle.HIGHEST_PROTOCOL)
+        if self.best_solution_val == None or self.best_solution_val < process_object.result_dict[self.metric]:
 
-
-        if self.best_solution_val == None or self.best_solution_val<process_object.result_dict[self.metric]:
-
-
-            writeLog(self.ALGORITHM_NAME + ": New best config found. Config {}: {} - results: {}\n".format(
-                self.model_counter, paramether_dictionary_to_save, process_object.result_dict), self.logFile)
+            writeLog(self.ALGORITHM_NAME + ": New best config found. Config {}: {} - MAP results: {}\n".format(
+                self.model_counter, paramether_dictionary_to_save, process_object.result_dict[self.metric]), self.logFile)
 
             pickle.dump(paramether_dictionary_to_save.copy(),
                         open(self.output_root_path + "_best_parameters", "wb"),
@@ -256,34 +224,32 @@ class RandomSearch(AbstractClassSearch):
             self.best_solution_object = process_object.recommender
 
             # Always save best model separately
-            if self.save_model != "no":
-                print(self.ALGORITHM_NAME + ": Saving model in {}\n".format(self.output_root_path))
-                process_object.recommender.saveModel(self.output_root_path, file_name="_best_model")
+            # if self.save_model != "no":
+            #     print(self.ALGORITHM_NAME + ": Saving model in {}\n".format(self.output_root_path))
+            #     process_object.recommender.saveModel(self.output_root_path, file_name="_best_model")
 
             if self.URM_test is not None:
                 self.evaluate_on_test(self.URM_test)
 
 
         else:
-            writeLog(self.ALGORITHM_NAME + ": Config is suboptimal. Config {}: {} - results: {}\n".format(
-                self.model_counter, paramether_dictionary_to_save, process_object.result_dict), self.logFile)
+            writeLog(self.ALGORITHM_NAME + ": Config is suboptimal. Config {}: {} - MAP results: {}\n".format(
+                self.model_counter, paramether_dictionary_to_save, process_object.result_dict[self.metric]), self.logFile)
 
             dereference_recommender_attributes(process_object.recommender)
 
 
-        #dump_garbage()
-
-
+        dump_garbage()
 
     def run_singleprocess_search(self, paramether_dictionary_list, num_cases_max):
 
         num_cases_evaluated = 0
 
         while num_cases_evaluated < num_cases_max:
-
             process_object = Process_object_data_and_evaluation(self.recommender_class, self.dictionary_input,
                                                                 paramether_dictionary_list[num_cases_evaluated],
-                                                                self.ALGORITHM_NAME, self.URM_validation, self.evaluation_function)
+                                                                self.ALGORITHM_NAME, self.URM_validation,
+                                                                self.evaluation_function)
 
             process_object.run("main")
 
@@ -291,19 +257,12 @@ class RandomSearch(AbstractClassSearch):
 
             process_object = None
 
-            #gc.collect()
-            #dump_garbage()
+            # gc.collect()
+            # dump_garbage()
 
             num_cases_evaluated += 1
 
-
-
-
-
-
-
     def run_multiprocess_search(self, paramether_dictionary_list, num_cases_max):
-
 
         # Te following function runs the search in parallel. As different configurations might have signifiantly divergent
         # runtime threads must be joined from the first to terminate and the objects might be big, therefore parallel.pool is not suitable
@@ -318,16 +277,12 @@ class RandomSearch(AbstractClassSearch):
         queue_job_todo = Queue()
         queue_job_done = Queue()
 
-
         get_memory_threshold_reached_partial = partial(get_memory_threshold_reached,
-                                                       max_ram_occupied_perc = self.max_ram_occupied_perc)
-
-
+                                                       max_ram_occupied_perc=self.max_ram_occupied_perc)
 
         for current_process_index in range(self.parallelPoolSize):
-
-
-            newProcess = multiprocessing.Process(target=process_worker, args=(queue_job_todo, queue_job_done, current_process_index, get_memory_threshold_reached_partial, ))
+            newProcess = multiprocessing.Process(target=process_worker, args=(
+                queue_job_todo, queue_job_done, current_process_index, get_memory_threshold_reached_partial,))
 
             process_list[current_process_index] = newProcess
 
@@ -336,10 +291,7 @@ class RandomSearch(AbstractClassSearch):
 
             print("Started process: {}".format(current_process_index))
 
-
-
         memory_threshold_reached, memory_used_quota = get_memory_threshold_reached(self.max_ram_occupied_perc)
-
 
         while num_cases_evaluated < num_cases_max:
 
@@ -348,33 +300,32 @@ class RandomSearch(AbstractClassSearch):
             #           if no other cases to explore
             # If no termination sent and active == 0, start one otherwise everything stalls
             # WARNING: apparently the function "queue_job_todo.empty()" is not reliable
-            while ((num_cases_active < self.parallelPoolSize and not memory_threshold_reached) or (num_cases_active == 0)) \
+            while (
+                        (num_cases_active < self.parallelPoolSize and not memory_threshold_reached) or (
+                        num_cases_active == 0)) \
                     and not termination_sent:
 
                 memory_threshold_reached, memory_used_quota = get_memory_threshold_reached(self.max_ram_occupied_perc)
 
                 if memory_threshold_reached:
-                    writeLog(self.ALGORITHM_NAME + ": Memory threshold reached, occupied {:.4f} %\n".format(memory_used_quota), self.logFile)
+                    writeLog(self.ALGORITHM_NAME + ": Memory threshold reached, occupied {:.4f} %\n".format(
+                        memory_used_quota), self.logFile)
 
-
-
-                if  num_cases_started < num_cases_max and not memory_threshold_reached:
-
+                if num_cases_started < num_cases_max and not memory_threshold_reached:
                     process_object = Process_object_data_and_evaluation(self.recommender_class, self.dictionary_input,
                                                                         paramether_dictionary_list[num_cases_started],
-                                                                        self.ALGORITHM_NAME, self.URM_validation, self.evaluation_function)
+                                                                        self.ALGORITHM_NAME, self.URM_validation,
+                                                                        self.evaluation_function)
 
                     queue_job_todo.put(process_object)
                     num_cases_started += 1
                     num_cases_active += 1
                     process_object = None
 
-
-                if  num_cases_started >= num_cases_max and not termination_sent:
+                if num_cases_started >= num_cases_max and not termination_sent:
                     print("Termination sent")
                     queue_job_todo.put(None)
                     termination_sent = True
-
 
             # Read all completed jobs. WARNING: apparently the function "empty" is not reliable
             queue_job_done_is_empty = False
@@ -386,30 +337,23 @@ class RandomSearch(AbstractClassSearch):
 
                     self.update_on_new_result(process_object, num_cases_evaluated)
                     num_cases_evaluated += 1
-                    num_cases_active -=1
+                    num_cases_active -= 1
                     process_object = None
 
                 except Empty:
                     queue_job_done_is_empty = True
 
-
-
             time.sleep(1)
-            #print("num_cases_evaluated {}".format(num_cases_evaluated))
+            # print("num_cases_evaluated {}".format(num_cases_evaluated))
 
-            #print("Evaluated {}, started {}, active {}".format(num_cases_evaluated, num_cases_started, num_cases_active))
-
+            # print("Evaluated {}, started {}, active {}".format(num_cases_evaluated, num_cases_started, num_cases_active))
 
         queue_job_todo.get()
 
         for current_process in process_list:
-            #print("Waiting to Join {}".format(current_process))
+            # print("Waiting to Join {}".format(current_process))
             current_process.join()
             print("Joined {}".format(current_process))
-
-
-
-
 
 
 def process_worker(queue_job_todo, queue_job_done, process_id, get_memory_threshold_reached):
@@ -443,38 +387,25 @@ def process_worker(queue_job_todo, queue_job_done, process_id, get_memory_thresh
         else:
             if not memory_threshold_warning_printed:
                 memory_threshold_warning_printed = True
-                print("Process: {} - Memory threshold reached, occupied {:.4f} %\n".format(process_id, memory_used_quota))
+                print(
+                    "Process: {} - Memory threshold reached, occupied {:.4f} %\n".format(process_id, memory_used_quota))
 
             time.sleep(5)
 
-
-    #Ensure termination signal stays in queue
+    # Ensure termination signal stays in queue
     queue_job_todo.put(None)
 
     # Termination signal
     print("Process: {} - Termination signal received".format(process_id))
 
-
     return
 
 
-
-
-
-
-
-
-
-
-
-
 class Process_object_data_and_evaluation(object):
-
     def __init__(self, recommender_class, dictionary_input, paramether_dictionary_to_evaluate, ALGORITHM_NAME,
                  URM_validation, evaluation_function):
 
         super(Process_object_data_and_evaluation, self).__init__()
-
 
         self.recommender_class = recommender_class
         self.URM_validation = URM_validation
@@ -486,7 +417,6 @@ class Process_object_data_and_evaluation(object):
         self.exception = None
         self.recommender = None
         self.result_dict = None
-
 
     def __del__(self):
         # self.recommender_class = None
@@ -504,35 +434,30 @@ class Process_object_data_and_evaluation(object):
         for key in object_attributes.keys():
             object_attributes[key] = None
 
-
-
-
     def run(self, process_id):
 
         try:
 
             # Create an object of the same class of the imput
             # Passing the paramether as a dictionary
-            self.recommender = self.recommender_class(*self.dictionary_input[DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS],
-                                                 **self.dictionary_input[DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS])
-
+            self.recommender = self.recommender_class(
+                *self.dictionary_input[DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS],
+                **self.dictionary_input[DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS])
 
             print(self.ALGORITHM_NAME + ": Process {} Config: {}".format(
                 process_id, self.paramether_dictionary_to_evaluate))
 
-
             self.recommender.fit(*self.dictionary_input[DictionaryKeys.FIT_POSITIONAL_ARGS],
-                            **self.dictionary_input[DictionaryKeys.FIT_KEYWORD_ARGS],
-                            **self.paramether_dictionary_to_evaluate)
+                                 **self.dictionary_input[DictionaryKeys.FIT_KEYWORD_ARGS],
+                                 **self.paramether_dictionary_to_evaluate)
 
-            self.result_dict = self.evaluation_function(self.recommender, self.URM_validation, self.paramether_dictionary_to_evaluate)
-
+            result_dict, _, _ = self.evaluation_function.evaluateRecommender(self.recommender)
+            result_dict = result_dict[list(result_dict.keys())[0]]
 
             print(self.ALGORITHM_NAME + ": Process {} Completed config: {} - result {}".format(
-                process_id, self.paramether_dictionary_to_evaluate, self.result_dict))
-
-
-            #self.result_dict = {"map": 0.0}
+                process_id, self.paramether_dictionary_to_evaluate, result_dict))
+            self.result_dict = result_dict
+            # self.result_dict = {"map": 0.0}
 
             return
 

@@ -185,7 +185,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     this_output_root_path = output_root_path + "Hybrid:" + "{}".format([x.RECOMMENDER_NAME for x in recommender_list])
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
-    parameterSearch = BayesianSearch(recommender_class, evaluator_validation=evaluator_validation)
+    parameterSearch = BayesianSearch(recommender_class, evaluator_validation)
 
     similarity_type_list = ['cosine', 'jaccard', "asymmetric", "dice", "tversky"]
 
@@ -201,14 +201,14 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     I left all the params in the hybrid fit function just in case we want to use those again
     '''
 
-    hyperparamethers_range_dictionary["weights1"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights2"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights3"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights4"] = range(0, 1)
-    # hyperparamethers_range_dictionary["weights5"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+    hyperparamethers_range_dictionary["weights1"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
+    hyperparamethers_range_dictionary["weights2"] = list(np.linspace(0, 1, 11))  # range(0, 1)
+    hyperparamethers_range_dictionary["weights3"] = list(np.linspace(0, 1, 11))  # range(0, 1)
+    hyperparamethers_range_dictionary["weights4"] = list(np.linspace(0, 1, 11))  # range(0, 1)
+    hyperparamethers_range_dictionary["weights5"] = list(np.linspace(0, 1, 11))  # range(0, 1)
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
-    lambda_i = 0.01
+    lambda_i = 0.1
     lambda_j = 0.01
     old_similrity_matrix = None
     num_factors = 165
@@ -225,22 +225,29 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     #     hyperparamethers_range_dictionary["feature_weighting"] = ["none", "BM25", "TF-IDF"]
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
-                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": True},
+                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 100, 150, 50], "shrink": [5, 50, 10, 0],
+                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 100, 50, 150, 50],
+                                                               "shrink": [5, 50, -1, -1, -1],
                                                                # put -1 where useless in order to force you to change when the became useful
                                                                "force_compute_sim": False,
                                                                "old_similarity_matrix": old_similrity_matrix,
-                                                               "epochs": 40, "lambda_i": lambda_i, "lambda_j": lambda_j,
-                                                               "num_factors": num_factors},
+                                                               "epochs": 100, "lambda_i": lambda_i,
+                                                               "lambda_j": lambda_j,
+                                                               "num_factors": num_factors,
+                                                               'alphaP3': 0.6048420766420062,
+                                                               'alphaRP3': 1.5890147620983466,
+                                                               'betaRP': 0.28778362462762974},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
 
     best_parameters = parameterSearch.search(recommenderDictionary,
-                                             n_cases=n_cases,
+                                             n_cases=60,
                                              output_root_path=output_root_path_similarity,
-                                             metric=metric_to_optimize)
+                                             metric=metric_to_optimize,
+                                             init_points=25
+                                             )
     print(best_parameters)
 
 
@@ -548,7 +555,7 @@ def read_data_split_and_search():
     """
 
     # this line removes old matrices saved, comment it if testing only the weights of hybrid
-    delete_previous_intermediate_computations()
+    # delete_previous_intermediate_computations()
     dataReader = RS_Data_Loader(top10k=True)
 
     URM_train = dataReader.get_URM_train()
@@ -617,12 +624,12 @@ def read_data_split_and_search():
                         # TopPop,
                         ItemKNNCBFRecommender,
                         ItemKNNCFRecommender,
-                        # RP3betaRecommender,
-                        UserKNNCFRecommender,
                         P3alphaRecommender,
+                        RP3betaRecommender,
+                        # UserKNNCFRecommender,
                         # MatrixFactorization_BPR_Cython,
                         # MatrixFactorization_FunkSVD_Cython,
-                        # SLIM_BPR_Cython,
+                        SLIM_BPR_Cython,
                         # SLIMElasticNetRecommender
                         # PureSVDRecommender
                     ]

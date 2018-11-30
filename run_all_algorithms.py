@@ -43,10 +43,10 @@ if __name__ == '__main__':
         # Random,
         # TopPop,
         # RP3betaRecommender,
-        ItemKNNCBFRecommender,
+        # ItemKNNCBFRecommender,
         ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        P3alphaRecommender,
+        # UserKNNCFRecommender,
+        # P3alphaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # SLIM_BPR_Cython,
@@ -56,23 +56,21 @@ if __name__ == '__main__':
 
     weights = [
         1,
-        2,
-        3,
-        4
+
     ]
 
     topK = [
-        60,
-        100,
-        150,
-        50
+        200,
+        # 100,
+        # 150,
+        # 50
     ]
 
     shrinks = [
-        5,
-        50,
-        10,
-        0
+        40,
+        # 50,
+        # 10,
+        # 0
     ]
 
     # For hybrid with weighted estimated rating

@@ -9,8 +9,6 @@ Created on 16/09/2017
 import pickle
 
 
-
-
 class SimilarityMatrixRecommender(object):
     """
     This class refers to a Recommender KNN which uses a similarity matrix, it provides two function to compute item's score
@@ -23,8 +21,6 @@ class SimilarityMatrixRecommender(object):
         self.sparse_weights = True
 
         self.compute_item_score = self.compute_score_item_based
-
-
 
     def compute_score_item_based(self, user_id):
 
@@ -44,10 +40,6 @@ class SimilarityMatrixRecommender(object):
             relevant_weights = self.W[user_profile]
             return relevant_weights.T.dot(user_ratings)
 
-
-
-
-
     def compute_score_user_based(self, user_id):
 
         if self.sparse_weights:
@@ -60,16 +52,7 @@ class SimilarityMatrixRecommender(object):
             # invoke the dot function on the sparse one
             return self.URM_train.T.dot(self.W[user_id])
 
-
-
-
-
-
-
-
-
-
-    def saveModel(self, folder_path, file_name = None):
+    def saveModel(self, folder_path, file_name=None):
 
         if file_name is None:
             file_name = self.RECOMMENDER_NAME
@@ -77,7 +60,6 @@ class SimilarityMatrixRecommender(object):
         print("{}: Saving model in file '{}'".format(self.RECOMMENDER_NAME, folder_path + file_name))
 
         dictionary_to_save = {"sparse_weights": self.sparse_weights}
-
 
         if self.sparse_weights:
             try:
@@ -88,12 +70,8 @@ class SimilarityMatrixRecommender(object):
         else:
             dictionary_to_save["W"] = self.W
 
-
         pickle.dump(dictionary_to_save,
                     open(folder_path + file_name, "wb"),
                     protocol=pickle.HIGHEST_PROTOCOL)
 
-
         print("{}: Saving complete".format(self.RECOMMENDER_NAME))
-
-

@@ -237,8 +237,8 @@ class BayesianSearch(AbstractClassSearch):
 
             if self.best_solution_val is None or self.best_solution_val < result_dict[metric]:
 
-                writeLog("BayesianSearch: New best config found. Config: {} - results: {} - time: {}\n".format(
-                    paramether_dictionary_to_save, result_dict, datetime.datetime.now()), self.logFile)
+                writeLog("BayesianSearch: New best config found. Config: {} - MAP results: {} - time: {}\n".format(
+                    paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()), self.logFile)
 
                 '''REMOVED IN ORDER NOT TO SAVE MODEL PARAMETERS (problem with hybrid and for us useless because
                 we'll train with all the train at the end, just memory usage) '''
@@ -262,8 +262,8 @@ class BayesianSearch(AbstractClassSearch):
                     self.evaluate_on_test()
 
             else:
-                writeLog("BayesianSearch: Config is suboptimal. Config: {} - results: {} - time: {}\n".format(
-                    paramether_dictionary_to_save, result_dict, datetime.datetime.now()), self.logFile)
+                writeLog("BayesianSearch: Config is suboptimal. Config: {} - MAP results: {} - time: {}\n".format(
+                    paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()), self.logFile)
 
             return result_dict[metric]
 

@@ -73,7 +73,7 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
     def fit(self, epochs=300, logFile=None,
             batch_size=1000, lambda_i=0.1, lambda_j=0.1, learning_rate=1e-3, topK=200,
             sgd_mode='adagrad', gamma=0.995, beta_1=0.9, beta_2=0.999,
-            stop_on_validation=True, lower_validatons_allowed=2, validation_metric="MAP",
+            stop_on_validation=False, lower_validatons_allowed=2, validation_metric="MAP",
             evaluator_object=None, validation_every_n=50, old_similarity_matrix=None,
             force_compute_sim=True):
         '''
@@ -81,8 +81,8 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
         :param epochs: max number of epochs
         :param logFile:
         :param batch_size:
-        :param lambda_i:
-        :param lambda_j:
+        :param lambda_i: first regualrizer
+        :param lambda_j: second regualrizer
         :param learning_rate:
         :param topK:
         :param sgd_mode:

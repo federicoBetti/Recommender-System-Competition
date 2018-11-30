@@ -125,8 +125,8 @@ class AbstractClassSearch(object):
 
             if self.best_solution_val == None or self.best_solution_val < result_dict[metric]:
 
-                writeLog(self.ALGORITHM_NAME + ": New best config found. Config: {} - results: {}\n".format(
-                    paramether_dictionary_to_save, result_dict), self.logFile)
+                writeLog(self.ALGORITHM_NAME + ": New best config found. Config: {} - MAP results: {}\n".format(
+                    paramether_dictionary_to_save, result_dict[metric]), self.logFile)
 
                 pickle.dump(paramether_dictionary_to_save.copy(),
                             open(self.output_root_path + "_best_parameters", "wb"),
@@ -145,8 +145,8 @@ class AbstractClassSearch(object):
                     self.evaluate_on_test()
 
             else:
-                writeLog(self.ALGORITHM_NAME + ": Config is suboptimal. Config: {} - results: {}\n".format(
-                    paramether_dictionary_to_save, result_dict), self.logFile)
+                writeLog(self.ALGORITHM_NAME + ": Config is suboptimal. Config: {} - MAP results: {}\n".format(
+                    paramether_dictionary_to_save, result_dict[metric]), self.logFile)
 
             return result_dict[metric]
 

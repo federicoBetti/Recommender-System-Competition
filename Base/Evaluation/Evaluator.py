@@ -336,7 +336,7 @@ class SequentialEvaluator(Evaluator):
                 user_profile = self.URM_train.indices[self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
                 key = int(ged.playlist_popularity(user_profile, dict_song_pop))
 
-                #added to_ret here
+                # added to_ret here
                 to_ret.append((user_id, recommended_items[:self.max_cutoff]))
                 n_users_evaluated += 1
 
@@ -354,8 +354,7 @@ class SequentialEvaluator(Evaluator):
                                                                                     relevant_items)
                     results_current_cutoff[EvaluatorMetrics.RECALL_TEST_LEN.value] += recall_min_test_len(
                         is_relevant_current_cutoff, relevant_items)
-                    results_current_cutoff[EvaluatorMetrics.MAP.value] += map(is_relevant_current_cutoff,
-                                                                              relevant_items)
+                    results_current_cutoff[EvaluatorMetrics.MAP.value] += current_map
                     results_current_cutoff[EvaluatorMetrics.MRR.value] += rr(is_relevant_current_cutoff)
                     results_current_cutoff[EvaluatorMetrics.NDCG.value] += ndcg(recommended_items_current_cutoff,
                                                                                 relevant_items,
@@ -527,8 +526,7 @@ class SequentialEvaluator(Evaluator):
 
         return results_dict, n_users_evaluated, to_ret
 
-    def evaluateRecommender(self, recommender_object, plot_stats=True):
-        print("2")
+    def evaluateRecommender(self, recommender_object, plot_stats=False):
         """
         :param recommender_object: the trained recommender object, a Recommender subclass
         :param URM_test_list: list of URMs to test the recommender against, or a single URM object
@@ -541,7 +539,6 @@ class SequentialEvaluator(Evaluator):
         results_dict, n_users_evaluated, to_ret_values = self._run_evaluation_on_selected_users(recommender_object,
                                                                                                 self.usersToEvaluate,
                                                                                                 plot_stats=plot_stats)
-        print("to ret values: ", str(to_ret_values))
 
         if (n_users_evaluated > 0):
 

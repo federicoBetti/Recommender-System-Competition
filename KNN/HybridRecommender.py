@@ -99,10 +99,11 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 recommender.fit(num_factors=similarity_args["num_factors"], force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [P3alphaRecommender]:
-                recommender.fit(topK=50, alpha=0.60484, min_rating=0, implicit=True, normalize_similarity=True)
+                recommender.fit(topK=knn, alpha=similarity_args["alphaP3"], min_rating=0, implicit=True,
+                                normalize_similarity=True, force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [RP3betaRecommender]:
-                recommender.fit(alpha=1., beta=0.6, min_rating=0, topK=100, implicit=True, normalize_similarity=True)
+                recommender.fit(alpha=similarity_args["alphaRP3"], beta=similarity_args["betaRP"], min_rating=0, topK=knn, implicit=True, normalize_similarity=True, force_compute_sim=force_compute_sim)
 
             else:  # ItemCF, UserCF, ItemCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
@@ -178,7 +179,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         else:
             raise NotImplementedError
 
-        scores = final_score
         # relevant_items_partition is block_size x cutoff
         relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
 

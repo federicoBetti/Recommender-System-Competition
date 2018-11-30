@@ -41,7 +41,7 @@ def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, UR
     # it saves best results in the txt file
     hyperparamethers_range_dictionary = {}
     hyperparamethers_range_dictionary["topK"] = [5, 10, 20, 50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
-    hyperparamethers_range_dictionary["shrink"] = [0, 10, 50, 100, 200, 300, 500, 1000]
+    hyperparamethers_range_dictionary["shrink"] = [0, 5, 10, 50, 100, 200, 300, 500, 1000]
     hyperparamethers_range_dictionary["similarity"] = [similarity_type]
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
@@ -570,11 +570,11 @@ def read_data_split_and_search():
         # P3alphaRecommender,
         # RP3betaRecommender,
         # ItemKNNCFRecommender,
-        # UserKNNCFRecommender#,
+        UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # PureSVDRecommender,
-        SLIM_BPR_Cython,
+        # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
         # HybridRecommender
     ]

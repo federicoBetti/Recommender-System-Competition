@@ -98,6 +98,19 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             else:  # ItemCF, UserCF, ItemCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
 
+    def change_weights(self, level, pop):
+        if level < pop[0]:
+            return self.d_weights[0]
+
+        elif pop[0] < level < pop[1]:
+            return self.d_weights[1]
+
+        elif pop[1] < level < pop[2]:
+            return self.d_weights[2]
+
+        else:
+            return self.d_weights[3]
+
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
 
@@ -122,7 +135,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             # noinspection PyUnresolvedReferences
             for recommender in self.recommender_list:
                 scores_batch = recommender.compute_item_score(user_id_array)
-                #scores_batch = np.ravel(scores_batch) # because i'm not using batch
+                # scores_batch = np.ravel(scores_batch) # because i'm not using batch
 
                 for user_index in range(len(user_id_array)):
 
@@ -139,7 +152,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
                 scores.append(scores_batch)
 
-
             final_score = np.zeros(scores[0].shape)
             if self.dynamic:
                 for user_index in range(len(user_id_array)):
@@ -147,12 +159,12 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                     pop = [150, 400, 575]
                     user_profile_pop = self.URM_train.indices[
                                        self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                    threshold = int(ged.playlist_popularity(user_profile_pop, dict_pop))
-                    weights = self.change_weights(threshold, pop)
+                    level = int(ged.playlist_popularity(user_profile_pop, dict_pop))
+                    weights = self.change_weights(level, pop)
 
                     final_score_line = np.zeros(scores[0].shape[1])
                     for score, weight in zip(scores, weights):
-                        final_score_line += (score[user_id_array] * weight)
+                        final_score_line += (score[user_index] * weight)
                     final_score[user_index] = final_score_line
             else:
                 for score, weight in zip(scores, weights):
@@ -165,28 +177,16 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         # relevant_items_partition is block_size x cutoff
         relevant_items_partition = (-scores_batch).argpartition(cutoff, axis=1)[:, 0:cutoff]
 
-        relevant_items_partition_original_value = scores_batch[np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
+        relevant_items_partition_original_value = scores_batch[
+            np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
         relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-        ranking = relevant_items_partition[np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
+        ranking = relevant_items_partition[
+            np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
 
         ranking_list = ranking.tolist()
-
 
         # Return single list for one user, instead of list of lists
         if single_user:
             ranking_list = ranking_list[0]
 
         return ranking
-
-    def change_weights(self, level, pop):
-        if level < pop[0]:
-            return self.d_weights[0]
-
-        elif pop[0] < level < pop[1]:
-            return self.d_weights[1]
-
-        elif pop[1] < level < pop[2]:
-            return self.d_weights[2]
-
-        else:
-            return self.d_weights[3]

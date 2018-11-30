@@ -9,16 +9,15 @@ from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactoriz
 from MatrixFactorization.PureSVD import PureSVDRecommender
 
 from Base.NonPersonalizedRecommender import TopPop, Random
-
 from KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from KNN.HybridRecommenderTopNapproach import HybridRecommenderTopNapproach
 from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from KNN.HybridRecommender import HybridRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
 import Support_functions.get_evaluate_data as ged
+
 from GraphBased.RP3betaRecommender import RP3betaRecommender
 from GraphBased.P3alphaRecommender import P3alphaRecommender
-
 from data.Movielens_10M.Movielens10MReader import Movielens10MReader
 
 import traceback, os
@@ -44,15 +43,15 @@ if __name__ == '__main__':
     recommender_list = [
         # Random,
         # TopPop,
-        # P3alphaRecommender,
+        P3alphaRecommender,  # fatto
         # RP3betaRecommender,
         # ItemKNNCBFRecommender,
-        # ItemKNNCFRecommender,
+        # ItemKNNCFRecommender,                 #fatto
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
-        # # SLIMElasticNetRecommender
+        # SLIM_BPR_Cython,                      #fatto
+        # SLIMElasticNetRecommender
         # PureSVDRecommender
     ]
 
@@ -66,13 +65,12 @@ if __name__ == '__main__':
     shrinks = [5, 15]
 
     # For hybrid with weighted estimated rating
-    d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
-
+    d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2]]
 
     # BEST RESULT : d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
 
     # Dynamics for Hybrid with Top_N. usefull for testing where each recommender works better
-    #d_weights = [[2, 4, 0], [1, 4, 5], [0, 2, 8]]
+    # d_weights = [[2, 4, 0], [1, 4, 5], [0, 2, 8]]
 
     from Base.Evaluation.Evaluator import SequentialEvaluator
 
@@ -100,10 +98,14 @@ if __name__ == '__main__':
 
         recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=False, d_weights=d_weights,
                                         URM_validation=URM_validation)
-        recommender.fit(**{"topK": [50], "shrink": [5], "force_compute_sim": False,
-                                                               "old_similarity_matrix": None,
-                                                               "epochs": 150, "lambda_i": 0.01, "lambda_j": 0.01,
-                                                               "num_factors": 165, "weights": weights})
+
+
+        recommender.fit(**{"topK": [100], "alpha":[1], "min_rating"=[0], "implicit": [True], "normalize_similarity"=False})
+
+        # recommender.fit(**{"topK": [50], "shrink": [5], "force_compute_sim": False,
+        #                                                        "old_similarity_matrix": None,
+        #                                                        "epochs": 150, "lambda_i": 0.01, "lambda_j": 0.01,
+        #                                                        "num_factors": 165, "weights": weights})
 
         print("Starting Evaluations...")
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,

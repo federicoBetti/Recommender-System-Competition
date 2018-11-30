@@ -301,6 +301,8 @@ class SequentialEvaluator(Evaluator):
 
         n_users_evaluated = 0
 
+        dict_song_pop = ged.tracks_popularity()
+        data_stats = {}
         # Start from -block_size to ensure it to be 0 at the first block
         user_batch_start = 0
         user_batch_end = 0
@@ -330,15 +332,18 @@ class SequentialEvaluator(Evaluator):
                 relevant_items = self.get_user_relevant_items(user_id)
                 is_relevant = np.in1d(recommended_items, relevant_items, assume_unique=True)
 
+                user_profile = self.URM_train.indices[self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
+                key = int(ged.playlist_popularity(user_profile, dict_song_pop))
+
                 n_users_evaluated += 1
 
                 for cutoff in self.cutoff_list:
-
                     results_current_cutoff = results_dict[cutoff]
 
                     is_relevant_current_cutoff = is_relevant[0:cutoff]
                     recommended_items_current_cutoff = recommended_items[0:cutoff]
 
+                    current_map = map(is_relevant_current_cutoff, relevant_items)
                     results_current_cutoff[EvaluatorMetrics.ROC_AUC.value] += roc_auc(is_relevant_current_cutoff)
                     results_current_cutoff[EvaluatorMetrics.PRECISION.value] += precision(is_relevant_current_cutoff,
                                                                                           len(relevant_items))
@@ -374,6 +379,11 @@ class SequentialEvaluator(Evaluator):
                     if EvaluatorMetrics.DIVERSITY_SIMILARITY.value in results_current_cutoff:
                         results_current_cutoff[EvaluatorMetrics.DIVERSITY_SIMILARITY.value].add_recommendations(
                             recommended_items_current_cutoff)
+
+                if key not in data_stats:
+                        data_stats[key] = [current_map]
+                else:
+                    data_stats[key].append(current_map)
 
                 if time.time() - start_time_print > 30 or n_users_evaluated == len(self.usersToEvaluate):
                     print(

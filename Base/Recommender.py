@@ -71,6 +71,7 @@ class Recommender(object):
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
 
+        print("qui")
         # If is a scalar transform it in a 1-cell array
         if np.isscalar(user_id_array):
             user_id_array = np.atleast_1d(user_id_array)

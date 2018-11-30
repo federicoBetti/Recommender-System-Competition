@@ -50,6 +50,7 @@ def create_URM_matrix(train):
     col = list(train.track_id)
     return csr_matrix(([1] * len(row), (row, col)), shape=(50446, 20635))
 
+
 def get_icm_matrix(tracks):
     tracks_arr = tracks.track_id.values
     album_arr = tracks.album_id.unique()
@@ -64,6 +65,12 @@ def get_icm_matrix(tracks):
     return csr_matrix(feature_tracks)
 
 
+def create_complete_test():
+    row = 50446
+    col = 20635
+    return csr_matrix(([1] * row, (range(row), [0] * row)), shape=(row, col))
+
+
 def get_fake_test():
     return sparse.load_npz(os.path.join("Dataset", "fake_test.npz"))
 
@@ -75,10 +82,9 @@ def divide_train_test(train_old, threshold=0.8):
     return train, test
 
 
-
 class RS_Data_Loader(object):
 
-    def __init__(self, split_train_test_validation_quota=[0.8, 0.0, 0.2], top10k=True, all_train=False):
+    def __init__(self, slim_after_hybrid, split_train_test_validation_quota=[0.8, 0.0, 0.2], top10k=True, all_train=False):
 
         super(RS_Data_Loader, self).__init__()
 
@@ -99,7 +105,8 @@ class RS_Data_Loader(object):
                 try:
                     self.URM_train = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_train.npz"))
                     self.URM_test = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_test.npz"))
-                    self.URM_validation = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_test.npz"))
+                    self.URM_validation = scipy.sparse.load_npz(
+                        os.path.join("IntermediateComputations", "URM_test.npz"))
                 except FileNotFoundError:
 
                     start_mask = np.asarray([False] * len(train))

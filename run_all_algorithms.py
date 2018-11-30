@@ -28,11 +28,13 @@ from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
     evaluate_algorithm = False
+    slim_after_hybrid = False
+
     delete_previous_intermediate_computations()
 
-    filename = "hybrid_4algorithms.csv"
+    filename = "hybrid_4algorithms_P3_thresholds: 130, 346.csv"
 
-    dataReader = RS_Data_Loader(top10k=True, all_train=not evaluate_algorithm)
+    dataReader = RS_Data_Loader(slim_after_hybrid, top10k=True, all_train=not evaluate_algorithm)
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()
@@ -79,6 +81,7 @@ if __name__ == '__main__':
                  [0.8451197847820727, 0.9253649964257065, 0.3313925225051185, 0.7574371680908533]]
 
 
+    pop = [130, 346]
     # BEST RESULT : d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
 
     # Dynamics for Hybrid with Top_N. usefull for testing where each recommender works better
@@ -113,7 +116,7 @@ if __name__ == '__main__':
         recommender.fit(**{"topK": topK, "shrink": shrinks, "force_compute_sim": False,
                                                                "old_similarity_matrix": None,
                                                                "epochs": 150, "lambda_i": 0.01, "lambda_j": 0.01,
-                                                               "num_factors": 165, "weights": weights})
+                                                               "num_factors": 165, "weights": weights, "pop": pop})
 
         print("Starting Evaluations...")
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,

@@ -60,7 +60,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 self.recommender_list.append(recommender(URM_train))
 
     def fit(self, topK=None, shrink=None, weights=None, weights1=None, weights2=None, weights3=None, weights4=None,
-            weights5=None, similarity='cosine', normalize=True, old_similarity_matrix=None, epochs=1,
+            weights5=None, weights6=None, similarity='cosine', normalize=True, old_similarity_matrix=None, epochs=1,
             force_compute_sim=False, **similarity_args):
 
         if self.weights is None:
@@ -195,3 +195,16 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             ranking_list = ranking_list[0]
 
         return ranking
+
+    def change_weights(self, level, pop):
+        if level < pop[0]:
+            return self.d_weights[0]
+
+        elif pop[0] < level < pop[1]:
+            return self.d_weights[1]
+
+        elif pop[1] < level < pop[2]:
+            return self.d_weights[2]
+
+        else:
+            return self.d_weights[3]

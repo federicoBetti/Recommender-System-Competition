@@ -283,7 +283,7 @@ class SequentialEvaluator(Evaluator):
                                                   ignore_items=ignore_items, ignore_users=ignore_users)
 
     # do not change the block_size!
-    def _run_evaluation_on_selected_users(self, recommender_object, usersToEvaluate, block_size=1, plot_stats=False):
+    def _run_evaluation_on_selected_users(self, recommender_object, usersToEvaluate, block_size=1000, plot_stats=False):
 
         to_ret = []
         start_time = time.time()
@@ -306,7 +306,6 @@ class SequentialEvaluator(Evaluator):
         # Start from -block_size to ensure it to be 0 at the first block
         user_batch_start = 0
         user_batch_end = 0
-        block_size = 1000
         while user_batch_start < len(self.usersToEvaluate):
 
             user_batch_end = user_batch_start + block_size
@@ -382,7 +381,7 @@ class SequentialEvaluator(Evaluator):
                             recommended_items_current_cutoff)
 
                 if key not in data_stats:
-                        data_stats[key] = [current_map]
+                    data_stats[key] = [current_map]
                 else:
                     data_stats[key].append(current_map)
 

@@ -12,6 +12,8 @@ from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 import numpy as np
 
 from Base.Similarity.Compute_Similarity import Compute_Similarity
+from GraphBased.P3alphaRecommender import P3alphaRecommender
+from GraphBased.RP3betaRecommender import RP3betaRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython, \
     MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
@@ -54,7 +56,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 self.recommender_list.append(recommender(ICM, URM_train))
             elif recommender.__class__ in [PureSVDRecommender]:
                 self.recommender_list.append(recommender(URM_train))
-            else:
+            else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
                 self.recommender_list.append(recommender(URM_train))
 
     def fit(self, topK=None, shrink=None, weights=None, weights1=None, weights2=None, weights3=None, weights4=None,
@@ -94,6 +96,12 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
             elif recommender.__class__ in [PureSVDRecommender]:
                 recommender.fit(num_factors=similarity_args["num_factors"], force_compute_sim=force_compute_sim)
+
+            elif recommender.__class__ in [P3alphaRecommender]:
+                recommender.fit(self, topK=100, alpha=1., min_rating=0, implicit=False, normalize_similarity=False)
+
+            elif recommender.__class__ in [RP3betaRecommender]:
+                recommender.fit(self, alpha=1., beta=0.6, min_rating=0, topK=100, implicit=False, normalize_similarity=True)
 
             else:  # ItemCF, UserCF, ItemCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)

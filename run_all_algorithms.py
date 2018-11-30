@@ -30,7 +30,7 @@ if __name__ == '__main__':
     evaluate_algorithm = False
     delete_previous_intermediate_computations()
 
-    filename = "hybrid_4algorithms.csv"
+    filename = "hybrid_4algorithms_P3: 0,01039.csv"
 
     dataReader = RS_Data_Loader(top10k=True, all_train=not evaluate_algorithm)
 

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.sparse import csr_matrix
-import os
+import os, pickle
 from itertools import repeat
 
 
@@ -19,10 +19,16 @@ def make_series(test):
 
 
 def tracks_popularity():
-    all_train, train, test, tracks, target_playlist, all_playlist_to_predict, test_songs_per_playlist, validation = get_data()
-    scores = all_train.groupby('track_id').count()
-    scores.columns = ['scores']
-    return scores.to_dict()['scores']
+    with open(os.path.join("IntermediateComputations", "dic_pop.pkl_no_rem"), 'rb') as handle:
+        to_ret = pickle.load(handle)
+    return to_ret
+    # all_train, train, test, tracks, target_playlist, all_playlist_to_predict, test_songs_per_playlist, validation = get_data()
+    # scores = all_train.groupby('track_id').count()
+    # scores.columns = ['scores']
+    # to_ret = scores.to_dict()['scores']
+    # with open(os.path.join("IntermediateComputations", "dic_pop.pkl_no_rem"), 'wb') as handle:
+    #     pickle.dump(to_ret, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    # return
 
 
 def playlist_popularity(playlist_songs, pop_dict):

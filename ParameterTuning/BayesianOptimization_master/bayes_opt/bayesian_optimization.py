@@ -273,7 +273,7 @@ class BayesianOptimization(object):
         # The arg_max of the acquisition function is found and this will be
         # the next probed value of the target function in the next round.
         for i in range(n_iter):
-            print("New iterations for parameter testing, number {}".format(i))
+            print("New iterations for parameter testing, number {}/{}".format(i, n_iter))
             # Test if x_max is repeated, if it is, draw another one at random
             # If it is repeated, print a warning
             pwarning = False

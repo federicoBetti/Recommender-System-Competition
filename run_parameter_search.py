@@ -482,11 +482,11 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                                                                "URM_validation": URM_validation},
                                      DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                                      DictionaryKeys.FIT_KEYWORD_ARGS: {"validation_every_n": 5,
-                                                                       "stop_on_validation": False,
+                                                                       "stop_on_validation": True,
                                                                        "evaluator_object": evaluator_validation_earlystopping,
-                                                                       "lower_validatons_allowed": 10,
+                                                                       "lower_validatons_allowed": 2,
                                                                        "validation_metric": metric_to_optimize,
-                                                                       "epochs": 10},
+                                                                       "epochs": 50},
                                      DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
         ##########################################################################################################
@@ -574,8 +574,8 @@ def read_data_split_and_search():
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # PureSVDRecommender,
-        # SLIM_BPR_Cython,
-        SLIMElasticNetRecommender,
+        SLIM_BPR_Cython,
+        # SLIMElasticNetRecommender,
         # HybridRecommender
     ]
 

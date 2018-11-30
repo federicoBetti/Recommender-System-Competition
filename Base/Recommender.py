@@ -75,17 +75,14 @@ class Recommender(object):
         else:
             single_user = False
 
+
         if cutoff is None:
             cutoff = self.URM_train.shape[1] - 1
 
-        '''
-        Per come l'abbiamo noi dovrebbe arrivare sempre user_id_array con un solo elemento e quindi cosi funziona,
-        per impplementazioni future rifare funzionare il batch
-        Ho dovuto fare cosi un user alla volta per far funzionare l'hybrid!
-        '''
         # Compute the scores using the model-specific function
         # Vectorize over all users in user_id_array
         scores_batch = self.compute_item_score(user_id_array)
+
 
         # if self.normalize:
         #     # normalization will keep the scores in the same range
@@ -101,14 +98,13 @@ class Recommender(object):
         #     den[np.abs(den) < 1e-6] = 1.0  # to avoid NaNs
         #     scores /= den
 
+
         for user_index in range(len(user_id_array)):
 
-            assert len(user_id_array) == 1, "La lunghezza del user_id_array è {} ( > 1 ) e la versione batch non è " \
-                                            "ancora stata implementata".format(len(user_id_array))
             user_id = user_id_array[user_index]
-            scores_batch = np.ravel(scores_batch) # only because len(user_id_array) == 1
+
             if remove_seen_flag:
-                scores_batch = self._remove_seen_on_scores(user_id, scores_batch)
+                scores_batch[user_index,:] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
 
             # Sorting is done in three steps. Faster then plain np.argsort for higher number of items
             # - Partition the data to extract the set of relevant items
@@ -120,32 +116,90 @@ class Recommender(object):
             #
             # ranking_list.append(ranking)
 
-            if remove_top_pop_flag:
-                scores_batch = self._remove_TopPop_on_scores(scores_batch)
 
-            if remove_CustomItems_flag:
-                scores_batch = self._remove_CustomItems_on_scores(scores_batch)
+        if remove_top_pop_flag:
+            scores_batch = self._remove_TopPop_on_scores(scores_batch)
 
-            # scores_batch = np.arange(0,3260).reshape((1, -1))
-            # scores_batch = np.repeat(scores_batch, 1000, axis = 0)
+        if remove_CustomItems_flag:
+            scores_batch = self._remove_CustomItems_on_scores(scores_batch)
 
-            # relevant_items_partition is block_size x cutoff
-            relevant_items_partition = (-scores_batch).argpartition(cutoff)[0:cutoff]
+        # scores_batch = np.arange(0,3260).reshape((1, -1))
+        # scores_batch = np.repeat(scores_batch, 1000, axis = 0)
 
-            # Get original value and sort it
-            # [:, None] adds 1 dimension to the array, from (block_size,) to (block_size,1)
-            # This is done to correctly get scores_batch value as [row, relevant_items_partition[row,:]]
-            relevant_items_partition_original_value = scores_batch[relevant_items_partition]
-            relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value)
-            ranking = relevant_items_partition[relevant_items_partition_sorting]
-            # print("Score batch: {}, Relevenat items parition: {}, Ranking: {}".format(scores_batch, relevant_items_partition, ranking))
-            ranking_list = ranking.tolist()
+        # relevant_items_partition is block_size x cutoff
+        relevant_items_partition = (-scores_batch).argpartition(cutoff, axis=1)[:,0:cutoff]
 
-            # # Return single list for one user, instead of list of lists
-            # if single_user:
-            #     ranking_list = ranking_list[0]
+        # Get original value and sort it
+        # [:, None] adds 1 dimension to the array, from (block_size,) to (block_size,1)
+        # This is done to correctly get scores_batch value as [row, relevant_items_partition[row,:]]
+        relevant_items_partition_original_value = scores_batch[np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
+        relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
+        ranking = relevant_items_partition[np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
 
-            return ranking_list
+        ranking_list = ranking.tolist()
+
+
+        # Return single list for one user, instead of list of lists
+        if single_user:
+            ranking_list = ranking_list[0]
+
+        return ranking_list
+
+        # old working version
+        '''
+        Per come l'abbiamo noi dovrebbe arrivare sempre user_id_array con un solo elemento e quindi cosi funziona,
+        per impplementazioni future rifare funzionare il batch
+        Ho dovuto fare cosi un user alla volta per far funzionare l'hybrid!
+        '''
+        # # Compute the scores using the model-specific function
+        # # Vectorize over all users in user_id_array
+        # scores_batch = self.compute_item_score(user_id_array)
+        #
+        # for user_index in range(len(user_id_array)):
+        #
+        #     assert len(user_id_array) == 1, "La lunghezza del user_id_array è {} ( > 1 ) e la versione batch non è " \
+        #                                     "ancora stata implementata".format(len(user_id_array))
+        #     user_id = user_id_array[user_index]
+        #     scores_batch = np.ravel(scores_batch) # only because len(user_id_array) == 1
+        #     if remove_seen_flag:
+        #         scores_batch = self._remove_seen_on_scores(user_id, scores_batch)
+        #
+        #     # Sorting is done in three steps. Faster then plain np.argsort for higher number of items
+        #     # - Partition the data to extract the set of relevant items
+        #     # - Sort only the relevant items
+        #     # - Get the original item index
+        #     # relevant_items_partition = (-scores_user).argpartition(cutoff)[0:cutoff]
+        #     # relevant_items_partition_sorting = np.argsort(-scores_user[relevant_items_partition])
+        #     # ranking = relevant_items_partition[relevant_items_partition_sorting]
+        #     #
+        #     # ranking_list.append(ranking)
+        #
+        #     if remove_top_pop_flag:
+        #         scores_batch = self._remove_TopPop_on_scores(scores_batch)
+        #
+        #     if remove_CustomItems_flag:
+        #         scores_batch = self._remove_CustomItems_on_scores(scores_batch)
+        #
+        #     # scores_batch = np.arange(0,3260).reshape((1, -1))
+        #     # scores_batch = np.repeat(scores_batch, 1000, axis = 0)
+        #
+        #     # relevant_items_partition is block_size x cutoff
+        #     relevant_items_partition = (-scores_batch).argpartition(cutoff)[0:cutoff]
+        #
+        #     # Get original value and sort it
+        #     # [:, None] adds 1 dimension to the array, from (block_size,) to (block_size,1)
+        #     # This is done to correctly get scores_batch value as [row, relevant_items_partition[row,:]]
+        #     relevant_items_partition_original_value = scores_batch[relevant_items_partition]
+        #     relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value)
+        #     ranking = relevant_items_partition[relevant_items_partition_sorting]
+        #     # print("Score batch: {}, Relevenat items parition: {}, Ranking: {}".format(scores_batch, relevant_items_partition, ranking))
+        #     ranking_list = ranking.tolist()
+        #
+        #     # # Return single list for one user, instead of list of lists
+        #     # if single_user:
+        #     #     ranking_list = ranking_list[0]
+        #
+        #     return ranking_list
 
     def evaluateRecommendations(self, URM_test, at=5, minRatingsPerUser=1, exclude_seen=True,
                                 filterCustomItems=np.array([], dtype=np.int),

@@ -73,13 +73,31 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
     def fit(self, epochs=300, logFile=None,
             batch_size=1000, lambda_i=0.1, lambda_j=0.1, learning_rate=1e-3, topK=200,
             sgd_mode='adagrad', gamma=0.995, beta_1=0.9, beta_2=0.999,
-            stop_on_validation=False, lower_validatons_allowed=5, validation_metric="MAP",
+            stop_on_validation=True, lower_validatons_allowed=2, validation_metric="MAP",
             evaluator_object=None, validation_every_n=50, old_similarity_matrix=None,
             force_compute_sim=True):
+        '''
 
-        # remove this line otherwise no validation is done!
-        validation_every_n = epochs + 1
-
+        :param epochs: max number of epochs
+        :param logFile:
+        :param batch_size:
+        :param lambda_i:
+        :param lambda_j:
+        :param learning_rate:
+        :param topK:
+        :param sgd_mode:
+        :param gamma:
+        :param beta_1:
+        :param beta_2:
+        :param stop_on_validation: should I stop after some validations?
+        :param lower_validatons_allowed: stop after n validations that worse the previous one
+        :param validation_metric:
+        :param evaluator_object:
+        :param validation_every_n: how often do validations?
+        :param old_similarity_matrix: if you want to start from a fixed similarity matrix
+        :param force_compute_sim:
+        :return:
+        '''
         if not force_compute_sim:
             found = True
             try:
@@ -94,6 +112,7 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
                 return
 
         if evaluator_object is None and stop_on_validation:
+            print("Creating evaluator object for SLIM BPR")
             evaluator_object = SequentialEvaluator(self.URM_validation, self.URM_train)
 
         # Import compiled module
@@ -123,7 +142,7 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
                                                  beta_1=beta_1,
                                                  beta_2=beta_2)
 
-        if (topK != False and topK < 1):
+        if topK != False and topK < 1:
             raise ValueError(
                 "TopK not valid. Acceptable values are either False or a positive integer value. Provided value was '{}'".format(
                     topK))

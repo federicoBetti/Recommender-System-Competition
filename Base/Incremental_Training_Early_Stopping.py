@@ -128,11 +128,14 @@ class Incremental_Training_Early_Stopping(object):
 
                         self._update_best_model()
 
-                        self.epochs_best = currentEpoch +1
+                        self.epochs_best = currentEpoch + 1
                         lower_validatons_count = 0
+                        print("This validation is the better than the previous one, maybe we could improve in next "
+                              "epochs...")
 
                     else:
                         lower_validatons_count += 1
+                        print("This validation was worse of the {} previous ones".format(lower_validatons_count))
 
                     if lower_validatons_count >= lower_validatons_allowed:
                         convergence = True

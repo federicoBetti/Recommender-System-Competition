@@ -27,9 +27,10 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     if not evaluate_algorithm:
         delete_previous_intermediate_computations()
+    delete_previous_intermediate_computations()
 
     filename = "hybrid_4algorithms.csv"
 
@@ -45,25 +46,24 @@ if __name__ == '__main__':
         # TopPop,
         # P3alphaRecommender,
         # RP3betaRecommender,
-        ItemKNNCBFRecommender,
-        ItemKNNCFRecommender,
+        # ItemKNNCBFRecommender,
+        # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender
-        PureSVDRecommender
+        # # SLIMElasticNetRecommender
+        # PureSVDRecommender
     ]
 
     weights = [
-        0.5,
-        0.5,
-        0.6,
-        0.9
+        1
+        # 0.6,
+        # 0.9
     ]
 
-    topK = [60, 200, 50, -1]
-    shrinks = [5, 15, -1, -1]
+    topK = [60, 200]
+    shrinks = [5, 15]
 
     # For hybrid with weighted estimated rating
     d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
@@ -100,9 +100,9 @@ if __name__ == '__main__':
 
         recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=False, d_weights=d_weights,
                                         URM_validation=URM_validation)
-        recommender.fit(**{"topK": [60, 200, 50, -1], "shrink": [5, 15, -1, -1], "force_compute_sim": False,
+        recommender.fit(**{"topK": [50], "shrink": [5], "force_compute_sim": False,
                                                                "old_similarity_matrix": None,
-                                                               "epochs": 40, "lambda_i": 0.01, "lambda_j": 0.01,
+                                                               "epochs": 150, "lambda_i": 0.01, "lambda_j": 0.01,
                                                                "num_factors": 165, "weights": weights})
 
         print("Starting Evaluations...")

@@ -98,28 +98,38 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             else:  # ItemCF, UserCF, ItemCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
 
-    def recommend(self, user_id, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
+    def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
+
+        if np.isscalar(user_id_array):
+            user_id_array = np.atleast_1d(user_id_array)
+            single_user = True
+        else:
+            single_user = False
 
         weights = self.weights
         if cutoff == None:
             # noinspection PyUnresolvedReferences
-            n = self.URM_train.shape[1] - 1
+            cutoff = self.URM_train.shape[1] - 1
         else:
-            n = cutoff
+            cutoff
 
         # compute the scores using the dot product
         # noinspection PyUnresolvedReferences
         if self.sparse_weights:
             scores = []
-            user_profile = self.URM_train[user_id]
+            user_profile = self.URM_train[user_id_array]
             # noinspection PyUnresolvedReferences
             for recommender in self.recommender_list:
-                scores_batch = recommender.compute_item_score(user_id)
-                scores_batch = np.ravel(scores_batch) # because i'm not using batch
+                scores_batch = recommender.compute_item_score(user_id_array)
+                #scores_batch = np.ravel(scores_batch) # because i'm not using batch
 
-                if remove_seen_flag:
-                    scores_batch = self._remove_seen_on_scores(user_id, scores_batch)
+                for user_index in range(len(user_id_array)):
+
+                    user_id = user_id_array[user_index]
+
+                    if remove_seen_flag:
+                        scores_batch[user_index, :] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
 
                 if remove_top_pop_flag:
                     scores_batch = self._remove_TopPop_on_scores(scores_batch)
@@ -129,8 +139,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
                 scores.append(scores_batch)
 
-            assert (len(scores) == len(weights)), "Weights and scores from similarities have two different lenghts: {" \
-                                                  "} and {}".format(len(scores), len(weights))
 
             final_score = np.zeros(scores[0].shape)
             if self.dynamic:
@@ -147,10 +155,19 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             raise NotImplementedError
 
         scores = final_score
+        # relevant_items_partition is block_size x cutoff
+        relevant_items_partition = (-scores_batch).argpartition(cutoff, axis=1)[:, 0:cutoff]
 
-        relevant_items_partition = (-scores).argpartition(n)[0:n]
-        relevant_items_partition_sorting = np.argsort(-scores[relevant_items_partition])
-        ranking = relevant_items_partition[relevant_items_partition_sorting]
+        relevant_items_partition_original_value = scores_batch[np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
+        relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
+        ranking = relevant_items_partition[np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
+
+        ranking_list = ranking.tolist()
+
+
+        # Return single list for one user, instead of list of lists
+        if single_user:
+            ranking_list = ranking_list[0]
 
         return ranking
 

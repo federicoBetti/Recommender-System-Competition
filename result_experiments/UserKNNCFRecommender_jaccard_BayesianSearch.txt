@@ -1,0 +1,1 @@
+BayesianSearch: Testing config: {'topK': 300, 'shrink': 5, 'similarity': 'jaccard', 'normalize': True} - Exception too many indices for array

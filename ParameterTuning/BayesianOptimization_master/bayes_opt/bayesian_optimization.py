@@ -86,9 +86,11 @@ class BayesianOptimization(object):
         self.init_points.extend(rand_points)
 
         # Evaluate target function at all initialization points
+        count = 1
         for x in self.init_points:
-            print("Initial test to understand starting points...")
+            print("Initial test number {}/{} to understand best starting points...".format(count, len(self.init_points)))
             y = self._observe_point(x)
+            count += 1
 
         # Add the points from `self.initialize` to the observations
         if self.x_init:

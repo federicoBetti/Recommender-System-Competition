@@ -34,6 +34,7 @@ from Utils.PoolWithSubprocess import PoolWithSubprocess
 from ParameterTuning.AbstractClassSearch import DictionaryKeys
 import numpy as np
 
+
 def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, URM_train, n_cases, output_root_path,
                                             metric_to_optimize):
     # pay attention that it doesn't finish (it should after n_cases, but now it doens't work)
@@ -226,7 +227,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 200, 50, -1], "shrink": [5, 15, -1, -1], # put -1 where useless in order to force you to change when the became useful
+                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 200, 50, -1], "shrink": [5, 15, -1, -1],
+                                                               # put -1 where useless in order to force you to change when the became useful
                                                                "force_compute_sim": False,
                                                                "old_similarity_matrix": old_similrity_matrix,
                                                                "epochs": 40, "lambda_i": lambda_i, "lambda_j": lambda_j,
@@ -467,7 +469,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         if recommender_class is SLIM_BPR_Cython:
             hyperparamethers_range_dictionary = {}
-            hyperparamethers_range_dictionary["topK"] = [5, 10, 20, 50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
+            hyperparamethers_range_dictionary["topK"] = [50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
             # hyperparamethers_range_dictionary["epochs"] = [1, 5, 10, 20, 30, 50, 70, 90, 110]
             hyperparamethers_range_dictionary["sgd_mode"] = ["adagrad", "adam"]
             hyperparamethers_range_dictionary["lambda_i"] = [0.0, 0.1, 0.01, 1e-3, 1e-6, 1e-9]
@@ -492,8 +494,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
         if recommender_class is SLIMElasticNetRecommender:
             hyperparamethers_range_dictionary = {}
             hyperparamethers_range_dictionary["topK"] = [50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
-            hyperparamethers_range_dictionary["l1_penalty"] = [1.0, 0.0, 1e-2, 1e-4, 1e-6]
-            hyperparamethers_range_dictionary["l2_penalty"] = [100.0, 1.0, 0.0, 1e-2, 1e-4, 1e-6]
+            hyperparamethers_range_dictionary["l1_ratio"] = [1.0, 0.0, 0.1, 1e-2, 1e-4, 1e-6]
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
@@ -508,7 +509,6 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                                  n_cases=n_cases,
                                                  output_root_path=output_root_path_rec_name,
                                                  metric=metric_to_optimize)
-
 
 
 
@@ -568,14 +568,14 @@ def read_data_split_and_search():
         # Random,
         # TopPop,
         # P3alphaRecommender,
-        RP3betaRecommender,
+        # RP3betaRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender#,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender,
+        SLIMElasticNetRecommender,
         # HybridRecommender
     ]
 

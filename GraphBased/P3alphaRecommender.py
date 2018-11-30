@@ -15,8 +15,6 @@ from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 import time, sys
 
 
-
-
 class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
     """ P3alpha recommender """
 
@@ -28,11 +26,12 @@ class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
         self.URM_train = check_matrix(URM_train, format='csr', dtype=np.float32)
         self.sparse_weights = True
 
-
     def __str__(self):
         return "P3alpha(alpha={}, min_rating={}, topk={}, implicit={}, normalize_similarity={})".format(self.alpha,
-                                                                            self.min_rating, self.topK, self.implicit,
-                                                                            self.normalize_similarity)
+                                                                                                        self.min_rating,
+                                                                                                        self.topK,
+                                                                                                        self.implicit,
+                                                                                                        self.normalize_similarity)
 
     def fit(self, topK=100, alpha=1., min_rating=0, implicit=False, normalize_similarity=False):
 
@@ -41,7 +40,6 @@ class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
         self.min_rating = min_rating
         self.implicit = implicit
         self.normalize_similarity = normalize_similarity
-
 
         #
         # if X.dtype != np.float32:
@@ -53,15 +51,15 @@ class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
             if self.implicit:
                 self.URM_train.data = np.ones(self.URM_train.data.size, dtype=np.float32)
 
-        #Pui is the row-normalized urm
+        # Pui is the row-normalized urm
         Pui = normalize(self.URM_train, norm='l1', axis=1)
 
-        #Piu is the column-normalized, "boolean" urm transposed
+        # Piu is the column-normalized, "boolean" urm transposed
         X_bool = self.URM_train.transpose(copy=True)
         X_bool.data = np.ones(X_bool.data.size, np.float32)
-        #ATTENTION: axis is still 1 because i transposed before the normalization
+        # ATTENTION: axis is still 1 because i transposed before the normalization
         Piu = normalize(X_bool, norm='l1', axis=1)
-        del(X_bool)
+        del (X_bool)
 
         # Alfa power
         if self.alpha != 1.:
@@ -81,7 +79,6 @@ class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
         values = np.zeros(dataBlock, dtype=np.float32)
 
         numCells = 0
-
 
         start_time = time.time()
         start_time_printBatch = start_time
@@ -112,13 +109,11 @@ class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
                         cols = np.concatenate((cols, np.zeros(dataBlock, dtype=np.int32)))
                         values = np.concatenate((values, np.zeros(dataBlock, dtype=np.float32)))
 
-
                     rows[numCells] = current_block_start_row + row_in_block
                     cols[numCells] = cols_to_add[index]
                     values[numCells] = values_to_add[index]
 
                     numCells += 1
-
 
             if time.time() - start_time_printBatch > 60:
                 print("Processed {} ( {:.2f}% ) in {:.2f} minutes. Rows per second: {:.0f}".format(
@@ -132,13 +127,12 @@ class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
 
                 start_time_printBatch = time.time()
 
-        self.W_sparse = sps.csr_matrix((values[:numCells], (rows[:numCells], cols[:numCells])), shape=(Pui.shape[1], Pui.shape[1]))
-
+        self.W_sparse = sps.csr_matrix((values[:numCells], (rows[:numCells], cols[:numCells])),
+                                       shape=(Pui.shape[1], Pui.shape[1]))
 
         if self.normalize_similarity:
             self.W_sparse = normalize(self.W_sparse, norm='l1', axis=1)
 
-
         if self.topK != False:
-            self.W_sparse = similarityMatrixTopK(self.W_sparse, forceSparseOutput = True, k=self.topK)
+            self.W_sparse = similarityMatrixTopK(self.W_sparse, forceSparseOutput=True, k=self.topK)
             self.sparse_weights = True

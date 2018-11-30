@@ -44,6 +44,7 @@ if __name__ == '__main__':
     recommender_list = [
         # Random,
         # TopPop,
+        # RP3betaRecommender,
         ItemKNNCBFRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,

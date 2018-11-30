@@ -413,3 +413,13 @@ Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Weight
 Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
 CUTOFF: 10 - ROC_AUC: 0.0000000, PRECISION: 0.0000000, RECALL: 0.0000000, RECALL_TEST_LEN: 0.0000000, MAP: 0.0000000, MRR: 0.0000000, NDCG: 0.0000000, F1: 0.0000000, HIT_RATE: 0.0000000, ARHR: 0.0000000, NOVELTY: 0.0057964, DIVERSITY_MEAN_INTER_LIST: 0.9920075, DIVERSITY_HERFINDAHL: 0.9991908, COVERAGE_ITEM: 0.3259026, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2614539, SHANNON_ENTROPY: 11.1076118, 
 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Knns, Shrinks and recommender list have different lenghts 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: only integer scalar arrays can be converted to a scalar index
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: only integer scalar arrays can be converted to a scalar index
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.4827542, PRECISION: 0.1618000, RECALL: 0.1618000, RECALL_TEST_LEN: 0.1618000, MAP: 0.0908010, MRR: 0.4328063, NDCG: 0.1870987, F1: 0.1618000, HIT_RATE: 1.6180000, ARHR: 0.6178162, NOVELTY: 0.0055127, DIVERSITY_MEAN_INTER_LIST: 0.9812954, DIVERSITY_HERFINDAHL: 0.9981197, COVERAGE_ITEM: 0.1894354, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2218108, SHANNON_ENTROPY: 10.0381311, 
+
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.4603863, PRECISION: 0.1458400, RECALL: 0.1458400, RECALL_TEST_LEN: 0.1458400, MAP: 0.0782219, MRR: 0.4024115, NDCG: 0.1681969, F1: 0.1458400, HIT_RATE: 1.4584000, ARHR: 0.5545173, NOVELTY: 0.0052589, DIVERSITY_MEAN_INTER_LIST: 0.9652590, DIVERSITY_HERFINDAHL: 0.9965162, COVERAGE_ITEM: 0.1106857, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.1804090, SHANNON_ENTROPY: 9.0066621, 
+

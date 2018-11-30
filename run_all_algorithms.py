@@ -1,3 +1,4 @@
+import pickle
 import sys
 
 from Dataset.RS_Data_Loader import RS_Data_Loader
@@ -27,18 +28,23 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = False
-    slim_after_hybrid = False
+    evaluate_algorithm = True
+    slim_after_hybrid = True
 
     delete_previous_intermediate_computations()
 
     filename = "hybrid_4algorithms_P3_thresholds: 130, 346.csv"
 
-    dataReader = RS_Data_Loader(slim_after_hybrid, top10k=True, all_train=not evaluate_algorithm)
+    dataReader = RS_Data_Loader(top10k=True, all_train=not evaluate_algorithm)
+
+    # if slim_after_hybrid:
+    #     URM_test = dataReader.create_complete_test()
+    #
+    # else:
+    URM_test = dataReader.get_URM_test()
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()
-    URM_test = dataReader.get_URM_test()
     ICM = dataReader.get_ICM()
 
     recommender_list = [
@@ -82,12 +88,11 @@ if __name__ == '__main__':
                  [0.11103826438392561, 0.028116683377075735, 0.024329672375916767, 0.6743664705280373],
                  [0.8451197847820727, 0.9253649964257065, 0.3313925225051185, 0.7574371680908533]]
 
-
-    pop = [130, 346]
+    lenght = [6, 20]
     # BEST RESULT : d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
 
     # Dynamics for Hybrid with Top_N. usefull for testing where each recommender works better
-    #d_weights = [[2, 4, 0], [1, 4, 5], [0, 2, 8]]
+    # d_weights = [[2, 4, 0], [1, 4, 5], [0, 2, 8]]
 
     from Base.Evaluation.Evaluator import SequentialEvaluator
 
@@ -116,13 +121,28 @@ if __name__ == '__main__':
         recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=True, d_weights=d_weights,
                                         URM_validation=URM_validation)
         recommender.fit(**{"topK": topK, "shrink": shrinks, "force_compute_sim": False,
-                                                               "old_similarity_matrix": None,
-                                                               "epochs": 150, "lambda_i": 0.01, "lambda_j": 0.01,
-                                                               "num_factors": 165, "weights": weights, "pop": pop})
+                           "old_similarity_matrix": None,
+                           "epochs": 150, "lambda_i": 0.01, "lambda_j": 0.01,
+                           "num_factors": 165, "weights": weights, "pop": lenght})
 
+        print(URM_train.shape)
         print("Starting Evaluations...")
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
                                                                                                 plot_stats=True)
+        #
+        # if slim_after_hybrid:
+        #     URM_train = ged.fill_URM_with_reccomendations(URM_train, target_recommendations)
+        #     with open(os.path.join("IntermediateComputations", "URM_train_for_slim.pkl"), 'wb') as handle:
+        #         pickle.dump((URM_train), handle, protocol=pickle.HIGHEST_PROTOCOL)
+        # with open(os.path.join("Dataset", "URM_train_for_slim.pkl"), 'rb') as handle:
+        #     URM_train = pickle.load(handle)
+        #
+        #     recommender_class = SLIM_BPR_Cython
+        #     recommender = recommender_class(URM_train, URM_validation=URM_validation)
+        #     recommender.fit(epochs=50, topK=50, lambda_i=0.1, lambda_j=0.001)
+        #
+        #     results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
+        #                                                                                             plot_stats=False)
 
         print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
                                                     results_run_string))

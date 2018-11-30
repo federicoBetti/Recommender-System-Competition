@@ -60,8 +60,10 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
                 self.recommender_list.append(recommender(URM_train))
 
-    def fit(self, topK=None, shrink=None, weights=None, pop=None, weights1=None, weights2=None, weights3=None, weights4=None,
-            weights5=None, weights6=None, pop1=None, pop2=None, similarity='cosine', normalize=True, old_similarity_matrix=None, epochs=1,
+    def fit(self, topK=None, shrink=None, weights=None, pop=None, weights1=None, weights2=None, weights3=None,
+            weights4=None,
+            weights5=None, weights6=None, pop1=None, pop2=None, similarity='cosine', normalize=True,
+            old_similarity_matrix=None, epochs=1,
             force_compute_sim=False, **similarity_args):
 
         if self.weights is None:
@@ -75,7 +77,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 pop = [pop1, pop2]
                 pop = [x for x in pop if x is not None]
             self.pop = pop
-
 
         assert self.weights is not None, "Weights Are None!"
 
@@ -114,16 +115,25 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             else:  # ItemCF, UserCF, ItemCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
 
-
     def change_weights(self, level, pop):
         if level < pop[0]:
             return self.weights
 
         elif pop[0] < level < pop[1]:
-            return [0,0,0,0]
+            return [0, 0, 0, 0]
 
         else:
-            return [0,0,0,0]
+            return [0, 0, 0, 0]
+
+    def change_weights_lenght(self, level, len):
+        if level < len[0]:
+            return self.d_weights[0]
+
+        elif len[0] < level < len[1]:
+            return self.d_weights[1]
+
+        else:
+            return self.d_weights[2]
 
     #
     # def change_weights(self, level, pop):
@@ -181,10 +191,11 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             if self.dynamic:
                 for user_index in range(len(user_id_array)):
                     user_id = user_id_array[user_index]
-                    user_profile_pop = self.URM_train.indices[
+                    user_profile = self.URM_train.indices[
                                        self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                    level = int(ged.playlist_popularity(user_profile_pop, dict_pop))
-                    weights = self.change_weights(level, self.pop)
+                    level = int(ged.lenght_playlist(user_profile))
+                    weights = self.change_weights_lenght(level, self.pop)
+                    print(weights)
                     final_score_line = np.zeros(scores[0].shape[1])
                     for score, weight in zip(scores, weights):
                         final_score_line += (score[user_index] * weight)

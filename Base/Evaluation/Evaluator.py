@@ -334,7 +334,7 @@ class SequentialEvaluator(Evaluator):
                 is_relevant = np.in1d(recommended_items, relevant_items, assume_unique=True)
 
                 user_profile = self.URM_train.indices[self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                key = int(ged.playlist_popularity(user_profile, dict_song_pop))
+                key = int(ged.lenght_playlist(user_profile))
 
                 #added to_ret here
                 to_ret.append((user_id, recommended_items[:self.max_cutoff]))
@@ -530,7 +530,7 @@ class SequentialEvaluator(Evaluator):
     def evaluateRecommender(self, recommender_object, plot_stats=True):
         print("2")
         """
-        :param recommender_object: the trained recommender object, a Recommender subclass
+        :param recommender_object: the trained recommenderURM_validation object, a Recommender subclass
         :param URM_test_list: list of URMs to test the recommender against, or a single URM object
         :param cutoff_list: list of cutoffs to be use to report the scores, or a single cutoff
         """
@@ -541,7 +541,6 @@ class SequentialEvaluator(Evaluator):
         results_dict, n_users_evaluated, to_ret_values = self._run_evaluation_on_selected_users(recommender_object,
                                                                                                 self.usersToEvaluate,
                                                                                                 plot_stats=plot_stats)
-        print("to ret values: ", str(to_ret_values))
 
         if (n_users_evaluated > 0):
 

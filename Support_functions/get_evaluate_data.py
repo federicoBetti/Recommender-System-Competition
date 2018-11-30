@@ -31,6 +31,14 @@ def tracks_popularity():
     # return
 
 
+def fill_URM_with_reccomendations(URM, target_recommendations):
+    URM_lil = URM.tolil()
+    for recommendations in target_recommendations:
+        URM[recommendations[0], recommendations[1][:5]] = 1
+        print(recommendations[0])
+    return csr_matrix(URM_lil)
+
+
 def playlist_popularity(playlist_songs, pop_dict):
     pop = 0
     count = 0
@@ -42,6 +50,10 @@ def playlist_popularity(playlist_songs, pop_dict):
         return 0
 
     return pop / count
+
+
+def lenght_playlist(playlist_songs):
+    return len(playlist_songs)
 
 
 def get_data():

@@ -201,13 +201,13 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     I left all the params in the hybrid fit function just in case we want to use those again
     '''
     #
-    # hyperparamethers_range_dictionary["pop1"] = range(100, 300)
-    # hyperparamethers_range_dictionary["pop2"] = range(301, 600)
+    hyperparamethers_range_dictionary["pop1"] = range(2, 15)
+    hyperparamethers_range_dictionary["pop2"] = range(15, 30)
 
-    hyperparamethers_range_dictionary["weights1"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights2"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights3"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights4"] = range(0, 1)
+    # hyperparamethers_range_dictionary["weights1"] = range(0, 1)
+    # hyperparamethers_range_dictionary["weights2"] = range(0, 1)
+    # hyperparamethers_range_dictionary["weights3"] = range(0, 1)
+    # hyperparamethers_range_dictionary["weights4"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights5"] = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
@@ -237,7 +237,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                                                                        "d_weights": d_weights},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 100, 150, 50], "shrink": [5, 50, 10, 0],
-                                                               "weights": weights, "pop": [130, 346],
+                                                               "weights": weights,
                                                                # put -1 where useless in order to force you to change when the became useful
                                                                "force_compute_sim": False,
                                                                "old_similarity_matrix": old_similrity_matrix,

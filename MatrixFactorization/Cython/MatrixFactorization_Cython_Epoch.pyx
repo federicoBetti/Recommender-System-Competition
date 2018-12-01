@@ -343,7 +343,6 @@ cdef class MatrixFactorization_Cython_Epoch:
             # print(cumulative_loss/(numCurrentBatch*self.batch_size + 1))
             # input()
 
-
             adaptive_gradient_item = self.adaptive_gradient_item(gradient, sample.item)
             adaptive_gradient_user = self.adaptive_gradient_user(gradient, sample.user)
 

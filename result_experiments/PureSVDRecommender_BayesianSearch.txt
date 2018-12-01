@@ -60,3 +60,37 @@ BayesianSearch: Config is suboptimal. Config: {'num_factors': 180} - results: {'
 BayesianSearch: Config is suboptimal. Config: {'num_factors': 150} - results: {'ROC_AUC': 0.45121200396825045, 'PRECISION': 0.1426899999999985, 'RECALL': 0.1426899999999985, 'RECALL_TEST_LEN': 0.1426899999999985, 'MAP': 0.07552688095238048, 'MRR': 0.3932082142857162, 'NDCG': 0.16414257959276438, 'F1': 0.1426899999999985, 'HIT_RATE': 1.4269, 'ARHR': 0.5401939682539708, 'NOVELTY': 0.005453723603030696, 'DIVERSITY_MEAN_INTER_LIST': 0.9863396359635964, 'DIVERSITY_HERFINDAHL': 0.9986241002, 'COVERAGE_ITEM': 0.0865035134480252, 'COVERAGE_USER': 0.1982317725885105, 'DIVERSITY_GINI': 0.3888875251959686, 'SHANNON_ENTROPY': 9.866333513620418} - time: 2018-11-30 10:54:46.405739
 BayesianSearch: Config is suboptimal. Config: {'num_factors': 160} - results: {'ROC_AUC': 0.4499124047619, 'PRECISION': 0.1435499999999988, 'RECALL': 0.1435499999999988, 'RECALL_TEST_LEN': 0.1435499999999988, 'MAP': 0.07579948412698347, 'MRR': 0.393499206349209, 'NDCG': 0.16463764901682734, 'F1': 0.1435499999999988, 'HIT_RATE': 1.4355, 'ARHR': 0.5407069047619075, 'NOVELTY': 0.00546675984207612, 'DIVERSITY_MEAN_INTER_LIST': 0.9867217621762177, 'DIVERSITY_HERFINDAHL': 0.998662309, 'COVERAGE_ITEM': 0.0888296583474679, 'COVERAGE_USER': 0.1982317725885105, 'DIVERSITY_GINI': 0.38980201744820064, 'SHANNON_ENTROPY': 9.90808780500059} - time: 2018-11-30 10:55:12.583761
 BayesianSearch: Best config is: Config {'num_factors': 155}, MAP value is 0.0762
+BayesianSearch: New best config found. Config: {'num_factors': 210, 'n_iter': 27} - MAP results: 0.07358359523809459 - time: 2018-12-01 10:43:51.199182
+BayesianSearch: New best config found. Config: {'num_factors': 105, 'n_iter': 24} - MAP results: 0.07409650793650727 - time: 2018-12-01 10:44:08.895256
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 375, 'n_iter': 46} - MAP results: 0.07104124206349176 - time: 2018-12-01 10:45:20.874229
+BayesianSearch: New best config found. Config: {'num_factors': 170, 'n_iter': 46} - MAP results: 0.0746185674603168 - time: 2018-12-01 10:45:58.705655
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 250, 'n_iter': 22} - MAP results: 0.07320090873015839 - time: 2018-12-01 10:46:28.328760
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 190, 'n_iter': 30} - MAP results: 0.07441117460317447 - time: 2018-12-01 10:46:57.681352
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 85, 'n_iter': 14} - MAP results: 0.07241732936507891 - time: 2018-12-01 10:47:09.413837
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 5, 'n_iter': 23} - MAP results: 0.02403292063492068 - time: 2018-12-01 10:47:16.182928
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 40, 'n_iter': 15} - MAP results: 0.06197688492063473 - time: 2018-12-01 10:47:24.848103
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 265, 'n_iter': 11} - MAP results: 0.07393727380952317 - time: 2018-12-01 10:47:47.821490
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 325, 'n_iter': 35} - MAP results: 0.0721912499999997 - time: 2018-12-01 10:48:39.860797
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 40, 'n_iter': 29} - MAP results: 0.06201424603174575 - time: 2018-12-01 10:48:51.184558
+BayesianSearch: New best config found. Config: {'num_factors': 220, 'n_iter': 7} - MAP results: 0.07521995634920586 - time: 2018-12-01 10:49:07.755486
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 390, 'n_iter': 43} - MAP results: 0.07065507539682502 - time: 2018-12-01 10:50:25.595243
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 355, 'n_iter': 48} - MAP results: 0.07130407142857084 - time: 2018-12-01 10:52:24.266133
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 50, 'n_iter': 39} - MAP results: 0.06568149206349198 - time: 2018-12-01 10:52:38.358494
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 300, 'n_iter': 31} - MAP results: 0.07292543253968209 - time: 2018-12-01 10:53:20.960832
+BayesianSearch: New best config found. Config: {'num_factors': 115, 'n_iter': 5} - MAP results: 0.07584510317460284 - time: 2018-12-01 10:53:30.719336
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 15, 'n_iter': 13} - MAP results: 0.042560079365079766 - time: 2018-12-01 10:53:37.349017
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 250, 'n_iter': 13} - MAP results: 0.07373398412698355 - time: 2018-12-01 10:53:56.204409
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 310, 'n_iter': 13} - MAP results: 0.0732828333333329 - time: 2018-12-01 10:54:33.864421
+BayesianSearch: New best config found. Config: {'num_factors': 175, 'n_iter': 4} - MAP results: 0.0768060793650784 - time: 2018-12-01 10:54:44.408441
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 345, 'n_iter': 34} - MAP results: 0.07164498412698371 - time: 2018-12-01 10:55:39.352922
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 320, 'n_iter': 24} - MAP results: 0.07249016666666627 - time: 2018-12-01 10:56:20.026836
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 195, 'n_iter': 12} - MAP results: 0.0746658055555552 - time: 2018-12-01 10:56:38.300667
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 395, 'n_iter': 0} - MAP results: 0.043758388888889214 - time: 2018-12-01 10:56:53.034745
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 110, 'n_iter': 40} - MAP results: 0.0741759563492056 - time: 2018-12-01 10:57:24.701095
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 70, 'n_iter': 0} - MAP results: 0.022768107142857177 - time: 2018-12-01 10:57:36.912140
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 250, 'n_iter': 49} - MAP results: 0.07305412301587251 - time: 2018-12-01 10:58:41.026711
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 85, 'n_iter': 49} - MAP results: 0.07218498015872982 - time: 2018-12-01 10:59:06.193223
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 395, 'n_iter': 19} - MAP results: 0.07110669047619 - time: 2018-12-01 10:59:47.355169
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 225, 'n_iter': 39} - MAP results: 0.07337638095238072 - time: 2018-12-01 11:00:37.776920
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 285, 'n_iter': 0} - MAP results: 0.03967619841269891 - time: 2018-12-01 11:00:53.344591
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 140, 'n_iter': 9} - MAP results: 0.07516171825396767 - time: 2018-12-01 11:01:09.811966

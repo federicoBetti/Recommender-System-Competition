@@ -20,9 +20,9 @@ class UserKNNCBRecommender(SimilarityMatrixRecommender, Recommender):
 
     RECOMMENDER_NAME = "UserKNNCBRecommender"
 
-    def __init__(self, URM_train, UCM_train=None, sparse_weights=True):
+    def __init__(self, UCM_train, URM_train, sparse_weights=True):
         super(UserKNNCBRecommender, self).__init__()
-        print("QUI!!")
+
         # Not sure if CSR here is faster
         self.URM_train = check_matrix(URM_train, 'csr')
         self.UCM_train = check_matrix(UCM_train, 'csr')
@@ -56,11 +56,8 @@ class UserKNNCBRecommender(SimilarityMatrixRecommender, Recommender):
         print("SIMILARITY COMPUTED")
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
-            print("SPARSE")
-
             with open(os.path.join("IntermediateComputations", "UCMCBFSimMatrix.pkl"), 'wb') as handle:
                 pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
         else:
-            print("NON SPARSE")
             self.W = similarity.compute_similarity()
             self.W = self.W.toarray()

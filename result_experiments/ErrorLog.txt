@@ -17,3 +17,5 @@ On recommender <class 'KNN.HybridRecommender.HybridRecommender'> Exception run_H
 On recommender <class 'KNN.HybridRecommender.HybridRecommender'> Exception run_HybridRecommender_on_similarity_type() missing 7 required positional arguments: 'similarity_type', 'parameterSearch', 'URM_train', 'ICM', 'n_cases', 'output_root_path', and 'metric_to_optimize'
 On recommender <class 'SLIM_BPR.Cython.SLIM_BPR_Cython.SLIM_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
 On recommender <class 'MatrixFactorization.PureSVD.PureSVDRecommender'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_AsySVD_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'KNN.UserKNNCBFRecommender.UserKNNCBRecommender'> Exception unhashable type: 'list'

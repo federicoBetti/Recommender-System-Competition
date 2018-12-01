@@ -12,6 +12,7 @@ from Base.NonPersonalizedRecommender import TopPop, Random
 from Dataset.RS_Data_Loader import RS_Data_Loader
 from KNN.HybridRecommender import HybridRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
+from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
 from KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from ParameterTuning.RandomSearch import RandomSearch
@@ -36,12 +37,12 @@ import numpy as np
 
 
 def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, URM_train, n_cases, output_root_path,
-                                            metric_to_optimize):
+                                            metric_to_optimize, UCM_train=None):
     # pay attention that it doesn't finish (it should after n_cases, but now it doens't work)
     # it saves best results in the txt file
     hyperparamethers_range_dictionary = {}
-    hyperparamethers_range_dictionary["topK"] = [5, 10, 20, 50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
-    hyperparamethers_range_dictionary["shrink"] = [0, 5, 10, 50, 100, 200, 300, 500, 1000]
+    hyperparamethers_range_dictionary["topK"] = list(range(10, 800, 10))
+    hyperparamethers_range_dictionary["shrink"] = list(range(10, 1200, 10))
     hyperparamethers_range_dictionary["similarity"] = [similarity_type]
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
@@ -54,7 +55,12 @@ def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, UR
         hyperparamethers_range_dictionary["tversky_beta"] = range(0, 2)
         hyperparamethers_range_dictionary["normalize"] = [True]
 
-    recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
+    if UCM_train is None:
+        first_dict = [URM_train]
+    else:
+        first_dict = [UCM_train, URM_train]
+
+    recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: first_dict,
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: dict(),  # questi sono quelli fissi
@@ -354,6 +360,57 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
             return
 
+            ##########################################################################################################
+            ##########################################################################################################
+
+        if recommender_class is ItemKNNCBFRecommender:
+
+            similarity_type_list = ['cosine']#, 'jaccard', "asymmetric", "dice", "tversky"]
+
+            run_KNNCFRecommender_on_similarity_type_partial = partial(run_KNNCFRecommender_on_similarity_type,
+                                                                      parameterSearch=parameterSearch,
+                                                                      URM_train=URM_train,
+                                                                      n_cases=30,
+                                                                      output_root_path=output_root_path_rec_name,
+                                                                      metric_to_optimize=metric_to_optimize,
+                                                                      UCM_train=ICM)
+
+            if parallelizeKNN:
+                pool = PoolWithSubprocess(processes=int(4), maxtasksperchild=1)
+                resultList = pool.map(run_KNNCFRecommender_on_similarity_type_partial, similarity_type_list)
+
+            else:
+
+                for similarity_type in similarity_type_list:
+                    run_KNNCFRecommender_on_similarity_type_partial(similarity_type)
+
+            return
+
+                ##########################################################################################################
+
+        if recommender_class is UserKNNCBRecommender:
+
+            similarity_type_list = ['cosine', 'jaccard', "asymmetric", "dice", "tversky"]
+
+            run_KNNCFRecommender_on_similarity_type_partial = partial(run_KNNCFRecommender_on_similarity_type,
+                                                                      parameterSearch=parameterSearch,
+                                                                      URM_train=URM_train,
+                                                                      n_cases=1,  # = n_cases
+                                                                      output_root_path=output_root_path_rec_name,
+                                                                      metric_to_optimize=metric_to_optimize,
+                                                                      UCM_train=ged.get_tfidf(ged.get_UCM_matrix()))
+
+            if parallelizeKNN:
+                pool = PoolWithSubprocess(processes=int(4), maxtasksperchild=1)
+                resultList = pool.map(run_KNNCFRecommender_on_similarity_type_partial, similarity_type_list)
+
+            else:
+
+                for similarity_type in similarity_type_list:
+                    run_KNNCFRecommender_on_similarity_type_partial(similarity_type)
+
+            return
+
         ##########################################################################################################
 
         if recommender_class is HybridRecommender:
@@ -609,13 +666,15 @@ def read_data_split_and_search():
     collaborative_algorithm_list = [
         # Random,
         # TopPop,
+        ItemKNNCBFRecommender,
+        # UserKNNCBRecommender,
         # P3alphaRecommender,
         # RP3betaRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        MatrixFactorization_AsySVD_Cython,
+        # MatrixFactorization_AsySVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,

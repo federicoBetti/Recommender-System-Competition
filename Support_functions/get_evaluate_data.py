@@ -59,7 +59,7 @@ def get_UCM_matrix():
         with open(os.path.join("Dataset", "UserCBF.pkl"), 'rb') as handle:
             to_ret = pickle.load(handle)
             return to_ret
-    except:
+    except FileNotFoundError:
         all_train, _, _, tracks, _, _, _, _ = get_data()
         tracks_for_playlist = all_train.merge(tracks, on="track_id").loc[:, 'playlist_id':'artist_id'].sort_values(
             by="playlist_id")
@@ -68,7 +68,7 @@ def get_UCM_matrix():
         UCM_artists = np.ndarray(shape=(playlists_arr.shape[0], artists_arr.shape[0]))
 
         def create_feature_artists(entry):
-            UCM_artists[entry.playlist_id][entry.artist_id] = 1
+            UCM_artists[entry.playlist_id][entry.artist_id] += 1
 
         tracks_for_playlist.apply(create_feature_artists, axis=1)
         with open(os.path.join("Dataset", "UserCBF.pkl"), 'wb') as handle:

@@ -61,7 +61,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             elif recommender in [PureSVDRecommender]:
                 self.recommender_list.append(recommender(URM_train))
             elif recommender in [UserKNNCBRecommender]:
-                self.recommender_list.append(recommender(URM_train, UCM_train=self.UCM_train))
+                self.recommender_list.append(recommender(self.UCM_train, URM_train))
             else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
                 self.recommender_list.append(recommender(URM_train))
 

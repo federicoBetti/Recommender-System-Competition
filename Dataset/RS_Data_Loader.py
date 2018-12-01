@@ -120,6 +120,7 @@ class RS_Data_Loader(object):
                     self.URM_test = create_URM_matrix(new_test)
                     self.URM_validation = create_URM_matrix(new_test)
 
+                    new_test.to_csv(os.path.join("IntermediateComputations", "new_train.csv"))
                     scipy.sparse.save_npz(os.path.join("IntermediateComputations", "URM_train.npz"), self.URM_train)
                     scipy.sparse.save_npz(os.path.join("IntermediateComputations", "URM_test.npz"), self.URM_test)
 

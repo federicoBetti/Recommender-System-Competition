@@ -53,7 +53,6 @@ class UserKNNCBRecommender(SimilarityMatrixRecommender, Recommender):
         similarity = Compute_Similarity(self.UCM_train.T, shrink=shrink, topK=topK, normalize=normalize,
                                         similarity=similarity, **similarity_args)
 
-        print("SIMILARITY COMPUTED")
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
             with open(os.path.join("IntermediateComputations", "UCMCBFSimMatrix.pkl"), 'wb') as handle:

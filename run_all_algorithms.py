@@ -42,6 +42,7 @@ if __name__ == '__main__':
     URM_test = dataReader.get_URM_test()
     ICM = dataReader.get_ICM()
     UCM_tfidf = dataReader.get_tfidf_artists()
+    _ = dataReader.get_tfidf_album()
 
     recommender_list = [
         # Random,

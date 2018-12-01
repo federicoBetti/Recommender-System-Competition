@@ -100,6 +100,7 @@ class RS_Data_Loader(object):
 
         if all_train:
             self.UCB_tfidf_artists = self.get_UCM_matrix_artists(train_path=os.path.join("Dataset", "train.csv"))
+            self.UCB_tfidf_album = self.get_UCM_matrix_album(train_path=os.path.join("Dataset", "train.csv"))
             self.URM_train = create_URM_matrix(train)
             self.URM_test = get_fake_test()
             self.URM_validation = get_fake_test()
@@ -107,7 +108,8 @@ class RS_Data_Loader(object):
             if top10k:
                 try:
                     self.UCB_tfidf_artists = self.get_UCM_matrix_artists(train_path=os.path.join("Dataset",
-                                                                                    "new_train.csv"))
+                                                                                                 "new_train.csv"))
+                    self.UCB_tfidf_album = self.get_UCM_matrix_album(train_path=os.path.join("Dataset", "new_train.csv"))
                     self.URM_train = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_train.npz"))
                     self.URM_test = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_test.npz"))
                     self.URM_validation = scipy.sparse.load_npz(
@@ -134,7 +136,7 @@ class RS_Data_Loader(object):
                     scipy.sparse.save_npz(os.path.join("IntermediateComputations", "URM_train.npz"), self.URM_train)
                     scipy.sparse.save_npz(os.path.join("IntermediateComputations", "URM_test.npz"), self.URM_test)
                     self.UCB_tfidf_artists = self.get_UCM_matrix_artists(train_path=os.path.join("Dataset",
-                                                "new_train.csv"))
+                                                                                                 "new_train.csv"))
                     # here we use the same train and test
 
             else:
@@ -178,6 +180,9 @@ class RS_Data_Loader(object):
     def get_tfidf_artists(self):
         return self.UCB_tfidf_artists
 
+    def get_tfidf_album(self):
+        return self.UCB_tfidf_album
+
     def get_ICM(self):
         if self.ICM is None:
             self.ICM = get_icm_matrix(self.tracks)
@@ -205,7 +210,7 @@ class RS_Data_Loader(object):
                 by="playlist_id")
             playlists_arr = tracks_for_playlist.playlist_id.unique()
             artists_arr = self.tracks.artist_id.unique()
-            UCM_artists = np.ndarray(shape=(50446, artists_arr.shape[0]))
+            UCM_artists = np.zeros(shape=(50446, artists_arr.shape[0]))
 
             def create_feature_artists(entry):
                 if entry.playlist_id in playlists_arr:
@@ -222,6 +227,40 @@ class RS_Data_Loader(object):
                 with open(os.path.join("Dataset", "UserCBF_artists.pkl"), 'wb') as handle:
                     pickle.dump(UCM_tfidf, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+            return UCM_tfidf
+
+    def get_UCM_matrix_album(self, train_path=None):
+        try:
+            if self.all_train:
+                with open(os.path.join("Dataset", "UserCBF_album_all.pkl"), 'rb') as handle:
+                    to_ret = pickle.load(handle)
+                    return to_ret
+            else:
+                with open(os.path.join("Dataset", "UserCBF_album.pkl"), 'rb') as handle:
+                    to_ret = pickle.load(handle)
+                    return to_ret
+
+        except FileNotFoundError:
+            train = pd.read_csv(train_path)
+            tracks_for_playlist = train.merge(self.tracks, on="track_id").loc[:, 'playlist_id':'album_id'].sort_values(
+                by="playlist_id")
+            playlists_arr = tracks_for_playlist.playlist_id.unique()
+            album_arr = self.tracks.album_id.unique()
+            UCM_albums = np.zeros(shape=(50446, album_arr.shape[0]))
+
+            def create_feature_album(entry):
+                UCM_albums[entry.playlist_id][entry.album_id] += 1
+
+            tracks_for_playlist.apply(create_feature_album, axis=1)
+
+            UCM_tfidf = self._get_tfidf(UCM_albums)
+
+            if self.all_train:
+                with open(os.path.join("Dataset", "UserCBF_album_all.pkl"), 'wb') as handle:
+                    pickle.dump(UCM_tfidf, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            else:
+                with open(os.path.join("Dataset", "UserCBF_album.pkl"), 'wb') as handle:
+                    pickle.dump(UCM_tfidf, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
             return UCM_tfidf
 

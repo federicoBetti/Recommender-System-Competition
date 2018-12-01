@@ -188,8 +188,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
 
     ##########################################################################################################
 
-    this_output_root_path = output_root_path + "Hybrid_popol_2:" + "{}".format(
-        [x.RECOMMENDER_NAME for x in recommender_list])
+    this_output_root_path = output_root_path + "Hybrid_8algo_together:" + "{}".format(
+        "_".join([x.RECOMMENDER_NAME for x in recommender_list]))
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
     parameterSearch = BayesianSearch(recommender_class, evaluator_validation)
@@ -248,7 +248,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     ]
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
-                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": True, "UCM_train": UCM_train},
+                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": False, "UCM_train": UCM_train},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 150, 100, 150, 56, 146, 50, -1],
                                                                "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
@@ -280,7 +280,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                      evaluator_validation=None, evaluator_test=None,
                                      evaluator_validation_earlystopping=None,
                                      output_root_path="result_experiments/", parallelizeKNN=True, n_cases=30,
-                                     URM_validation=None):
+                                     URM_validation=None, UCM_train=None):
     from ParameterTuning.AbstractClassSearch import DictionaryKeys
 
     # If directory does not exist, create
@@ -405,7 +405,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                                                       n_cases=n_cases,
                                                                       output_root_path=output_root_path_rec_name,
                                                                       metric_to_optimize=metric_to_optimize,
-                                                                      UCM_train=ICM)
+                                                                      UCM_train=UCM_train)
 
             if parallelizeKNN:
                 pool = PoolWithSubprocess(processes=int(4), maxtasksperchild=1)
@@ -689,11 +689,6 @@ def read_data_split_and_search():
         HybridRecommender
     ]
 
-    if UserKNNCBRecommender in collaborative_algorithm_list:
-        ICM = dataReader.get_tfidf_artists()
-        ICM = dataReader.get_tfidf_album()
-    elif ItemKNNCBFRecommender in collaborative_algorithm_list:
-        ICM = dataReader.get_ICM()
 
     from ParameterTuning.AbstractClassSearch import EvaluatorWrapper
     from Base.Evaluation.Evaluator import SequentialEvaluator
@@ -770,7 +765,7 @@ def read_data_split_and_search():
                                                                        # us is the same
                                                                        output_root_path=output_root_path,
                                                                        n_cases=30,
-                                                                       URM_validation=URM_validation)
+                                                                       URM_validation=URM_validation, UCM_train=UCM_train)
                     runParameterSearch_Collaborative_partial(recommender_class)
 
             except Exception as e:

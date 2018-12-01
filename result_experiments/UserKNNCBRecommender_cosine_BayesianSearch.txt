@@ -1,0 +1,10 @@
+BayesianSearch: New best config found. Config: {'topK': 250, 'shrink': 750, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.14952204365079416 - time: 2018-12-01 11:28:54.904072
+BayesianSearch: Config is suboptimal. Config: {'topK': 320, 'shrink': 820, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.14575658333333372 - time: 2018-12-01 11:30:12.186333
+BayesianSearch: Config is suboptimal. Config: {'topK': 290, 'shrink': 550, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.1469241111111112 - time: 2018-12-01 11:32:01.806763
+BayesianSearch: Config is suboptimal. Config: {'topK': 370, 'shrink': 660, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.1430482261904758 - time: 2018-12-01 11:32:55.445542
+BayesianSearch: Config is suboptimal. Config: {'topK': 330, 'shrink': 580, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.14508536507936495 - time: 2018-12-01 11:34:33.036847
+BayesianSearch: Config is suboptimal. Config: {'topK': 750, 'shrink': 1010, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.12877849206349112 - time: 2018-12-01 11:35:45.231503
+BayesianSearch: Config is suboptimal. Config: {'topK': 630, 'shrink': 60, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.13239220634920562 - time: 2018-12-01 11:36:49.403808
+BayesianSearch: Config is suboptimal. Config: {'topK': 470, 'shrink': 90, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.13905753968253948 - time: 2018-12-01 11:37:49.387119
+BayesianSearch: Config is suboptimal. Config: {'topK': 10, 'shrink': 1190, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.09038228174603076 - time: 2018-12-01 11:38:54.999583
+BayesianSearch: Best config is: Config {'topK': 250, 'shrink': 750, 'similarity': 'cosine', 'normalize': False}, MAP value is 0.1495

@@ -16,6 +16,9 @@ import scipy.sparse as sps
 from scipy import sparse
 from scipy.sparse import csr_matrix
 import pickle
+
+from sklearn.feature_extraction.text import TfidfTransformer
+
 from Support_functions import get_evaluate_data as ged
 
 
@@ -90,18 +93,21 @@ class RS_Data_Loader(object):
 
         print("RS_Data_Loader: loading data...")
 
+        self.all_train = all_train
         train = pd.read_csv(os.path.join("Dataset", "train.csv"))
+        self.tracks = pd.read_csv(os.path.join("Dataset", "tracks.csv"))
+        self.target_playlist = pd.read_csv(os.path.join("Dataset", "target_playlists.csv"))
 
         if all_train:
-            self.UCB_train = ged.get_UCM_matrix_artists(train)
+            self.UCB_tfidf_artists = self.get_UCM_matrix_artists(train_path=os.path.join("Dataset", "train.csv"))
             self.URM_train = create_URM_matrix(train)
             self.URM_test = get_fake_test()
             self.URM_validation = get_fake_test()
         else:
             if top10k:
                 try:
-                    # TO COMPLETE
-                    self.UCB_train = ged.get_UCM_matrix_artists()
+                    self.UCB_tfidf_artists = self.get_UCM_matrix_artists(train_path=os.path.join("Dataset",
+                                                                                    "new_train.csv"))
                     self.URM_train = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_train.npz"))
                     self.URM_test = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_test.npz"))
                     self.URM_validation = scipy.sparse.load_npz(
@@ -124,10 +130,11 @@ class RS_Data_Loader(object):
                     self.URM_test = create_URM_matrix(new_test)
                     self.URM_validation = create_URM_matrix(new_test)
 
-                    new_test.to_csv(os.path.join("IntermediateComputations", "new_train.csv"))
+                    new_test.to_csv(os.path.join("Dataset", "new_train.csv"))
                     scipy.sparse.save_npz(os.path.join("IntermediateComputations", "URM_train.npz"), self.URM_train)
                     scipy.sparse.save_npz(os.path.join("IntermediateComputations", "URM_test.npz"), self.URM_test)
-
+                    self.UCB_tfidf_artists = self.get_UCM_matrix_artists(train_path=os.path.join("Dataset",
+                                                "new_train.csv"))
                     # here we use the same train and test
 
             else:
@@ -143,8 +150,6 @@ class RS_Data_Loader(object):
         # # to delete in case!
         # all_playlist_to_predict = pd.DataFrame(index=train.playlist_id.unique())
         # s = train.playlist_id.unique()
-        self.tracks = pd.read_csv(os.path.join("Dataset", "tracks.csv"))
-        self.target_playlist = pd.read_csv(os.path.join("Dataset", "target_playlists.csv"))
         # all_train = train.copy()
         # train, test = divide_train_test(train, threshold=0.85)
         # train, validation = divide_train_test(train, threshold=0.85)
@@ -170,8 +175,10 @@ class RS_Data_Loader(object):
     def get_traks(self):
         return self.tracks
 
+    def get_tfidf_artists(self):
+        return self.UCB_tfidf_artists
+
     def get_ICM(self):
-        # todo save ICM in a file, since it is always the same
         if self.ICM is None:
             self.ICM = get_icm_matrix(self.tracks)
         return self.ICM
@@ -180,3 +187,43 @@ class RS_Data_Loader(object):
         row = 50446
         col = 20635
         return csr_matrix(([1] * row, (range(row), [0] * row)), shape=(row, col))
+
+    def get_UCM_matrix_artists(self, train_path=""):
+        try:
+            if self.all_train:
+                with open(os.path.join("Dataset", "UserCBF_artists_all.pkl"), 'rb') as handle:
+                    to_ret = pickle.load(handle)
+                    return to_ret
+            else:
+                with open(os.path.join("Dataset", "UserCBF_artists.pkl"), 'rb') as handle:
+                    to_ret = pickle.load(handle)
+                    return to_ret
+
+        except FileNotFoundError:
+            train = pd.read_csv(train_path)
+            tracks_for_playlist = train.merge(self.tracks, on="track_id").loc[:, 'playlist_id':'artist_id'].sort_values(
+                by="playlist_id")
+            playlists_arr = tracks_for_playlist.playlist_id.unique()
+            artists_arr = self.tracks.artist_id.unique()
+            UCM_artists = np.ndarray(shape=(50446, artists_arr.shape[0]))
+
+            def create_feature_artists(entry):
+                if entry.playlist_id in playlists_arr:
+                    UCM_artists[entry.playlist_id][entry.artist_id] += 1
+
+            tracks_for_playlist.apply(create_feature_artists, axis=1)
+            if self.all_train:
+                with open(os.path.join("Dataset", "UserCBF_artists_all.pkl"), 'wb') as handle:
+                    pickle.dump(UCM_artists, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            else:
+                with open(os.path.join("Dataset", "UserCBF_artists.pkl"), 'wb') as handle:
+                    pickle.dump(UCM_artists, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+            UCM_tfidf = self._get_tfidf(UCM_artists)
+
+            return UCM_tfidf
+
+    def _get_tfidf(self, matrix):
+        transformer = TfidfTransformer(smooth_idf=False)
+        tfidf = transformer.fit_transform(matrix)
+        return csr_matrix(tfidf.toarray())

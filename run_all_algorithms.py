@@ -28,7 +28,7 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     slim_after_hybrid = False
 
     delete_previous_intermediate_computations()
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     URM_validation = dataReader.get_URM_validation()
     URM_test = dataReader.get_URM_test()
     ICM = dataReader.get_ICM()
-    UCM_tfidf = ged.get_tfidf(ged.get_UCM_matrix_artists())
+    UCM_tfidf = dataReader.get_tfidf_artists()
 
     recommender_list = [
         # Random,

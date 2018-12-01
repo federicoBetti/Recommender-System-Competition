@@ -15,6 +15,7 @@ from KNN.HybridRecommenderTopNapproach import HybridRecommenderTopNapproach
 from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from KNN.HybridRecommender import HybridRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
+from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
 import Support_functions.get_evaluate_data as ged
 from GraphBased.RP3betaRecommender import RP3betaRecommender
 from GraphBased.P3alphaRecommender import P3alphaRecommender
@@ -27,7 +28,7 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     slim_after_hybrid = False
 
     # delete_previous_intermediate_computations()
@@ -40,19 +41,21 @@ if __name__ == '__main__':
     URM_validation = dataReader.get_URM_validation()
     URM_test = dataReader.get_URM_test()
     ICM = dataReader.get_ICM()
+    UCM_tfidf = ged.get_tfidf(ged.get_UCM_matrix())
 
     recommender_list = [
         # Random,
         # TopPop,
         # RP3betaRecommender,
-        ItemKNNCBFRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        P3alphaRecommender,
-        RP3betaRecommender,
+        # ItemKNNCBFRecommender,
+        # ItemKNNCFRecommender,
+        # UserKNNCFRecommender,
+        # P3alphaRecommender,
+        # RP3betaRecommender,
+        UserKNNCBRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
+        # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
         # PureSVDRecommender
     ]
@@ -111,26 +114,26 @@ if __name__ == '__main__':
     try:
         recommender_class = HybridRecommender
         print("Algorithm: {}".format(recommender_class))
-
-        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=True, d_weights=d_weights,
+        print(type(UCM_tfidf))
+        recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=False, d_weights=d_weights,
                                         URM_validation=URM_validation)
-        lambda_i = 0.1
-        lambda_j = 0.01
-        old_similrity_matrix = None
-        num_factors = 165
-        recommender.fit(**{"topK": [60, 100, 150, 50, 150, 50],
-                                                               "shrink": [5, 50, 10, -1, -1, -1],
-                                                               "pop": [130, 346],
-                                                               "weights": [1,1,1,1,1,1],
-                                                               # put -1 where useless in order to force you to change when the became useful
-                                                               "force_compute_sim": False,
-                                                               "old_similarity_matrix": old_similrity_matrix,
-                                                               "epochs": 200, "lambda_i": lambda_i,
-                                                               "lambda_j": lambda_j,
-                                                               "num_factors": num_factors,
-                                                               'alphaP3': 0.6048420766420062,
-                                                               'alphaRP3': 1.5890147620983466,
-                                                               'betaRP': 0.28778362462762974})
+        # lambda_i = 0.1
+        # lambda_j = 0.01
+        # old_similrity_matrix = None
+        # num_factors = 165
+        # recommender.fit(**{"topK": [60, 100, 150, 50, 150, 50],
+        #                                                        "shrink": [5, 50, 10, -1, -1, -1],
+        #                                                        "pop": [130, 346],
+        #                                                        "weights": [1,1,1,1,1,1],
+        #                                                        # put -1 where useless in order to force you to change when the became useful
+        #                                                        "force_compute_sim": False,
+        #                                                        "old_similarity_matrix": old_similrity_matrix,
+        #                                                        "epochs": 200, "lambda_i": lambda_i,
+        #                                                        "lambda_j": lambda_j,
+        #                                                        "num_factors": num_factors,
+        #                                                        'alphaP3': 0.6048420766420062,
+        #                                                        'alphaRP3': 1.5890147620983466,
+        #                                                        'betaRP': 0.28778362462762974})
 
         print("Starting Evaluations...")
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,

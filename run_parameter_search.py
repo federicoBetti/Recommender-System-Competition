@@ -188,7 +188,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
 
     ##########################################################################################################
 
-    this_output_root_path = output_root_path + "Hybrid_8algo_together:" + "{}".format(
+    this_output_root_path = output_root_path + "Hybrid_parallel8_final:" + "{}".format(
         "_".join([x.RECOMMENDER_NAME for x in recommender_list]))
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
@@ -214,21 +214,21 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     old_similrity_matrix = None
     num_factors = 165
 
-    recommender_list = [
-        # Random,
-        # TopPop,
-        ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        P3alphaRecommender,
-        RP3betaRecommender,
-        # MatrixFactorization_BPR_Cython,
-        # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender
-        PureSVDRecommender
-    ]
+    # recommender_list = [
+    #     # Random,
+    #     # TopPop,
+    #     ItemKNNCBFRecommender,
+    #     UserKNNCBRecommender,
+    #     ItemKNNCFRecommender,
+    #     UserKNNCFRecommender,
+    #     P3alphaRecommender,
+    #     RP3betaRecommender,
+    #     # MatrixFactorization_BPR_Cython,
+    #     # MatrixFactorization_FunkSVD_Cython,
+    #     SLIM_BPR_Cython,
+    #     # SLIMElasticNetRecommender
+    #     PureSVDRecommender
+    # ]
     # if similarity_type == "asymmetric":
     #     hyperparamethers_range_dictionary["asymmetric_alpha"] = range(0, 2)
     #     hyperparamethers_range_dictionary["normalize"] = [True]
@@ -248,7 +248,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     ]
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
-                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": False, "UCM_train": UCM_train},
+                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": True, "UCM_train": UCM_train},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 150, 100, 150, 56, 146, 50, -1],
                                                                "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
@@ -686,7 +686,7 @@ def read_data_split_and_search():
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
-        # HybridRecommender
+        HybridRecommender
     ]
 
     # if UserKNNCBRecommender in collaborative_algorithm_list:

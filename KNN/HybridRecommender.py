@@ -125,21 +125,18 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     def change_weights(self, level, pop):
         if level < pop[0]:
-            # return [0, 0, 0, 0, 0, 0]
-            return self.weights
-            return [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
-                    0.4112843940329439]
+            #return [0, 0, 0, 0, 0, 0, 0, 0]
+            #return self.weights
+            return [0.9844911002619661, 0.3113236728221124, 0.3158093389868384, 0.0014751314468445242, 0.6585198016958426, 0.8587674552958615, 0.8129623926385413, 0.1348070186778627]
 
         elif pop[0] < level < pop[1]:
-            return [0, 0, 0, 0, 0, 0, 0, 0]
-            return [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
-                    0.6888103295594851]
+            #return [0, 0, 0, 0, 0, 0, 0, 0]
+            return [0.46601913441887954, 0.5949346313874165, 0.025149148493800122, 0.010227684759653966, 0.965682727828649, 0.6734116014307487, 0.9651620832259757, 0.041956627293385895]
 
         else:
-            # return self.weights
-            return [0, 0, 0, 0, 0, 0, 0, 0]
-            return [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
-                    0.5873532658846817]
+            #return self.weights
+            #return [0, 0, 0, 0, 0, 0, 0, 0]
+            return [0.48871102663065424,  0.9990436940488147, 0.018937108359614596, 0.1222775659407358, 0.9347154048622398, 0.04063991540944767, 0.3357399854429757, 0.9885927180644606]
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
@@ -188,7 +185,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                     user_id = user_id_array[user_index]
                     user_profile = self.URM_train.indices[
                                    self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                    level = int(ged.playlist_popularity(user_profile))
+                    level = int(ged.playlist_popularity(user_profile, dict_pop))
                     weights = self.change_weights(level, self.pop)
                     # print(weights)
                     final_score_line = np.zeros(scores[0].shape[1])

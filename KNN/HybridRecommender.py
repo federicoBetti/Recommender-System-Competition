@@ -95,6 +95,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         self.shrink = shrink
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
+            print("FIT")
+
             if recommender.__class__ is SLIM_BPR_Cython:
                 if "lambda_i" in list(similarity_args.keys()):  # lambda i and j provided in args
                     recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
@@ -111,6 +113,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             elif recommender.__class__ in [PureSVDRecommender]:
                 recommender.fit(num_factors=similarity_args["num_factors"], force_compute_sim=force_compute_sim)
 
+
             elif recommender.__class__ in [P3alphaRecommender]:
                 recommender.fit(topK=knn, alpha=similarity_args["alphaP3"], min_rating=0, implicit=True,
                                 normalize_similarity=True, force_compute_sim=force_compute_sim)
@@ -119,7 +122,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 recommender.fit(alpha=similarity_args["alphaRP3"], beta=similarity_args["betaRP"], min_rating=0,
                                 topK=knn, implicit=True, normalize_similarity=True, force_compute_sim=force_compute_sim)
 
-            else:  # ItemCF, UserCF, ItemCBF
+            else:  # ItemCF, UserCF, ItemCBF, UserCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
 
     def change_weights(self, level, pop):

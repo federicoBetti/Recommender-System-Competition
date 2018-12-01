@@ -20,6 +20,7 @@ from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactoriz
 from MatrixFactorization.PureSVD import PureSVDRecommender
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 import Support_functions.get_evaluate_data as ged
+from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
 
 
 class HybridRecommender(SimilarityMatrixRecommender, Recommender):
@@ -27,12 +28,13 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     RECOMMENDER_NAME = "ItemKNNCFRecommender"
 
-    def __init__(self, URM_train, ICM, recommender_list, dynamic=False, d_weights=None, weights=None,
+    def __init__(self, URM_train, ICM, recommender_list, UCM_train=None, dynamic=False, d_weights=None, weights=None,
                  URM_validation=None, sparse_weights=True):
         super(Recommender, self).__init__()
 
         # CSR is faster during evaluation
         self.pop = None
+        self.UCM_train = UCM_train
         self.URM_train = check_matrix(URM_train, 'csr')
         self.URM_validation = URM_validation
         self.dynamic = dynamic
@@ -52,16 +54,21 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             if recommender in [SLIM_BPR_Cython, MatrixFactorization_BPR_Cython, MatrixFactorization_FunkSVD_Cython,
                                MatrixFactorization_AsySVD_Cython]:
                 print("class recognized")
+
                 self.recommender_list.append(recommender(URM_train, URM_validation=URM_validation))
             elif recommender is ItemKNNCBFRecommender:
                 self.recommender_list.append(recommender(ICM, URM_train))
             elif recommender.__class__ in [PureSVDRecommender]:
                 self.recommender_list.append(recommender(URM_train))
+            elif recommender in [UserKNNCBRecommender]:
+                self.recommender_list.append(recommender(URM_train, UCM_train=self.UCM_train))
             else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
                 self.recommender_list.append(recommender(URM_train))
 
-    def fit(self, topK=None, shrink=None, weights=None, pop=None, weights1=None, weights2=None, weights3=None, weights4=None,
-            weights5=None, weights6=None, pop1=None, pop2=None, similarity='cosine', normalize=True, old_similarity_matrix=None, epochs=1,
+    def fit(self, topK=None, shrink=None, weights=None, pop=None, weights1=None, weights2=None, weights3=None,
+            weights4=None,
+            weights5=None, weights6=None, pop1=None, pop2=None, similarity='cosine', normalize=True,
+            old_similarity_matrix=None, epochs=1,
             force_compute_sim=False, **similarity_args):
 
         if self.weights is None:
@@ -75,7 +82,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 pop = [pop1, pop2]
                 pop = [x for x in pop if x is not None]
             self.pop = pop
-
 
         assert self.weights is not None, "Weights Are None!"
 
@@ -116,21 +122,23 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             else:  # ItemCF, UserCF, ItemCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
 
-
     def change_weights(self, level, pop):
         if level < pop[0]:
             # return [0, 0, 0, 0, 0, 0]
             # return self.weights
-            return [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731, 0.4112843940329439]
+            return [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
+                    0.4112843940329439]
 
         elif pop[0] < level < pop[1]:
             # return [0, 0, 0, 0, 0, 0]
-            return [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388, 0.6888103295594851]
+            return [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
+                    0.6888103295594851]
 
         else:
             # return self.weights
             # return [0, 0, 0, 0, 0, 0]
-            return [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613, 0.5873532658846817]
+            return [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
+                    0.5873532658846817]
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
@@ -178,10 +186,10 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 for user_index in range(len(user_id_array)):
                     user_id = user_id_array[user_index]
                     user_profile = self.URM_train.indices[
-                                       self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
+                                   self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
                     level = int(ged.lenght_playlist(user_profile))
-                    weights = self.change_weights_lenght(level, self.pop)
-                    #print(weights)
+                    weights = self.change_weights(level, self.pop)
+                    # print(weights)
                     final_score_line = np.zeros(scores[0].shape[1])
                     for score, weight in zip(scores, weights):
                         final_score_line += (score[user_index] * weight)

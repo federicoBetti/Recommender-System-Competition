@@ -512,3 +512,15 @@ CUTOFF: 10 - ROC_AUC: 0.5059288, PRECISION: 0.1761500, RECALL: 0.1761500, RECALL
 Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results:
 CUTOFF: 10 - ROC_AUC: 0.0000000, PRECISION: 0.0000000, RECALL: 0.0000000, RECALL_TEST_LEN: 0.0000000, MAP: 0.0000000, MRR: 0.0000000, NDCG: 0.0000000, F1: 0.0000000, HIT_RATE: 0.0000000, ARHR: 0.0000000, NOVELTY: 0.0059925, DIVERSITY_MEAN_INTER_LIST: 0.9952356, DIVERSITY_HERFINDAHL: 0.9995136, COVERAGE_ITEM: 0.4157015, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.3201255, SHANNON_ENTROPY: 11.7826529,
 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'NoneType' object has no attribute 'tocsr'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'NoneType' object has no attribute 'tocsr'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'NoneType' object has no attribute 'tocsr'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'NoneType' object has no attribute 'tocsr'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'NoneType' object has no attribute 'tocsr'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'NoneType' object has no attribute 'tocsr'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'NoneType' object has no attribute 'tocsr'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'NoneType' object has no attribute 'tocsr'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: __init__() got an unexpected keyword argument 'URM_validation'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'UserKNNCBRecommender' object has no attribute 'W_sparse'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'UserKNNCBRecommender' object has no attribute 'W_sparse'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'UserKNNCBRecommender' object has no attribute 'W_sparse'

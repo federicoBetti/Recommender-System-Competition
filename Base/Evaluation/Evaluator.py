@@ -334,7 +334,7 @@ class SequentialEvaluator(Evaluator):
                 is_relevant = np.in1d(recommended_items, relevant_items, assume_unique=True)
 
                 user_profile = self.URM_train.indices[self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                key = int(ged.lenght_playlist(user_profile))
+                key = int(ged.playlist_popularity(user_profile))
 
                 # added to_ret here
                 to_ret.append((user_id, recommended_items[:self.max_cutoff]))

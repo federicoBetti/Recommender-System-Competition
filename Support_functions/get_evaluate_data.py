@@ -4,6 +4,8 @@ from scipy.sparse import csr_matrix
 import os, pickle
 from itertools import repeat
 
+from sklearn.feature_extraction.text import TfidfTransformer
+
 
 def divide_train_test(train_old, threshold=0.8):
     msk = np.random.rand(len(train_old)) < threshold
@@ -50,6 +52,35 @@ def playlist_popularity(playlist_songs, pop_dict):
         return 0
 
     return pop / count
+
+
+def get_UCM_matrix():
+    try:
+        with open(os.path.join("Dataset", "UserCBF.pkl"), 'rb') as handle:
+            to_ret = pickle.load(handle)
+            return to_ret
+    except:
+        all_train, _, _, tracks, _, _, _, _ = get_data()
+        tracks_for_playlist = all_train.merge(tracks, on="track_id").loc[:, 'playlist_id':'artist_id'].sort_values(
+            by="playlist_id")
+        playlists_arr = tracks_for_playlist.playlist_id.unique()
+        artists_arr = tracks.artist_id.unique()
+        UCM_artists = np.ndarray(shape=(playlists_arr.shape[0], artists_arr.shape[0]))
+
+        def create_feature_artists(entry):
+            UCM_artists[entry.playlist_id][entry.artist_id] = 1
+
+        tracks_for_playlist.apply(create_feature_artists, axis=1)
+        with open(os.path.join("Dataset", "UserCBF.pkl"), 'wb') as handle:
+            pickle.dump(UCM_artists, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+        return tracks_for_playlist
+
+
+def get_tfidf(matrix):
+    transformer = TfidfTransformer(smooth_idf=False)
+    tfidf = transformer.fit_transform(matrix)
+    return csr_matrix(tfidf.toarray())
 
 
 def lenght_playlist(playlist_songs):

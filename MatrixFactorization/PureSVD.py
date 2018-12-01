@@ -35,7 +35,7 @@ class PureSVDRecommender(Recommender):
         self.compute_item_score = self.compute_score_SVD
         self.U, self.Sigma, self.VT, self.s_Vt = None, None, None, None
 
-    def fit(self, num_factors=100, force_compute_sim=True):
+    def fit(self, num_factors=100, n_iter=5, force_compute_sim=True):
 
         if not force_compute_sim:
             found = True
@@ -57,7 +57,7 @@ class PureSVDRecommender(Recommender):
 
         self.U, self.Sigma, self.VT = randomized_svd(self.URM_train,
                                                      n_components=num_factors,
-                                                     # n_iter=5,
+                                                     n_iter=n_iter,
                                                      random_state=None)
 
         self.s_Vt = sps.diags(self.Sigma) * self.VT
@@ -68,13 +68,14 @@ class PureSVDRecommender(Recommender):
             pickle.dump((self.U, self.s_Vt), handle,
                         protocol=pickle.HIGHEST_PROTOCOL)
 
-            # truncatedSVD = TruncatedSVD(n_components = num_factors)
-            #
-            # truncatedSVD.fit(self.URM_train)
-            #
-            # truncatedSVD
-
-            # U, s, Vt =
+        # It's a wrapper aroung randomized_svd
+        # truncatedSVD = TruncatedSVD(n_components = num_factors)
+        #
+        # truncatedSVD.fit(self.URM_train)
+        #
+        # truncatedSVD
+        #
+        # U, s, Vt =
 
     def compute_score_SVD(self, user_id_array):
 

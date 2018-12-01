@@ -23,7 +23,7 @@ from GraphBased.RP3betaRecommender import RP3betaRecommender
 from Support_functions import get_evaluate_data as ged
 
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython, \
-    MatrixFactorization_FunkSVD_Cython
+    MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
 from MatrixFactorization.PureSVD import PureSVDRecommender
 
 from ParameterTuning.BayesianSearch import BayesianSearch
@@ -228,10 +228,11 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     # if similarity_type in ["cosine", "asymmetric"]:
     #     hyperparamethers_range_dictionary["feature_weighting"] = ["none", "BM25", "TF-IDF"]
 
-    dynamic_best = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731, 0.4112843940329439],
-           [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388, 0.6888103295594851],
-           [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613, 0.5873532658846817]
-    ]
+    dynamic_best = [
+        [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731, 0.4112843940329439],
+        [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388, 0.6888103295594851],
+        [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613, 0.5873532658846817]
+        ]
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": False},
@@ -472,9 +473,32 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         ##########################################################################################################
 
+        if recommender_class is MatrixFactorization_AsySVD_Cython:
+            hyperparamethers_range_dictionary = {}
+            hyperparamethers_range_dictionary["sgd_mode"] = ["adagrad"]#, "adam"]
+            # hyperparamethers_range_dictionary["epochs"] = [1, 5, 10, 20, 30, 50, 70, 90, 110]
+            hyperparamethers_range_dictionary["num_factors"] = list(range(10, 200, 10))
+            # hyperparamethers_range_dictionary["batch_size"] = [1]
+            hyperparamethers_range_dictionary["positive_reg"] = range(0, 1)
+            hyperparamethers_range_dictionary["negative_reg"] = range(0, 1)
+            hyperparamethers_range_dictionary["learning_rate"] = range(0, 1)
+
+            recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
+                                     DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {'positive_threshold': 1},
+                                     DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
+                                     DictionaryKeys.FIT_KEYWORD_ARGS: {"epochs": 40, "validation_every_n": 2000,
+                                                                       "stop_on_validation": False,
+                                                                       "evaluator_object": evaluator_validation_earlystopping,
+                                                                       "lower_validatons_allowed": 20,
+                                                                       "validation_metric": metric_to_optimize},
+                                     DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
+
+        ##########################################################################################################
+
         if recommender_class is PureSVDRecommender:
             hyperparamethers_range_dictionary = {}
-            hyperparamethers_range_dictionary["num_factors"] = list(range(0, 250, 5))
+            hyperparamethers_range_dictionary["num_factors"] = list(range(0, 400, 5))
+            hyperparamethers_range_dictionary["n_iter"] = list(range(0, 50))
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
@@ -586,11 +610,12 @@ def read_data_split_and_search():
         # Random,
         # TopPop,
         # P3alphaRecommender,
-        RP3betaRecommender,
+        # RP3betaRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
+        MatrixFactorization_AsySVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,

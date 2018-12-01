@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     filename = "hybrid_6algorithms_P3_thresholds: 130, 346.csv"
 
-    dataReader = RS_Data_Loader(slim_after_hybrid, top10k=True, all_train=not evaluate_algorithm)
+    dataReader = RS_Data_Loader(top10k=True, all_train=not evaluate_algorithm)
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()

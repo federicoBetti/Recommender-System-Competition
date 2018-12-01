@@ -62,7 +62,9 @@ def get_icm_matrix(tracks):
         feature_tracks[entry.track_id][album_arr.shape[0] + entry.artist_id] = 0.8
 
     tracks.apply(create_feature, axis=1)
-    return csr_matrix(feature_tracks)
+    to_ret = csr_matrix(feature_tracks)
+    del feature_tracks
+    return to_ret
 
 
 def get_fake_test():
@@ -77,7 +79,6 @@ def divide_train_test(train_old, threshold=0.8):
 
 
 class RS_Data_Loader(object):
-
     def __init__(self, split_train_test_validation_quota=[0.8, 0.0, 0.2], top10k=True, all_train=False):
 
         super(RS_Data_Loader, self).__init__()
@@ -122,7 +123,7 @@ class RS_Data_Loader(object):
                     scipy.sparse.save_npz(os.path.join("IntermediateComputations", "URM_train.npz"), self.URM_train)
                     scipy.sparse.save_npz(os.path.join("IntermediateComputations", "URM_test.npz"), self.URM_test)
 
-                # here we use the same train and test
+                    # here we use the same train and test
 
             else:
                 train, test = divide_train_test(train, threshold=0.85)

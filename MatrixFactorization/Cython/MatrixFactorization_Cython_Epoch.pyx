@@ -553,6 +553,7 @@ cdef class MatrixFactorization_Cython_Epoch:
 
     cdef double adaptive_gradient_user(self, double gradient, long user_id):
 
+        print("Adaptive gradient inizio")
 
         cdef double gradient_update
 
@@ -587,7 +588,7 @@ cdef class MatrixFactorization_Cython_Epoch:
 
             gradient_update = gradient
 
-
+        print("Adaptive gradient fine")
         return gradient_update
 
 

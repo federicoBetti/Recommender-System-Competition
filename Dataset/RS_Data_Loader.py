@@ -212,14 +212,16 @@ class RS_Data_Loader(object):
                     UCM_artists[entry.playlist_id][entry.artist_id] += 1
 
             tracks_for_playlist.apply(create_feature_artists, axis=1)
-            if self.all_train:
-                with open(os.path.join("Dataset", "UserCBF_artists_all.pkl"), 'wb') as handle:
-                    pickle.dump(UCM_artists, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            else:
-                with open(os.path.join("Dataset", "UserCBF_artists.pkl"), 'wb') as handle:
-                    pickle.dump(UCM_artists, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
             UCM_tfidf = self._get_tfidf(UCM_artists)
+
+            if self.all_train:
+                with open(os.path.join("Dataset", "UserCBF_artists_all.pkl"), 'wb') as handle:
+                    pickle.dump(UCM_tfidf, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            else:
+                with open(os.path.join("Dataset", "UserCBF_artists.pkl"), 'wb') as handle:
+                    pickle.dump(UCM_tfidf, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 
             return UCM_tfidf
 

@@ -54,27 +54,51 @@ def playlist_popularity(playlist_songs, pop_dict):
     return pop / count
 
 
-def get_UCM_matrix():
+def get_UCM_matrix_album():
     try:
-        with open(os.path.join("Dataset", "UserCBF.pkl"), 'rb') as handle:
+        with open(os.path.join("Dataset", "UserCBF_albums.pkl"), 'rb') as handle:
             to_ret = pickle.load(handle)
             return to_ret
     except:
-        all_train, _, _, tracks, _, _, _, _ = get_data()
-        tracks_for_playlist = all_train.merge(tracks, on="track_id").loc[:, 'playlist_id':'artist_id'].sort_values(
+        _, train, _, tracks, _, _, _, _ = get_data()
+        tracks_for_playlist = train.merge(tracks, on="track_id").loc[:, 'playlist_id':'album_id'].sort_values(
+            by="playlist_id")
+        playlists_arr = tracks_for_playlist.playlist_id.unique()
+        album_arr = tracks.album_id.unique()
+        UCM_albums = np.ndarray(shape=(playlists_arr.shape[0], album_arr.shape[0]))
+
+        def create_feature_artists(entry):
+            UCM_albums[entry.playlist_id][entry.album_id] = 1
+
+        tracks_for_playlist.apply(create_feature_artists, axis=1)
+        with open(os.path.join("Dataset", "UserCBF_albums.pkl"), 'wb') as handle:
+            pickle.dump(UCM_albums, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+        return UCM_albums
+
+
+def get_UCM_matrix_artists(train):
+    try:
+        with open(os.path.join("Dataset", "UserCBF_artists.pkl"), 'rb') as handle:
+            to_ret = pickle.load(handle)
+            return to_ret
+    except:
+        _, _, _, tracks, _, _, _, _ = get_data()
+        tracks_for_playlist = train.merge(tracks, on="track_id").loc[:, 'playlist_id':'artist_id'].sort_values(
             by="playlist_id")
         playlists_arr = tracks_for_playlist.playlist_id.unique()
         artists_arr = tracks.artist_id.unique()
         UCM_artists = np.ndarray(shape=(playlists_arr.shape[0], artists_arr.shape[0]))
 
         def create_feature_artists(entry):
-            UCM_artists[entry.playlist_id][entry.artist_id] = 1
+            if entry.playlist_id in playlists_arr:
+                UCM_artists[entry.playlist_id][entry.artist_id] += 1
 
         tracks_for_playlist.apply(create_feature_artists, axis=1)
-        with open(os.path.join("Dataset", "UserCBF.pkl"), 'wb') as handle:
+        with open(os.path.join("Dataset", "UserCBF_artists.pkl"), 'wb') as handle:
             pickle.dump(UCM_artists, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-        return tracks_for_playlist
+        return UCM_artists
 
 
 def get_tfidf(matrix):

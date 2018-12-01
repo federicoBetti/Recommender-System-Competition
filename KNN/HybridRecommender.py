@@ -125,21 +125,20 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     def change_weights(self, level, pop):
         if level < pop[0]:
-            # return [0, 0, 0, 0, 0, 0]
-            return self.weights
-            return [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
-                    0.4112843940329439]
+            return [0, 0, 0, 0, 0, 0]
+            # return [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
+            #         0.4112843940329439]
 
         elif pop[0] < level < pop[1]:
-            return [0, 0, 0, 0, 0, 0, 0, 0]
-            return [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
-                    0.6888103295594851]
+            return [0, 0, 0, 0, 0, 0]
+            # return [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
+            #         0.6888103295594851]
 
         else:
-            # return self.weights
-            return [0, 0, 0, 0, 0, 0, 0, 0]
-            return [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
-                    0.5873532658846817]
+            return self.weights
+            # return [0, 0, 0, 0, 0, 0]
+            # return [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
+            #         0.5873532658846817]
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
@@ -188,7 +187,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                     user_id = user_id_array[user_index]
                     user_profile = self.URM_train.indices[
                                    self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                    level = int(ged.playlist_popularity(user_profile))
+                    level = int(ged.playlist_popularity(user_profile, dict_pop))
                     weights = self.change_weights(level, self.pop)
                     # print(weights)
                     final_score_line = np.zeros(scores[0].shape[1])

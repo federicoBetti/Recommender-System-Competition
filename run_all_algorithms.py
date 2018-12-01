@@ -28,12 +28,12 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = True
+    evaluate_algorithm = False
     slim_after_hybrid = False
 
-    #delete_previous_intermediate_computations()
+    delete_previous_intermediate_computations()
 
-    filename = "hybrid_UserContentMatrix"
+    filename = "hybrid_8algo_3pop_parts.csv"
 
     dataReader = RS_Data_Loader(top10k=True, all_train=not evaluate_algorithm)
 
@@ -47,18 +47,17 @@ if __name__ == '__main__':
     recommender_list = [
         # Random,
         # TopPop,
-        # RP3betaRecommender,
-        # ItemKNNCBFRecommender,
-        # ItemKNNCFRecommender,
-        # UserKNNCFRecommender,
-        # P3alphaRecommender,
-        # RP3betaRecommender,
+        ItemKNNCBFRecommender,
+        UserKNNCBRecommender,
+        ItemKNNCFRecommender,
+        UserKNNCFRecommender,
+        P3alphaRecommender,
+        RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        # SLIM_BPR_Cython,
-        UserKNNCBRecommender,
+        SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
-        # PureSVDRecommender
+        PureSVDRecommender
     ]
 
     weights = [
@@ -73,8 +72,11 @@ if __name__ == '__main__':
     shrinks = [10]
 
     # For hybrid with weighted estimated rating
-    d_weights = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,0.4112843940329439, 0.3112843940329439],
-        [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388, 0.6888103295594851, 0.4888103295594851],
+    d_weights = [
+        [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731, 0.4112843940329439,
+         0.3112843940329439],
+        [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388, 0.6888103295594851,
+         0.4888103295594851],
         [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613, 0.5873532658846817]]
 
     pop = [130, 346]
@@ -110,19 +112,24 @@ if __name__ == '__main__':
         recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
                                         d_weights=d_weights,
                                         URM_validation=URM_validation)
-        # lambda_i = 0.1
-        # lambda_j = 0.01
-        # old_similrity_matrix = None
-        # num_factors = 165
-        recommender.fit(**{
-                            "topK": topk,
-                        "weights": weights,
-                           "shrink": shrinks,
-                           "pop": pop,
-                            "force_compute_sim": False,
-                           'alphaP3': 0.6048420766420062,
-                           'alphaRP3': 1.5890147620983466,
-                           'betaRP': 0.28778362462762974},)
+
+        lambda_i = 0.1
+        lambda_j = 0.05
+        old_similrity_matrix = None
+        num_factors = 165
+        recommender.fit(**{"topK": [60, 150, 100, 150, 56, 146, 50, -1],
+                           "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
+                           "pop": [130, 346],
+                           "weights": [1, 1, 1, 1, 1, 1, 1, 1],
+                           # put -1 where useless in order to force you to change when the became useful
+                           "force_compute_sim": False,
+                           "old_similarity_matrix": old_similrity_matrix,
+                           "epochs": 200, "lambda_i": lambda_i,
+                           "lambda_j": lambda_j,
+                           "num_factors": num_factors,
+                           'alphaP3': 1.160296393373262,
+                           'alphaRP3': 0.4156476217553893,
+                           'betaRP': 0.20430089442930188})
 
         print("Starting Evaluations...")
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
@@ -145,4 +152,4 @@ if __name__ == '__main__':
         logFile.write("Algorithm: {} - Exception: {}\n".format(recommender_class, str(e)))
         logFile.flush()
 
-    #delete_previous_intermediate_computations()
+        # delete_previous_intermediate_computations()

@@ -188,8 +188,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
 
     ##########################################################################################################
 
-    this_output_root_path = output_root_path + "Hybrid_popol_2:" + "{}".format(
-        [x.RECOMMENDER_NAME for x in recommender_list])
+    this_output_root_path = output_root_path + "Hybrid_parallel8_final:" + "{}".format(
+        "_".join([x.RECOMMENDER_NAME for x in recommender_list]))
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
     parameterSearch = BayesianSearch(recommender_class, evaluator_validation)
@@ -203,8 +203,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     hyperparamethers_range_dictionary["weights4"] = range(0, 1)  # list(np.linspace(0, 1, 11))
     hyperparamethers_range_dictionary["weights5"] = range(0, 1)  # list(np.linspace(0, 1, 11))
     hyperparamethers_range_dictionary["weights6"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    # hyperparamethers_range_dictionary["weights7"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    # hyperparamethers_range_dictionary["weights8"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    hyperparamethers_range_dictionary["weights7"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    hyperparamethers_range_dictionary["weights8"] = range(0, 1)  # list(np.linspace(0, 1, 11))
     # hyperparamethers_range_dictionary["pop1"] = range(80, 200)  # list(np.linspace(0, 1, 11))
     # hyperparamethers_range_dictionary["pop2"] = range(250, 450)  # list(np.linspace(0, 1, 11))
     hyperparamethers_range_dictionary["normalize"] = [True, False]
@@ -214,21 +214,21 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     old_similrity_matrix = None
     num_factors = 165
 
-    recommender_list = [
-        # Random,
-        # TopPop,
-        ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        P3alphaRecommender,
-        RP3betaRecommender,
-        # MatrixFactorization_BPR_Cython,
-        # MatrixFactorization_FunkSVD_Cython,
-        # SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender
-        # PureSVDRecommender
-    ]
+    # recommender_list = [
+    #     # Random,
+    #     # TopPop,
+    #     ItemKNNCBFRecommender,
+    #     UserKNNCBRecommender,
+    #     ItemKNNCFRecommender,
+    #     UserKNNCFRecommender,
+    #     P3alphaRecommender,
+    #     RP3betaRecommender,
+    #     # MatrixFactorization_BPR_Cython,
+    #     # MatrixFactorization_FunkSVD_Cython,
+    #     SLIM_BPR_Cython,
+    #     # SLIMElasticNetRecommender
+    #     PureSVDRecommender
+    # ]
     # if similarity_type == "asymmetric":
     #     hyperparamethers_range_dictionary["asymmetric_alpha"] = range(0, 2)
     #     hyperparamethers_range_dictionary["normalize"] = [True]
@@ -250,8 +250,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": True, "UCM_train": UCM_train},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 150, 100, 150, 56, 146], # tolti 50 e -1
-                                                               "shrink": [5, 10, 50, 10, -1, -1],
+                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 150, 100, 150, 56, 146, 50, -1],
+                                                               "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
                                                                "pop": [130, 346],
                                                                # "weights": [1,1,1,1,1,1],
                                                                # put -1 where useless in order to force you to change when the became useful
@@ -268,10 +268,10 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     output_root_path_similarity = this_output_root_path
 
     best_parameters = parameterSearch.search(recommenderDictionary,
-                                             n_cases=70,
+                                             n_cases=150,
                                              output_root_path=output_root_path_similarity,
                                              metric=metric_to_optimize,
-                                             init_points=20
+                                             init_points=40
                                              )
     print(best_parameters)
 
@@ -380,7 +380,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                                                       n_cases=30,
                                                                       output_root_path=output_root_path_rec_name,
                                                                       metric_to_optimize=metric_to_optimize,
-                                                                      UCM_train=URM_train)
+                                                                      UCM_train=U)
 
             if parallelizeKNN:
                 pool = PoolWithSubprocess(processes=int(4), maxtasksperchild=1)
@@ -740,9 +740,9 @@ def read_data_split_and_search():
                         RP3betaRecommender,
                         # MatrixFactorization_BPR_Cython,
                         # MatrixFactorization_FunkSVD_Cython,
-                        # SLIM_BPR_Cython,
+                        SLIM_BPR_Cython,
                         # SLIMElasticNetRecommender
-                        # PureSVDRecommender
+                        PureSVDRecommender
                     ]
 
                     if SLIM_BPR_Cython in recommender_list:
@@ -764,7 +764,6 @@ def read_data_split_and_search():
                                                                        ICM=ICM,
                                                                        metric_to_optimize="MAP",
                                                                        evaluator_validation_earlystopping=evaluator_validation_earlystopping,
-                                                                       UCM_train=UCM_train,
                                                                        evaluator_validation=evaluator_validation,
                                                                        # evaluator_test=evaluator_test, # I'm not
                                                                        # passing it because validation and test for

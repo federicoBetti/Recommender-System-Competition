@@ -221,6 +221,7 @@ class RS_Data_Loader(object):
             UCM_tfidf = self._get_tfidf(UCM_artists)
 
             if self.all_train:
+                print("All train artists matrix saved")
                 with open(os.path.join("Dataset", "UserCBF_artists_all.pkl"), 'wb') as handle:
                     pickle.dump(UCM_tfidf, handle, protocol=pickle.HIGHEST_PROTOCOL)
             else:

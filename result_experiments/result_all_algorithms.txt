@@ -524,3 +524,10 @@ Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: __init
 Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'UserKNNCBRecommender' object has no attribute 'W_sparse'
 Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'UserKNNCBRecommender' object has no attribute 'W_sparse'
 Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'UserKNNCBRecommender' object has no attribute 'W_sparse'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'UserKNNCBRecommender' object has no attribute 'W_sparse'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'UserKNNCBRecommender' object has no attribute 'W_sparse'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'UserKNNCBRecommender' object has no attribute 'W_sparse'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: playlist_popularity() missing 1 required positional argument: 'pop_dict'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.6155733, PRECISION: 0.2445500, RECALL: 0.2445500, RECALL_TEST_LEN: 0.2445500, MAP: 0.1525386, MRR: 0.6257115, NDCG: 0.2896389, F1: 0.2445500, HIT_RATE: 2.4455000, ARHR: 0.9728066, NOVELTY: 0.0055575, DIVERSITY_MEAN_INTER_LIST: 0.9876204, DIVERSITY_HERFINDAHL: 0.9987522, COVERAGE_ITEM: 0.2597528, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2344617, SHANNON_ENTROPY: 10.5860446, 
+

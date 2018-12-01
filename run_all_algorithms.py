@@ -121,19 +121,14 @@ if __name__ == '__main__':
         # lambda_j = 0.01
         # old_similrity_matrix = None
         # num_factors = 165
-        # recommender.fit(**{"topK": [60, 100, 150, 50, 150, 50],
-        #                                                        "shrink": [5, 50, 10, -1, -1, -1],
-        #                                                        "pop": [130, 346],
-        #                                                        "weights": [1,1,1,1,1,1],
-        #                                                        # put -1 where useless in order to force you to change when the became useful
-        #                                                        "force_compute_sim": False,
-        #                                                        "old_similarity_matrix": old_similrity_matrix,
-        #                                                        "epochs": 200, "lambda_i": lambda_i,
-        #                                                        "lambda_j": lambda_j,
-        #                                                        "num_factors": num_factors,
-        #                                                        'alphaP3': 0.6048420766420062,
-        #                                                        'alphaRP3': 1.5890147620983466,
-        #                                                        'betaRP': 0.28778362462762974})
+        recommender.fit(**{"topK": topK,
+                           "shrink": shrinks,
+                           #"pop": [130, 346],
+                           "weights": weights,
+                           # put -1 where useless in order to force you to change when the became useful
+                           })
+
+
 
         print("Starting Evaluations...")
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,

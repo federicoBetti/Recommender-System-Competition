@@ -54,7 +54,7 @@ def playlist_popularity(playlist_songs, pop_dict):
     return pop / count
 
 
-def get_UCM_matrix_album():
+def get_UCM_matrix_album(train):
     try:
         with open(os.path.join("Dataset", "UserCBF_albums.pkl"), 'rb') as handle:
             to_ret = pickle.load(handle)

@@ -380,7 +380,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                                                       n_cases=30,
                                                                       output_root_path=output_root_path_rec_name,
                                                                       metric_to_optimize=metric_to_optimize,
-                                                                      UCM_train=ICM)
+                                                                      UCM_train=U)
 
             if parallelizeKNN:
                 pool = PoolWithSubprocess(processes=int(4), maxtasksperchild=1)
@@ -686,9 +686,14 @@ def read_data_split_and_search():
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
-        HybridRecommender
+        # HybridRecommender
     ]
 
+    # if UserKNNCBRecommender in collaborative_algorithm_list:
+    #     ICM = dataReader.get_tfidf_artists()
+    #     ICM = dataReader.get_tfidf_album()
+    # elif ItemKNNCBFRecommender in collaborative_algorithm_list:
+    #     ICM = dataReader.get_ICM()
 
     from ParameterTuning.AbstractClassSearch import EvaluatorWrapper
     from Base.Evaluation.Evaluator import SequentialEvaluator
@@ -765,7 +770,7 @@ def read_data_split_and_search():
                                                                        # us is the same
                                                                        output_root_path=output_root_path,
                                                                        n_cases=30,
-                                                                       URM_validation=URM_validation, UCM_train=UCM_train)
+                                                                       URM_validation=URM_validation)
                     runParameterSearch_Collaborative_partial(recommender_class)
 
             except Exception as e:

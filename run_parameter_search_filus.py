@@ -7,6 +7,7 @@ Created on 22/11/17
 """
 import glob
 
+from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
 from Base.Evaluation.Evaluator import SequentialEvaluator
 from Base.NonPersonalizedRecommender import TopPop, Random
 from Dataset.RS_Data_Loader import RS_Data_Loader
@@ -190,19 +191,21 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     similarity_type_list = ['cosine', 'jaccard', "asymmetric", "dice", "tversky"]
 
     hyperparamethers_range_dictionary = {}
-    '''
-    Those are not parameters to test so the can be passed directly as FIT_KEYWORD_ARGS
-    hyperparamethers_range_dictionary["topK1"] = [60]
-    hyperparamethers_range_dictionary["topK2"] = [200]
-    hyperparamethers_range_dictionary["topK3"] = [200]
-    hyperparamethers_range_dictionary["shrink1"] = [5]
-    hyperparamethers_range_dictionary["shrink2"] = [15]
-    hyperparamethers_range_dictionary["shrink3"] = [5]
-    I left all the params in the hybrid fit function just in case we want to use those again
-    '''
+
+    # Those are not parameters to test so the can be passed directly as FIT_KEYWORD_ARGS
+    hyperparamethers_range_dictionary["topK"] = [50, 100, 200, 300, 400]
+    # hyperparamethers_range_dictionary["topK2"] = [200]
+    # hyperparamethers_range_dictionary["topK3"] = [200]
+    hyperparamethers_range_dictionary["shrink"] = [5, 10, 20, 25, 30, 40]
+    # hyperparamethers_range_dictionary["shrink2"] = [15]
+    # hyperparamethers_range_dictionary["shrink3"] = [5]
+    # I left all the params in the hybrid fit function just in case we want to use those again
     #
-    hyperparamethers_range_dictionary["pop1"] = range(2, 15)
-    hyperparamethers_range_dictionary["pop2"] = range(15, 30)
+    #
+    # hyperparamethers_range_dictionary["pop1"] = range(2, 15)
+    # hyperparamethers_range_dictionary["pop2"] = range(15, 30)
+
+
 
     # hyperparamethers_range_dictionary["weights1"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights2"] = range(0, 1)
@@ -232,17 +235,16 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                  [0.8451197847820727, 0.9253649964257065, 0.3313925225051185, 0.7574371680908533]]
 
     weights = [0, 1, 2, 3]
+    dataReader = RS_Data_Loader(top10k=True, all_train=False)
+    UCM_tfidf = dataReader.get_tfidf_artists()
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
-                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": True,
-                                                                       "d_weights": d_weights},
+                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "UCM_train": UCM_tfidf,"dynamic": False},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 100, 150, 50], "shrink": [5, 50, 10, 0],
-                                                               "weights": weights,
+                             DictionaryKeys.FIT_KEYWORD_ARGS: {
+                                                               "weights": [1],
                                                                # put -1 where useless in order to force you to change when the became useful
                                                                "force_compute_sim": False,
-                                                               "old_similarity_matrix": old_similrity_matrix,
-                                                               "epochs": 40, "lambda_i": lambda_i, "lambda_j": lambda_j,
-                                                               "num_factors": num_factors, "alpha": 0.6048420766420062},
+                                                               },
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
@@ -582,7 +584,7 @@ def read_data_split_and_search():
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
-        HybridRecommender
+        # HybridRecommender
     ]
 
     from ParameterTuning.AbstractClassSearch import EvaluatorWrapper
@@ -622,11 +624,12 @@ def read_data_split_and_search():
                     recommender_list = [
                         # Random,
                         # TopPop,
-                        ItemKNNCBFRecommender,
-                        ItemKNNCFRecommender,
+                        # ItemKNNCBFRecommender,
+                        # ItemKNNCFRecommender,
                         # RP3betaRecommender,
-                        UserKNNCFRecommender,
-                        P3alphaRecommender,
+                        # UserKNNCFRecommender,
+                        # P3alphaRecommender,
+                        # UserKNNCBRecommender,
                         # MatrixFactorization_BPR_Cython,
                         # MatrixFactorization_FunkSVD_Cython,
                         # SLIM_BPR_Cython,

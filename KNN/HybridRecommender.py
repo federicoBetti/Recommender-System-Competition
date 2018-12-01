@@ -188,7 +188,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                     user_id = user_id_array[user_index]
                     user_profile = self.URM_train.indices[
                                    self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                    level = int(ged.lenght_playlist(user_profile))
+                    level = int(ged.playlist_popularity(user_profile))
                     weights = self.change_weights(level, self.pop)
                     # print(weights)
                     final_score_line = np.zeros(scores[0].shape[1])

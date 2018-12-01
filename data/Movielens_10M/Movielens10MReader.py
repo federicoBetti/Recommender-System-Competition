@@ -119,8 +119,8 @@ class Movielens10MReader(object):
 
 
         try:
-            self.URM_train = sps.load_npz(dataSubfolder + "URM_train.npz")
-            self.URM_test = sps.load_npz(dataSubfolder + "URM_test.npz")
+            self.URM_train = sps.load_npz(dataSubfolder + "URM_train_old.npz")
+            self.URM_test = sps.load_npz(dataSubfolder + "URM_test_old.npz")
             self.URM_validation = sps.load_npz(dataSubfolder + "URM_validation.npz")
 
             self.column_token_to_id_mapper = pickle.load(open(dataSubfolder + "column_token_to_id_mapper", "rb"))
@@ -153,8 +153,8 @@ class Movielens10MReader(object):
 
 
             print("Movielens10MReader: saving URM_train and URM_test")
-            sps.save_npz(dataSubfolder + "URM_train.npz", self.URM_train)
-            sps.save_npz(dataSubfolder + "URM_test.npz", self.URM_test)
+            sps.save_npz(dataSubfolder + "URM_train_old.npz", self.URM_train)
+            sps.save_npz(dataSubfolder + "URM_test_old.npz", self.URM_test)
             sps.save_npz(dataSubfolder + "URM_validation.npz", self.URM_validation)
 
 

@@ -31,7 +31,7 @@ if __name__ == '__main__':
     evaluate_algorithm = True
     slim_after_hybrid = False
 
-    delete_previous_intermediate_computations()
+    #delete_previous_intermediate_computations()
 
     filename = "hybrid_UserContentMatrix"
 
@@ -53,10 +53,10 @@ if __name__ == '__main__':
         # UserKNNCFRecommender,
         # P3alphaRecommender,
         # RP3betaRecommender,
-        UserKNNCBRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # SLIM_BPR_Cython,
+        UserKNNCBRecommender,
         # SLIMElasticNetRecommender
         # PureSVDRecommender
     ]
@@ -66,31 +66,22 @@ if __name__ == '__main__':
 
     ]
 
-    topK = [
-        200,
-        # 100,
-        # 150,
-        # 50
-    ]
+    # content topk = 60 e shrink = 5
+    # topK = [100, 150, 50, 150, 150]
+    topk = [200]
 
-    shrinks = [
-        40,
-        # 50,
-        # 10,
-        # 0
-    ]
+    shrinks = [10]
 
     # For hybrid with weighted estimated rating
-    d_weights = [[0.5036233341368713, 0.33188050208014197, 0.011954128257236074, 0.9989615570048721],
-                 [0.11103826438392561, 0.028116683377075735, 0.024329672375916767, 0.6743664705280373],
-                 [0.8451197847820727, 0.9253649964257065, 0.3313925225051185, 0.7574371680908533]]
-
+    d_weights = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,0.4112843940329439, 0.3112843940329439],
+        [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388, 0.6888103295594851, 0.4888103295594851],
+        [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613, 0.5873532658846817]]
 
     pop = [130, 346]
     # BEST RESULT : d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
 
     # Dynamics for Hybrid with Top_N. usefull for testing where each recommender works better
-    #d_weights = [[2, 4, 0], [1, 4, 5], [0, 2, 8]]
+    # d_weights = [[2, 4, 0], [1, 4, 5], [0, 2, 8]]
 
     from Base.Evaluation.Evaluator import SequentialEvaluator
 
@@ -116,20 +107,22 @@ if __name__ == '__main__':
         recommender_class = HybridRecommender
         print("Algorithm: {}".format(recommender_class))
         print(type(UCM_tfidf))
-        recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=False, d_weights=d_weights,
+        recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
+                                        d_weights=d_weights,
                                         URM_validation=URM_validation)
         # lambda_i = 0.1
         # lambda_j = 0.01
         # old_similrity_matrix = None
         # num_factors = 165
-        recommender.fit(**{"topK": topK,
+        recommender.fit(**{
+                            "topK": topk,
+                        "weights": weights,
                            "shrink": shrinks,
-                           #"pop": [130, 346],
-                           "weights": weights,
-                           # put -1 where useless in order to force you to change when the became useful
-                           })
-
-
+                           "pop": pop,
+                            "force_compute_sim": False,
+                           'alphaP3': 0.6048420766420062,
+                           'alphaRP3': 1.5890147620983466,
+                           'betaRP': 0.28778362462762974},)
 
         print("Starting Evaluations...")
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
@@ -152,4 +145,4 @@ if __name__ == '__main__':
         logFile.write("Algorithm: {} - Exception: {}\n".format(recommender_class, str(e)))
         logFile.flush()
 
-    delete_previous_intermediate_computations()
+    #delete_previous_intermediate_computations()

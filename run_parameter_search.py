@@ -280,7 +280,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                      evaluator_validation=None, evaluator_test=None,
                                      evaluator_validation_earlystopping=None,
                                      output_root_path="result_experiments/", parallelizeKNN=True, n_cases=30,
-                                     URM_validation=None):
+                                     URM_validation=None, UCM_train=None):
     from ParameterTuning.AbstractClassSearch import DictionaryKeys
 
     # If directory does not exist, create
@@ -380,7 +380,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                                                       n_cases=30,
                                                                       output_root_path=output_root_path_rec_name,
                                                                       metric_to_optimize=metric_to_optimize,
-                                                                      UCM_train=ICM)
+                                                                      UCM_train=U)
 
             if parallelizeKNN:
                 pool = PoolWithSubprocess(processes=int(4), maxtasksperchild=1)
@@ -405,7 +405,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                                                       n_cases=n_cases,
                                                                       output_root_path=output_root_path_rec_name,
                                                                       metric_to_optimize=metric_to_optimize,
-                                                                      UCM_train=ICM)
+                                                                      UCM_train=UCM_train)
 
             if parallelizeKNN:
                 pool = PoolWithSubprocess(processes=int(4), maxtasksperchild=1)
@@ -675,7 +675,7 @@ def read_data_split_and_search():
         # Random,
         # TopPop,
         # ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
+        UserKNNCBRecommender,
         # P3alphaRecommender,
         # RP3betaRecommender,
         # ItemKNNCFRecommender,
@@ -686,14 +686,14 @@ def read_data_split_and_search():
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
-        HybridRecommender
+        # HybridRecommender
     ]
 
-    if UserKNNCBRecommender in collaborative_algorithm_list:
-        ICM = dataReader.get_tfidf_artists()
-        ICM = dataReader.get_tfidf_album()
-    elif ItemKNNCBFRecommender in collaborative_algorithm_list:
-        ICM = dataReader.get_ICM()
+    # if UserKNNCBRecommender in collaborative_algorithm_list:
+    #     ICM = dataReader.get_tfidf_artists()
+    #     ICM = dataReader.get_tfidf_album()
+    # elif ItemKNNCBFRecommender in collaborative_algorithm_list:
+    #     ICM = dataReader.get_ICM()
 
     from ParameterTuning.AbstractClassSearch import EvaluatorWrapper
     from Base.Evaluation.Evaluator import SequentialEvaluator
@@ -764,6 +764,7 @@ def read_data_split_and_search():
                                                                        ICM=ICM,
                                                                        metric_to_optimize="MAP",
                                                                        evaluator_validation_earlystopping=evaluator_validation_earlystopping,
+                                                                       UCM_train=UCM_train,
                                                                        evaluator_validation=evaluator_validation,
                                                                        # evaluator_test=evaluator_test, # I'm not
                                                                        # passing it because validation and test for

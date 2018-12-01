@@ -1,0 +1,8 @@
+BayesianSearch: Testing config: {'weights1': 0.4664709313985401, 'weights2': 0.4179438589741775, 'weights3': 0.5948799414367416, 'weights4': 0.11105807631636122, 'normalize': False} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'weights1': 0.1200351823256881, 'weights2': 0.8817264062113463, 'weights3': 0.493396395292102, 'weights4': 0.5295441252328363, 'normalize': True} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'weights1': 0.9738487715244345, 'weights2': 0.8258719469315013, 'weights3': 0.6783015794239209, 'weights4': 0.3035183514361399, 'normalize': False} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'weights1': 0.7866045173390874, 'weights2': 0.8295554266324789, 'weights3': 0.8148252951096502, 'weights4': 0.7499499514181056, 'normalize': False} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'weights1': 0.022164333795514968, 'weights2': 0.7551439943692473, 'weights3': 0.575333793384396, 'weights4': 0.3096336062573468, 'normalize': True} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'weights1': 0.37097846828485526, 'weights2': 0.24393207588026877, 'weights3': 0.5400285413982852, 'weights4': 0.2927443466622406, 'normalize': False} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'weights1': 0.020846145164785224, 'weights2': 0.43174281152191885, 'weights3': 0.9351159497207225, 'weights4': 0.16364650844231687, 'normalize': True} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'weights1': 0.6252871828214158, 'weights2': 0.45385726910476654, 'weights3': 0.21354745271632036, 'weights4': 0.7719498476566928, 'normalize': True} - Exception 'alphaP3'

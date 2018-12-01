@@ -1,0 +1,12 @@
+BayesianSearch: New best config found. Config: {'pop1': 139.98414390508466, 'pop2': 367.0104189872947, 'normalize': False} - MAP results: 0.10445184920634897 - time: 2018-11-30 19:36:29.608839
+BayesianSearch: Config is suboptimal. Config: {'pop1': 127.41320385959057, 'pop2': 260.86599366530277, 'normalize': False} - MAP results: 0.10401017063492023 - time: 2018-11-30 19:36:44.244398
+BayesianSearch: Config is suboptimal. Config: {'pop1': 156.16116993995033, 'pop2': 369.4436242294841, 'normalize': True} - MAP results: 0.10437146031746006 - time: 2018-11-30 19:36:58.816277
+BayesianSearch: Config is suboptimal. Config: {'pop1': 166.31523974655778, 'pop2': 327.95406270811225, 'normalize': False} - MAP results: 0.10418805952380944 - time: 2018-11-30 19:37:13.330358
+BayesianSearch: Config is suboptimal. Config: {'pop1': 112.00530037713511, 'pop2': 332.2143648701591, 'normalize': True} - MAP results: 0.1043345119047618 - time: 2018-11-30 19:37:28.896037
+BayesianSearch: Config is suboptimal. Config: {'pop1': 135.36589649471546, 'pop2': 430.3747473074377, 'normalize': True} - MAP results: 0.10417147222222181 - time: 2018-11-30 19:37:43.880116
+BayesianSearch: Config is suboptimal. Config: {'pop1': 170.18261923792895, 'pop2': 294.88234189259464, 'normalize': False} - MAP results: 0.10403059920634883 - time: 2018-11-30 19:37:58.647088
+BayesianSearch: Config is suboptimal. Config: {'pop1': 159.1079736758747, 'pop2': 265.62530926658036, 'normalize': True} - MAP results: 0.10383241269841229 - time: 2018-11-30 19:38:14.767887
+BayesianSearch: New best config found. Config: {'pop1': 132.57291524082413, 'pop2': 365.45459438363986, 'normalize': True} - MAP results: 0.1044741349206347 - time: 2018-11-30 19:38:29.903883
+BayesianSearch: Config is suboptimal. Config: {'pop1': 111.4089744165556, 'pop2': 372.92762969823957, 'normalize': False} - MAP results: 0.10443382936507908 - time: 2018-11-30 19:38:44.589856
+BayesianSearch: Config is suboptimal. Config: {'pop1': 125.51535588983245, 'pop2': 425.50785524034563, 'normalize': False} - MAP results: 0.10419474206349166 - time: 2018-11-30 19:38:59.568237
+BayesianSearch: Config is suboptimal. Config: {'pop1': 197.06495718154252, 'pop2': 334.6012942565902, 'normalize': False} - MAP results: 0.10429711904761867 - time: 2018-11-30 19:39:14.909029

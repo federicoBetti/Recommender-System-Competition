@@ -1,0 +1,1 @@
+BayesianSearch: New best config found. Config: {'weights1': 0.6321184664063297, 'weights2': 0.9064878682960182, 'weights3': 0.21986181775928804, 'weights4': 0.4047718022597919, 'weights5': 0.5824588171484617, 'weights6': 0.28621895254775764, 'normalize': False} - MAP results: 0.10449001190476176 - time: 2018-11-30 19:35:00.329017

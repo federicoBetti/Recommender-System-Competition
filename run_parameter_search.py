@@ -403,7 +403,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         if recommender_class is P3alphaRecommender:
             hyperparamethers_range_dictionary = {}
-            hyperparamethers_range_dictionary["topK"] = [5, 10, 20, 50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
+            hyperparamethers_range_dictionary["topK"] = list(range(1, 800, 5))
             hyperparamethers_range_dictionary["alpha"] = range(0, 2)
             hyperparamethers_range_dictionary["normalize_similarity"] = [True, False]
 
@@ -417,7 +417,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         if recommender_class is RP3betaRecommender:
             hyperparamethers_range_dictionary = {}
-            hyperparamethers_range_dictionary["topK"] = [5, 10, 20, 50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
+            hyperparamethers_range_dictionary["topK"] = list(range(1, 800, 5))
             hyperparamethers_range_dictionary["alpha"] = range(0, 2)
             hyperparamethers_range_dictionary["beta"] = range(0, 2)
             hyperparamethers_range_dictionary["normalize_similarity"] = [True, False]
@@ -523,9 +523,10 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         ## Final step, after the hyperparameter range has been defined for each type of algorithm
         best_parameters = parameterSearch.search(recommenderDictionary,
-                                                 n_cases=n_cases,
+                                                 n_cases=60,
                                                  output_root_path=output_root_path_rec_name,
-                                                 metric=metric_to_optimize)
+                                                 metric=metric_to_optimize,
+                                                 init_points=25)
 
 
 
@@ -585,7 +586,7 @@ def read_data_split_and_search():
         # Random,
         # TopPop,
         # P3alphaRecommender,
-        # RP3betaRecommender,
+        RP3betaRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
@@ -593,7 +594,7 @@ def read_data_split_and_search():
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
-        HybridRecommender
+        # HybridRecommender
     ]
 
     from ParameterTuning.AbstractClassSearch import EvaluatorWrapper

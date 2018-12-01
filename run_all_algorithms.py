@@ -28,12 +28,12 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = True
+    evaluate_algorithm = False
     slim_after_hybrid = False
 
-    # delete_previous_intermediate_computations()
+    delete_previous_intermediate_computations()
 
-    filename = "hybrid_6algorithms_P3_thresholds: 130, 346.csv"
+    filename = "hybrid_UserContentMatrix"
 
     dataReader = RS_Data_Loader(top10k=True, all_train=not evaluate_algorithm)
 
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     URM_validation = dataReader.get_URM_validation()
     URM_test = dataReader.get_URM_test()
     ICM = dataReader.get_ICM()
-    UCM_tfidf = ged.get_tfidf(ged.get_UCM_matrix())
+    UCM_tfidf = ged.get_tfidf(ged.get_UCM_matrix_artists())
 
     recommender_list = [
         # Random,

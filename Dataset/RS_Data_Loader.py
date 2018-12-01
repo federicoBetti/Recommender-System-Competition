@@ -16,6 +16,7 @@ import scipy.sparse as sps
 from scipy import sparse
 from scipy.sparse import csr_matrix
 import pickle
+from Support_functions import get_evaluate_data as ged
 
 
 def split_train_validation_test(URM_all, split_train_test_validation_quota):
@@ -92,12 +93,15 @@ class RS_Data_Loader(object):
         train = pd.read_csv(os.path.join("Dataset", "train.csv"))
 
         if all_train:
+            self.UCB_train = ged.get_UCM_matrix_artists(train)
             self.URM_train = create_URM_matrix(train)
             self.URM_test = get_fake_test()
             self.URM_validation = get_fake_test()
         else:
             if top10k:
                 try:
+                    # TO COMPLETE
+                    self.UCB_train = ged.get_UCM_matrix_artists()
                     self.URM_train = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_train.npz"))
                     self.URM_test = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_test.npz"))
                     self.URM_validation = scipy.sparse.load_npz(

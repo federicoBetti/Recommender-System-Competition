@@ -67,13 +67,14 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     def fit(self, topK=None, shrink=None, weights=None, pop=None, weights1=None, weights2=None, weights3=None,
             weights4=None,
-            weights5=None, weights6=None, pop1=None, pop2=None, similarity='cosine', normalize=True,
+            weights5=None, weights6=None, weights7=None, weights8=None, pop1=None, pop2=None, similarity='cosine',
+            normalize=True,
             old_similarity_matrix=None, epochs=1,
             force_compute_sim=False, **similarity_args):
 
         if self.weights is None:
             if weights is None:
-                weights = [weights1, weights2, weights3, weights4, weights5, weights6]
+                weights = [weights1, weights2, weights3, weights4, weights5, weights6, weights7, weights8]
                 weights = [x for x in weights if x is not None]
             self.weights = weights
 
@@ -95,8 +96,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         self.shrink = shrink
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
-            print("FIT")
-
             if recommender.__class__ is SLIM_BPR_Cython:
                 if "lambda_i" in list(similarity_args.keys()):  # lambda i and j provided in args
                     recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
@@ -113,7 +112,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             elif recommender.__class__ in [PureSVDRecommender]:
                 recommender.fit(num_factors=similarity_args["num_factors"], force_compute_sim=force_compute_sim)
 
-
             elif recommender.__class__ in [P3alphaRecommender]:
                 recommender.fit(topK=knn, alpha=similarity_args["alphaP3"], min_rating=0, implicit=True,
                                 normalize_similarity=True, force_compute_sim=force_compute_sim)
@@ -128,18 +126,18 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
     def change_weights(self, level, pop):
         if level < pop[0]:
             # return [0, 0, 0, 0, 0, 0]
-            # return self.weights
+            return self.weights
             return [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
                     0.4112843940329439]
 
         elif pop[0] < level < pop[1]:
-            # return [0, 0, 0, 0, 0, 0]
+            return [0, 0, 0, 0, 0, 0, 0, 0]
             return [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
                     0.6888103295594851]
 
         else:
             # return self.weights
-            # return [0, 0, 0, 0, 0, 0]
+            return [0, 0, 0, 0, 0, 0, 0, 0]
             return [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
                     0.5873532658846817]
 

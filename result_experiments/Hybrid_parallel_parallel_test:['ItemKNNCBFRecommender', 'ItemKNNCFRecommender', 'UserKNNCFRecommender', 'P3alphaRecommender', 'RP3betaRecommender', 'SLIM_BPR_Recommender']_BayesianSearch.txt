@@ -16,3 +16,15 @@ BayesianSearch: New best config found. Config: {'weights1': 0.6321184664063297, 
             return [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
                     0.5873532658846817
 
+"pop": [130, 346],
+# "weights": [1,1,1,1,1,1],
+# put -1 where useless in order to force you to change when the became useful
+"force_compute_sim": False,
+"old_similarity_matrix": old_similrity_matrix,
+"epochs": 100, "lambda_i": lambda_i,
+"lambda_j": lambda_j,
+"num_factors": num_factors,
+'alphaP3': 0.6048420766420062,
+'alphaRP3': 1.5890147620983466,
+'betaRP': 0.28778362462762974},
+

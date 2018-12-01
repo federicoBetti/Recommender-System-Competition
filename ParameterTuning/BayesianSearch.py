@@ -264,7 +264,7 @@ class BayesianSearch(AbstractClassSearch):
             else:
                 writeLog("BayesianSearch: Config is suboptimal. Config: {} - MAP results: {} - time: {}\n".format(
                     paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()), self.logFile)
-
+            del recommender
             return result_dict[metric]
 
 

@@ -29,7 +29,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
     RECOMMENDER_NAME = "ItemKNNCFRecommender"
 
     def __init__(self, URM_train, ICM, recommender_list, UCM_train=None, dynamic=False, d_weights=None, weights=None,
-                 URM_validation=None, sparse_weights=True):
+                 URM_validation=None, sparse_weights=True, onPop=True, moreHybrids=False):
         super(Recommender, self).__init__()
 
         # CSR is faster during evaluation
@@ -40,6 +40,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         self.dynamic = dynamic
         self.d_weights = d_weights
         self.dataset = None
+        self.onPop = onPop
+        self.moreHybrids = moreHybrids
 
         self.sparse_weights = sparse_weights
 
@@ -62,6 +64,10 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 self.recommender_list.append(recommender(URM_train))
             elif recommender in [UserKNNCBRecommender]:
                 self.recommender_list.append(recommender(self.UCM_train, URM_train))
+            # For sake of simplicity the recommender in this case is initialized and fitted outside
+            elif recommender.__class__ in [HybridRecommender]:
+                self.recommender_list.append(recommender)
+
             else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
                 self.recommender_list.append(recommender(URM_train))
 
@@ -125,18 +131,45 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     def change_weights(self, level, pop):
         if level < pop[0]:
-            #return [0, 0, 0, 0, 0, 0, 0, 0]
-            #return self.weights
-            return [0.9844911002619661, 0.3113236728221124, 0.3158093389868384, 0.0014751314468445242, 0.6585198016958426, 0.8587674552958615, 0.8129623926385413, 0.1348070186778627]
+            # return [0, 0, 0, 0, 0, 0, 0, 0]
+            return self.d_weights[0]
+            # return [0.9844911002619661, 0.3113236728221124, 0.3158093389868384, 0.0014751314468445242, 0.6585198016958426, 0.8587674552958615, 0.8129623926385413, 0.1348070186778627]
 
         elif pop[0] < level < pop[1]:
-            #return [0, 0, 0, 0, 0, 0, 0, 0]
-            return [0.46601913441887954, 0.5949346313874165, 0.025149148493800122, 0.010227684759653966, 0.965682727828649, 0.6734116014307487, 0.9651620832259757, 0.041956627293385895]
-
+            # return [0, 0, 0, 0, 0, 0, 0, 0]
+            # return [0.46601913441887954, 0.5949346313874165, 0.025149148493800122, 0.010227684759653966, 0.965682727828649, 0.6734116014307487, 0.9651620832259757, 0.041956627293385895]
+            return self.d_weights[1]
         else:
-            #return self.weights
-            #return [0, 0, 0, 0, 0, 0, 0, 0]
-            return [0.48871102663065424,  0.9990436940488147, 0.018937108359614596, 0.1222775659407358, 0.9347154048622398, 0.04063991540944767, 0.3357399854429757, 0.9885927180644606]
+            # return self.weights
+            # return [0, 0, 0, 0, 0, 0, 0, 0]
+            return self.d_weights[2]
+            # return [0.48871102663065424,  0.9990436940488147, 0.018937108359614596, 0.1222775659407358, 0.9347154048622398, 0.04063991540944767, 0.3357399854429757, 0.9885927180644606]
+
+    def compute_score_hybrid(self, recommender, user_id_array, dict_pop):
+        scores = []
+        final_score = np.zeros(len(recommender.recommender_list))
+        if recommender.dynamic:
+            for user_index in range(len(user_id_array)):
+                user_id = user_id_array[user_index]
+                user_profile = recommender.URM_train.indices[
+                               recommender.URM_train.indptr[user_id]:recommender.URM_train.indptr[user_id + 1]]
+                level_pop = int(ged.playlist_popularity(user_profile, dict_pop))
+                level_len = int(ged.lenght_playlist(user_profile))
+                if recommender.onPop:
+                    level = level_pop
+                else:
+                    level = level_len
+                weights = recommender.change_weights(level, recommender.pop)
+                # print(weights)
+                dim = 20635
+                final_score_line = np.zeros(dim)
+                for score, weight in zip(scores, weights):
+                    final_score_line += (score[user_index] * weight)
+                final_score[user_index] = final_score_line
+        else:
+            for score, weight in zip(scores, recommender.weights):
+                final_score += (score * weight)
+        return final_score
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
@@ -161,6 +194,9 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             user_profile = self.URM_train[user_id_array]
             # noinspection PyUnresolvedReferences
             for recommender in self.recommender_list:
+                if recommender.__class__ in [HybridRecommender]:
+                    scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop))
+                    continue
                 scores_batch = recommender.compute_item_score(user_id_array)
                 # scores_batch = np.ravel(scores_batch) # because i'm not using batch
 
@@ -180,14 +216,20 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 scores.append(scores_batch)
 
             final_score = np.zeros(scores[0].shape)
+
             if self.dynamic:
                 for user_index in range(len(user_id_array)):
                     user_id = user_id_array[user_index]
                     user_profile = self.URM_train.indices[
                                    self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                    level = int(ged.playlist_popularity(user_profile, dict_pop))
+                    level_pop = int(ged.playlist_popularity(user_profile, dict_pop))
+                    level_len = int(ged.lenght_playlist(user_profile))
+                    if self.onPop:
+                        level = level_pop
+                    else:
+                        level = level_len
                     weights = self.change_weights(level, self.pop)
-                    # print(weights)
+                    print(scores[0].shape[1])
                     final_score_line = np.zeros(scores[0].shape[1])
                     for score, weight in zip(scores, weights):
                         final_score_line += (score[user_index] * weight)

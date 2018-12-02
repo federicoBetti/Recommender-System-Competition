@@ -28,12 +28,12 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     slim_after_hybrid = False
 
     # delete_previous_intermediate_computations()
 
-    filename = "hybrid_8algo_3pop_parts2.csv"
+    filename = "best.csv"
 
     dataReader = RS_Data_Loader(top10k=True, all_train=not evaluate_algorithm)
 
@@ -42,44 +42,47 @@ if __name__ == '__main__':
     URM_test = dataReader.get_URM_test()
     ICM = dataReader.get_ICM()
     UCM_tfidf = dataReader.get_tfidf_artists()
-    _ = dataReader.get_tfidf_album()
+    # _ = dataReader.get_tfidf_album()
 
     recommender_list = [
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
         ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        P3alphaRecommender,
-        RP3betaRecommender,
+        # UserKNNCFRecommender,
+        # P3alphaRecommender,
+        # RP3betaRecommender,
+        # UserKNNCBRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
+        # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
-        PureSVDRecommender
+        # PureSVDRecommender
     ]
 
     weights = [
+        1,
         1,
 
     ]
 
     # content topk = 60 e shrink = 5
-    # topK = [100, 150, 50, 150, 150]
-    topk = [150]
+    topK = [100, 150]
+    # topk = [60, 100, 150, 56, 146, 50]
 
-    shrinks = [10]
+    # shrinks = [5, 50, 10, -1, -1, -1]
+    shrinks = [5, 50]
 
     # For hybrid with weighted estimated rating
     d_weights = [
-        [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731, 0.4112843940329439,
-         0.3112843940329439],
-        [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388, 0.6888103295594851,
-         0.4888103295594851],
-        [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613, 0.5873532658846817]]
+        [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
+         0.4112843940329439],
+        [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
+         0.6888103295594851],
+        [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
+         0.5873532658846817]
+    ]
 
-    pop = [130, 346]
     # BEST RESULT : d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
 
     # Dynamics for Hybrid with Top_N. usefull for testing where each recommender works better
@@ -108,32 +111,82 @@ if __name__ == '__main__':
     try:
         recommender_class = HybridRecommender
         print("Algorithm: {}".format(recommender_class))
-        print(type(UCM_tfidf))
+
+        '''
+        Test run with hybrid of hybrids
+        '''
+        # onPop = True
+        # recommender_1 = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
+        #                                   d_weights=d_weights,
+        #                                   URM_validation=URM_validation, onPop=onPop)
+        #
+        # onPop = False
+        # recommender_2 = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
+        #                                   d_weights=d_weights,
+        #                                   URM_validation=URM_validation, onPop=onPop)
+        #
+        # pop = [130, 346]
+        # recommender_1.fit(**{"topK": topK,
+        #                      "shrink": shrinks,
+        #                      "pop": pop,
+        #                      # "pop": [130, 346],
+        #                      "weights": [1, 1],
+        #                      # put -1 where useless in order to force you to change when the became useful
+        #                      "force_compute_sim": True,
+        #                      'alphaP3': 0.6048420766420062,
+        #                      'alphaRP3': 1.5890147620983466,
+        #                      'betaRP': 0.28778362462762974})
+        #
+        # pop = [15, 30]
+        # recommender_2.fit(**{"topK": topK,
+        #                      "shrink": shrinks,
+        #                      "pop": pop,
+        #                      # "pop": [130, 346],
+        #                      "weights": [1, 1],
+        #                      # put -1 where useless in order to force you to change when the became useful
+        #                      "force_compute_sim": True,
+        #                      'alphaP3': 0.6048420766420062,
+        #                      'alphaRP3': 1.5890147620983466,
+        #                      'betaRP': 0.28778362462762974})
+        #
+        # recommender_list_2 = [recommender_1, recommender_2]
+        # recommender = recommender_class(URM_train, ICM, recommender_list_2, UCM_train=UCM_tfidf, dynamic=False,
+        #                                 d_weights=d_weights, weights=weights,
+        #                                 URM_validation=URM_validation, onPop=onPop, moreHybrids=False)
+
+
+        '''
+        Our optimal run
+        '''
+        onPop = True
+        # On pop it used to choose if have dynamic weights for
         recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
                                         d_weights=d_weights,
-                                        URM_validation=URM_validation)
+                                        URM_validation=URM_validation, onPop=onPop)
 
         lambda_i = 0.1
         lambda_j = 0.05
         old_similrity_matrix = None
         num_factors = 165
-        recommender.fit(**{"topK": [60, 150, 100, 150, 56, 146, 50, -1],
-                           "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
-                           "pop": [136, 323],
-                           "weights": [1, 1, 1, 1, 1, 1, 1, 1],
+        recommender.fit(**{"topK": topK,
+                           "shrink": shrinks,
+                           # "pop": pop,
+                           "pop": [130, 346],
+                           "weights": [1, 1],
                            # put -1 where useless in order to force you to change when the became useful
-                           "force_compute_sim": False,
+                           "force_compute_sim": True,
                            "old_similarity_matrix": old_similrity_matrix,
-                           "epochs": 200, "lambda_i": lambda_i,
-                           "lambda_j": lambda_j,
                            "num_factors": num_factors,
-                           'alphaP3': 1.160296393373262,
-                           'alphaRP3': 0.4156476217553893,
-                           'betaRP': 0.20430089442930188})
+                           'alphaP3':  0.6048420766420062,
+                           'alphaRP3': 1.5890147620983466,
+                           'betaRP': 0.28778362462762974})
 
         print("Starting Evaluations...")
+        # to indicate if plotting for lenght or for pop
+
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
-                                                                                                plot_stats=True)
+                                                                                                plot_stats=True,
+                                                                                                onPop=onPop)
 
         print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
                                                     results_run_string))

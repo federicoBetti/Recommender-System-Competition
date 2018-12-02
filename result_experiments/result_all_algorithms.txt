@@ -573,3 +573,32 @@ CUTOFF: 10 - ROC_AUC: 0.0000000, PRECISION: 0.0000000, RECALL: 0.0000000, RECALL
 Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
 CUTOFF: 10 - ROC_AUC: 0.0000000, PRECISION: 0.0000000, RECALL: 0.0000000, RECALL_TEST_LEN: 0.0000000, MAP: 0.0000000, MRR: 0.0000000, NDCG: 0.0000000, F1: 0.0000000, HIT_RATE: 0.0000000, ARHR: 0.0000000, NOVELTY: 0.0060130, DIVERSITY_MEAN_INTER_LIST: 0.9956514, DIVERSITY_HERFINDAHL: 0.9995552, COVERAGE_ITEM: 0.4029077, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.3401886, SHANNON_ENTROPY: 11.8433420, 
 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.5166721, PRECISION: 0.1838800, RECALL: 0.1838800, RECALL_TEST_LEN: 0.1838800, MAP: 0.1056603, MRR: 0.4794042, NDCG: 0.2127779, F1: 0.1838800, HIT_RATE: 1.8388000, ARHR: 0.7030115, NOVELTY: 0.0055510, DIVERSITY_MEAN_INTER_LIST: 0.9845474, DIVERSITY_HERFINDAHL: 0.9984449, COVERAGE_ITEM: 0.2433729, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2235980, SHANNON_ENTROPY: 10.3747601, 
+
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: TopK not valid. Acceptable values are either False or a positive integer value. Provided value was '-1'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.5079374, PRECISION: 0.1802100, RECALL: 0.1802100, RECALL_TEST_LEN: 0.1802100, MAP: 0.1049553, MRR: 0.4685660, NDCG: 0.2087245, F1: 0.1802100, HIT_RATE: 1.8021000, ARHR: 0.6898781, NOVELTY: 0.0056220, DIVERSITY_MEAN_INTER_LIST: 0.9876337, DIVERSITY_HERFINDAHL: 0.9987535, COVERAGE_ITEM: 0.2746789, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2346022, SHANNON_ENTROPY: 10.6402172, 
+
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.5079374, PRECISION: 0.1802100, RECALL: 0.1802100, RECALL_TEST_LEN: 0.1802100, MAP: 0.1049553, MRR: 0.4685660, NDCG: 0.2087245, F1: 0.1802100, HIT_RATE: 1.8021000, ARHR: 0.6898781, NOVELTY: 0.0056220, DIVERSITY_MEAN_INTER_LIST: 0.9876337, DIVERSITY_HERFINDAHL: 0.9987535, COVERAGE_ITEM: 0.2746789, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2346022, SHANNON_ENTROPY: 10.6402172, 
+
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: unsupported operand type(s) for *: 'csr_matrix' and 'NoneType'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: unsupported operand type(s) for *: 'csr_matrix' and 'NoneType'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.5079374, PRECISION: 0.1802100, RECALL: 0.1802100, RECALL_TEST_LEN: 0.1802100, MAP: 0.1049553, MRR: 0.4685660, NDCG: 0.2087245, F1: 0.1802100, HIT_RATE: 1.8021000, ARHR: 0.6898781, NOVELTY: 0.0056220, DIVERSITY_MEAN_INTER_LIST: 0.9876337, DIVERSITY_HERFINDAHL: 0.9987535, COVERAGE_ITEM: 0.2746789, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2346022, SHANNON_ENTROPY: 10.6402172, 
+
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.0000222, PRECISION: 0.0001000, RECALL: 0.0001000, RECALL_TEST_LEN: 0.0001000, MAP: 0.0000125, MRR: 0.0000125, NDCG: 0.0000315, F1: 0.0001000, HIT_RATE: 0.0001000, ARHR: 0.0000125, NOVELTY: 0.0059289, DIVERSITY_MEAN_INTER_LIST: 0.9935152, DIVERSITY_HERFINDAHL: 0.9993416, COVERAGE_ITEM: 0.4236007, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2835539, SHANNON_ENTROPY: 11.5495010, 
+
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'HybridRecommender' object is not callable
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Recommender: compute_item_score not assigned for current recommender, unable to compute prediction scores
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: list index out of range
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Weights and recommender list have different lenghts
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'NoneType' object is not subscriptable
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: list index out of range
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: setting an array element with a sequence.
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3918068, PRECISION: 0.1191300, RECALL: 0.1191300, RECALL_TEST_LEN: 0.1191300, MAP: 0.0678491, MRR: 0.3433521, NDCG: 0.1404481, F1: 0.1191300, HIT_RATE: 1.1913000, ARHR: 0.4709902, NOVELTY: 0.0062433, DIVERSITY_MEAN_INTER_LIST: 0.9923800, DIVERSITY_HERFINDAHL: 0.9992281, COVERAGE_ITEM: 0.3568209, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.3032815, SHANNON_ENTROPY: 11.4064328, 
+
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: setting an array element with a sequence.

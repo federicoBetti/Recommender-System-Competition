@@ -282,8 +282,26 @@ class SequentialEvaluator(Evaluator):
                                                   minRatingsPerUser=minRatingsPerUser, exclude_seen=exclude_seen,
                                                   ignore_items=ignore_items, ignore_users=ignore_users)
 
+    def plot(self, data_stats):
+        label = []
+        for i in data_stats:
+            content = data_stats[i]
+            lenght = len(content)
+            summed_values = sum(content)
+            data_stats[i] = summed_values / float(lenght)
+            label.append(str(lenght))
+
+        z, y = list(data_stats.keys()), list(data_stats.values())
+        fig, ax = plt.subplots()
+        ax.scatter(z, y)
+
+        for i, txt in enumerate(label):
+            ax.annotate(txt, (z[i], y[i]))
+        fig.show()
+
     # do not change the block_size!
-    def _run_evaluation_on_selected_users(self, recommender_object, usersToEvaluate, block_size=1000, plot_stats=False):
+    def _run_evaluation_on_selected_users(self, recommender_object, usersToEvaluate, block_size=1000, plot_stats=False,
+                                          onPop=True):
 
         to_ret = []
         start_time = time.time()
@@ -302,7 +320,8 @@ class SequentialEvaluator(Evaluator):
         n_users_evaluated = 0
 
         dict_song_pop = ged.tracks_popularity()
-        data_stats = {}
+        data_stats_pop = {}
+        data_stats_len = {}
         # Start from -block_size to ensure it to be 0 at the first block
         user_batch_start = 0
         user_batch_end = 0
@@ -334,7 +353,8 @@ class SequentialEvaluator(Evaluator):
                 is_relevant = np.in1d(recommended_items, relevant_items, assume_unique=True)
 
                 user_profile = self.URM_train.indices[self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                key = int(ged.playlist_popularity(user_profile, pop_dict=dict_song_pop))
+                key_pop = int(ged.playlist_popularity(user_profile, pop_dict=dict_song_pop))
+                key_len = int(ged.lenght_playlist(user_profile))
 
                 # added to_ret here
                 to_ret.append((user_id, recommended_items[:self.max_cutoff]))
@@ -382,10 +402,16 @@ class SequentialEvaluator(Evaluator):
                         results_current_cutoff[EvaluatorMetrics.DIVERSITY_SIMILARITY.value].add_recommendations(
                             recommended_items_current_cutoff)
 
-                if key not in data_stats:
-                    data_stats[key] = [current_map]
+                # create both data structures for plotting: lenght and popularity
+                if key_pop not in data_stats_pop:
+                    data_stats_pop[key_pop] = [current_map]
                 else:
-                    data_stats[key].append(current_map)
+                    data_stats_pop[key_pop].append(current_map)
+
+                if key_len not in data_stats_len:
+                    data_stats_len[key_len] = [current_map]
+                else:
+                    data_stats_len[key_len].append(current_map)
 
                 if time.time() - start_time_print > 30 or n_users_evaluated == len(self.usersToEvaluate):
                     print(
@@ -508,25 +534,14 @@ class SequentialEvaluator(Evaluator):
         #         start_time_print = time.time()
 
         if plot_stats:
-            label = []
-            for i in data_stats:
-                content = data_stats[i]
-                lenght = len(content)
-                summed_values = sum(content)
-                data_stats[i] = summed_values / float(lenght)
-                label.append(str(lenght))
-
-            z, y = list(data_stats.keys()), list(data_stats.values())
-            fig, ax = plt.subplots()
-            ax.scatter(z, y)
-
-            for i, txt in enumerate(label):
-                ax.annotate(txt, (z[i], y[i]))
-            fig.show()
+            if onPop:
+                self.plot(data_stats_pop)
+            else:
+                self.plot(data_stats_len)
 
         return results_dict, n_users_evaluated, to_ret
 
-    def evaluateRecommender(self, recommender_object, plot_stats=True):
+    def evaluateRecommender(self, recommender_object, plot_stats=True, onPop=True):
         """
         :param recommender_object: the trained recommenderURM_validation object, a Recommender subclass
         :param URM_test_list: list of URMs to test the recommender against, or a single URM object
@@ -538,7 +553,8 @@ class SequentialEvaluator(Evaluator):
 
         results_dict, n_users_evaluated, to_ret_values = self._run_evaluation_on_selected_users(recommender_object,
                                                                                                 self.usersToEvaluate,
-                                                                                                plot_stats=plot_stats)
+                                                                                                plot_stats=plot_stats,
+                                                                                                onPop=onPop)
 
         if (n_users_evaluated > 0):
 

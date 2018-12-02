@@ -100,7 +100,7 @@ class RS_Data_Loader(object):
 
         if all_train:
             self.UCB_tfidf_artists = self.get_UCM_matrix_artists(train_path=os.path.join("Dataset", "train.csv"))
-            self.UCB_tfidf_album = self.get_UCM_matrix_album(train_path=os.path.join("Dataset", "train.csv"))
+            # self.UCB_tfidf_album = self.get_UCM_matrix_album(train_path=os.path.join("Dataset", "train.csv"))
             self.URM_train = create_URM_matrix(train)
             self.URM_test = get_fake_test()
             self.URM_validation = get_fake_test()
@@ -109,7 +109,7 @@ class RS_Data_Loader(object):
                 try:
                     self.UCB_tfidf_artists = self.get_UCM_matrix_artists(train_path=os.path.join("Dataset",
                                                                                                  "new_train.csv"))
-                    self.UCB_tfidf_album = self.get_UCM_matrix_album(train_path=os.path.join("Dataset", "new_train.csv"))
+                    # self.UCB_tfidf_album = self.get_UCM_matrix_album(train_path=os.path.join("Dataset", "new_train.csv"))
                     self.URM_train = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_train.npz"))
                     self.URM_test = scipy.sparse.load_npz(os.path.join("IntermediateComputations", "URM_test.npz"))
                     self.URM_validation = scipy.sparse.load_npz(

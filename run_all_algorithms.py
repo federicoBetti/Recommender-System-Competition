@@ -31,9 +31,9 @@ if __name__ == '__main__':
     evaluate_algorithm = False
     slim_after_hybrid = False
 
-    delete_previous_intermediate_computations()
+    # delete_previous_intermediate_computations()
 
-    filename = "hybrid_8algo_3pop_parts.csv"
+    filename = "hybrid_8algo_3pop_parts2.csv"
 
     dataReader = RS_Data_Loader(top10k=True, all_train=not evaluate_algorithm)
 
@@ -119,7 +119,7 @@ if __name__ == '__main__':
         num_factors = 165
         recommender.fit(**{"topK": [60, 150, 100, 150, 56, 146, 50, -1],
                            "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
-                           "pop": [130, 346],
+                           "pop": [136, 323],
                            "weights": [1, 1, 1, 1, 1, 1, 1, 1],
                            # put -1 where useless in order to force you to change when the became useful
                            "force_compute_sim": False,

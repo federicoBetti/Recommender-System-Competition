@@ -197,16 +197,16 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     similarity_type_list = ['cosine', 'jaccard', "asymmetric", "dice", "tversky"]
 
     hyperparamethers_range_dictionary = {}
-    hyperparamethers_range_dictionary["weights1"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    hyperparamethers_range_dictionary["weights2"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    hyperparamethers_range_dictionary["weights3"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    hyperparamethers_range_dictionary["weights4"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    hyperparamethers_range_dictionary["weights5"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    hyperparamethers_range_dictionary["weights6"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    hyperparamethers_range_dictionary["weights7"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    hyperparamethers_range_dictionary["weights8"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    # hyperparamethers_range_dictionary["pop1"] = range(80, 200)  # list(np.linspace(0, 1, 11))
-    # hyperparamethers_range_dictionary["pop2"] = range(250, 450)  # list(np.linspace(0, 1, 11))
+    # hyperparamethers_range_dictionary["weights1"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    # hyperparamethers_range_dictionary["weights2"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    # hyperparamethers_range_dictionary["weights3"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    # hyperparamethers_range_dictionary["weights4"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    # hyperparamethers_range_dictionary["weights5"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    # hyperparamethers_range_dictionary["weights6"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    # hyperparamethers_range_dictionary["weights7"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    # hyperparamethers_range_dictionary["weights8"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    hyperparamethers_range_dictionary["pop1"] = list(range(80, 200))  # list(np.linspace(0, 1, 11))
+    hyperparamethers_range_dictionary["pop2"] = list(range(250, 450))  # list(np.linspace(0, 1, 11))
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
     lambda_i = 0.1
@@ -248,12 +248,13 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     ]
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
-                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": True, "UCM_train": UCM_train},
+                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": True,
+                                                                       "UCM_train": UCM_train},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 150, 100, 150, 56, 146, 50, -1],
                                                                "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
-                                                               "pop": [130, 346],
-                                                               # "weights": [1,1,1,1,1,1],
+                                                               # "pop": [130, 346],
+                                                               "weights": [1, 1, 1, 1, 1, 1, 1, 1],
                                                                # put -1 where useless in order to force you to change when the became useful
                                                                "force_compute_sim": False,
                                                                "old_similarity_matrix": old_similrity_matrix,
@@ -268,7 +269,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     output_root_path_similarity = this_output_root_path
 
     best_parameters = parameterSearch.search(recommenderDictionary,
-                                             n_cases=150,
+                                             n_cases=40,
                                              output_root_path=output_root_path_similarity,
                                              metric=metric_to_optimize,
                                              init_points=40
@@ -397,7 +398,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         if recommender_class is UserKNNCBRecommender:
 
-            similarity_type_list = ['cosine']#, 'jaccard', "asymmetric", "dice", "tversky"]
+            similarity_type_list = ['cosine']  # , 'jaccard', "asymmetric", "dice", "tversky"]
 
             run_KNNCFRecommender_on_similarity_type_partial = partial(run_KNNCFRecommender_on_similarity_type,
                                                                       parameterSearch=parameterSearch,

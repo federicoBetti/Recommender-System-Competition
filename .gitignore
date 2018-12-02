@@ -5,3 +5,9 @@
 pycache/*
 
 IntermediateComputations/
+
+Dataset/UserCBF_album.pkl
+Dataset/UserCBF_album_all.pkl
+Dataset/UserCBF_artists.pkl
+Dataset/UserCBF_artists_all.pkl
+Dataset/new_train.csv

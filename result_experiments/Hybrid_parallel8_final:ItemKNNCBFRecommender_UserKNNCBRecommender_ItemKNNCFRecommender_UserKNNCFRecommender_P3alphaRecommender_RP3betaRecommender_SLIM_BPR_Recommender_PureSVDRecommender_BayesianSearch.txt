@@ -1,0 +1,35 @@
+BayesianSearch: New best config found. Config: {'weights1': 0.31852463261158637, 'weights2': 0.7685515437456053, 'weights3': 0.897920450664337, 'weights4': 0.5444247420294163, 'weights5': 0.6196767158832331, 'weights6': 0.8572332669651703, 'weights7': 0.4328290046575112, 'weights8': 0.8046942156266803, 'normalize': True} - MAP results: 0.10776484126984048 - time: 2018-12-01 17:12:28.887182
+BayesianSearch: New best config found. Config: {'weights1': 0.2603352348434457, 'weights2': 0.12360061688521773, 'weights3': 0.5126596728523956, 'weights4': 0.9330567548288804, 'weights5': 0.9566004114343113, 'weights6': 0.36152763221816664, 'weights7': 0.14336048108076094, 'weights8': 0.270763714095851, 'normalize': False} - MAP results: 0.1071567301587294 - time: 2018-12-01 17:42:16.991659
+BayesianSearch: New best config found. Config: {'pop1': 173, 'pop2': 329, 'normalize': False} - MAP results: 0.10791114682539624 - time: 2018-12-01 18:52:10.302448
+BayesianSearch: Config is suboptimal. Config: {'pop1': 169, 'pop2': 273, 'normalize': True} - MAP results: 0.10758091269841213 - time: 2018-12-01 18:52:47.917323
+BayesianSearch: Config is suboptimal. Config: {'pop1': 84, 'pop2': 341, 'normalize': True} - MAP results: 0.10771369841269779 - time: 2018-12-01 18:53:25.745935
+BayesianSearch: Config is suboptimal. Config: {'pop1': 102, 'pop2': 271, 'normalize': True} - MAP results: 0.1074960079365074 - time: 2018-12-01 18:53:59.241089
+BayesianSearch: Config is suboptimal. Config: {'pop1': 193, 'pop2': 290, 'normalize': False} - MAP results: 0.10769476587301517 - time: 2018-12-01 18:54:36.782687
+BayesianSearch: Config is suboptimal. Config: {'pop1': 115, 'pop2': 277, 'normalize': True} - MAP results: 0.1075855476190471 - time: 2018-12-01 18:55:06.684258
+BayesianSearch: Config is suboptimal. Config: {'pop1': 157, 'pop2': 382, 'normalize': True} - MAP results: 0.1077683373015866 - time: 2018-12-01 18:55:33.594077
+BayesianSearch: Config is suboptimal. Config: {'pop1': 84, 'pop2': 445, 'normalize': False} - MAP results: 0.1065365158730152 - time: 2018-12-01 18:55:59.499700
+BayesianSearch: Config is suboptimal. Config: {'pop1': 154, 'pop2': 296, 'normalize': True} - MAP results: 0.10777859126984064 - time: 2018-12-01 18:56:25.815806
+BayesianSearch: Config is suboptimal. Config: {'pop1': 193, 'pop2': 370, 'normalize': False} - MAP results: 0.10768426587301498 - time: 2018-12-01 18:56:51.969653
+BayesianSearch: Config is suboptimal. Config: {'pop1': 98, 'pop2': 299, 'normalize': False} - MAP results: 0.10767363492063443 - time: 2018-12-01 18:57:18.106013
+BayesianSearch: Config is suboptimal. Config: {'pop1': 171, 'pop2': 434, 'normalize': False} - MAP results: 0.1066895476190468 - time: 2018-12-01 18:57:44.062741
+BayesianSearch: Config is suboptimal. Config: {'pop1': 125, 'pop2': 277, 'normalize': False} - MAP results: 0.1076109563492058 - time: 2018-12-01 18:58:11.810237
+BayesianSearch: Config is suboptimal. Config: {'pop1': 145, 'pop2': 371, 'normalize': False} - MAP results: 0.10778330158730089 - time: 2018-12-01 18:58:41.038001
+BayesianSearch: Config is suboptimal. Config: {'pop1': 91, 'pop2': 296, 'normalize': False} - MAP results: 0.10762780158730097 - time: 2018-12-01 18:59:12.499797
+BayesianSearch: Config is suboptimal. Config: {'pop1': 185, 'pop2': 410, 'normalize': False} - MAP results: 0.1071873730158721 - time: 2018-12-01 18:59:49.781187
+BayesianSearch: Config is suboptimal. Config: {'pop1': 181, 'pop2': 359, 'normalize': True} - MAP results: 0.10776848015872947 - time: 2018-12-01 19:00:32.639540
+BayesianSearch: Config is suboptimal. Config: {'pop1': 122, 'pop2': 359, 'normalize': False} - MAP results: 0.10779000396825329 - time: 2018-12-01 19:01:05.418816
+BayesianSearch: Config is suboptimal. Config: {'pop1': 112, 'pop2': 424, 'normalize': True} - MAP results: 0.10690752777777696 - time: 2018-12-01 19:01:38.063976
+BayesianSearch: Config is suboptimal. Config: {'pop1': 98, 'pop2': 428, 'normalize': False} - MAP results: 0.10676097619047539 - time: 2018-12-01 19:02:11.799224
+BayesianSearch: Config is suboptimal. Config: {'pop1': 99, 'pop2': 391, 'normalize': False} - MAP results: 0.10740984126984052 - time: 2018-12-01 19:02:47.783783
+BayesianSearch: New best config found. Config: {'pop1': 136, 'pop2': 323, 'normalize': False} - MAP results: 0.10792405158730103 - time: 2018-12-01 19:03:20.426705
+BayesianSearch: Config is suboptimal. Config: {'pop1': 191, 'pop2': 415, 'normalize': False} - MAP results: 0.10700629365079267 - time: 2018-12-01 19:03:56.067095
+BayesianSearch: Config is suboptimal. Config: {'pop1': 99, 'pop2': 434, 'normalize': False} - MAP results: 0.1066013015873008 - time: 2018-12-01 19:04:42.907976
+BayesianSearch: Config is suboptimal. Config: {'pop1': 133, 'pop2': 307, 'normalize': False} - MAP results: 0.10783533730158679 - time: 2018-12-01 19:05:18.163830
+BayesianSearch: Config is suboptimal. Config: {'pop1': 125, 'pop2': 287, 'normalize': True} - MAP results: 0.10768703968253915 - time: 2018-12-01 19:05:51.059678
+BayesianSearch: Config is suboptimal. Config: {'pop1': 90, 'pop2': 301, 'normalize': False} - MAP results: 0.10762140079365023 - time: 2018-12-01 19:06:25.116744
+BayesianSearch: Config is suboptimal. Config: {'pop1': 130, 'pop2': 270, 'normalize': True} - MAP results: 0.1076180992063486 - time: 2018-12-01 19:07:08.985906
+BayesianSearch: Config is suboptimal. Config: {'pop1': 145, 'pop2': 430, 'normalize': False} - MAP results: 0.10685091666666582 - time: 2018-12-01 19:07:41.970913
+BayesianSearch: Config is suboptimal. Config: {'pop1': 133, 'pop2': 412, 'normalize': False} - MAP results: 0.10721906349206267 - time: 2018-12-01 19:08:15.091653
+BayesianSearch: Config is suboptimal. Config: {'pop1': 82, 'pop2': 373, 'normalize': True} - MAP results: 0.10763442857142788 - time: 2018-12-01 19:08:48.009369
+BayesianSearch: New best config found. Config: {'pop1': 190, 'pop2': 317, 'normalize': False} - MAP results: 0.10793661507936442 - time: 2018-12-01 19:09:24.497062
+BayesianSearch: Config is suboptimal. Config: {'pop1': 181, 'pop2': 311, 'normalize': False} - MAP results: 0.1077864761904756 - time: 2018-12-01 19:09:57.037206

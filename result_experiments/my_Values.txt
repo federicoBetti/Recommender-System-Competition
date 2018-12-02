@@ -1,20 +1,57 @@
-best vlaues submitted:
+1) best vlaues submitted:
+Recommender list: ItemCB, ItemCF, UserCF, P3alpha, RP3beta
 "topK": [60, 100, 150, 50, 150], "shrink": [5, 50, 10, -1, -1],
 BayesianSearch: New best config found. Config: {'weights1': 0.6321184664063297, 'weights2': 0.9064878682960182, 'weights3': 0.21986181775928804, 'weights4': 0.4047718022597919, 'weights5': 0.5824588171484617, 'weights6': 0.28621895254775764, 'normalize': False} - MAP results: 0.10449001190476176 - time: 2018-11-30 19:35:00.329017
-        if level < pop[0]:
-            # return [0, 0, 0, 0, 0, 0]
-            # return self.weights
-            return [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
-                    0.4112843940329439]
+if level < pop[0]:
+    return [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
+            0.4112843940329439]
 
-        elif pop[0] < level < pop[1]:
-            # return [0, 0, 0, 0, 0, 0]
-            return [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
-                    0.6888103295594851]
+elif pop[0] < level < pop[1]:
+    return [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
+            0.6888103295594851]
 
-        else:
-            # return self.weights
-            # return [0, 0, 0, 0, 0, 0]
-            return [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
-                    0.5873532658846817
+else:
+    return [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
+            0.5873532658846817
 
+
+
+
+2) values submitted with terrible results, local map 10.79%
+
+recommender_list = [
+    # Random,
+    # TopPop,
+    ItemKNNCBFRecommender,
+    UserKNNCBRecommender,
+    ItemKNNCFRecommender,
+    UserKNNCFRecommender,
+    P3alphaRecommender,
+    RP3betaRecommender,
+    # MatrixFactorization_BPR_Cython,
+    # MatrixFactorization_FunkSVD_Cython,
+    SLIM_BPR_Cython,
+    # SLIMElasticNetRecommender
+    PureSVDRecommender
+]
+{"topK": [60, 150, 100, 150, 56, 146, 50, -1],
+                           "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
+                           "pop": [136, 323],
+                           "weights": [1, 1, 1, 1, 1, 1, 1, 1],
+                           # put -1 where useless in order to force you to change when the became useful
+                           "force_compute_sim": False,
+                           "old_similarity_matrix": old_similrity_matrix,
+                           "epochs": 200, "lambda_i": lambda_i,
+                           "lambda_j": lambda_j,
+                           "num_factors": num_factors,
+                           'alphaP3': 1.160296393373262,
+                           'alphaRP3': 0.4156476217553893,
+                           'betaRP': 0.20430089442930188}
+if level < pop[0]:
+    return [0.9844911002619661, 0.3113236728221124, 0.3158093389868384, 0.0014751314468445242, 0.6585198016958426, 0.8587674552958615, 0.8129623926385413, 0.1348070186778627]
+
+elif pop[0] < level < pop[1]:
+    return [0.46601913441887954, 0.5949346313874165, 0.025149148493800122, 0.010227684759653966, 0.965682727828649, 0.6734116014307487, 0.9651620832259757, 0.041956627293385895]
+
+else:
+    return [0.48871102663065424,  0.9990436940488147, 0.018937108359614596, 0.1222775659407358, 0.9347154048622398, 0.04063991540944767, 0.3357399854429757, 0.9885927180644606]

@@ -1,0 +1,48 @@
+BayesianSearch: Testing config: {'topK': range(20, 300), 'shrink': range(0, 50), 'normalize': True} - Exception Knns, Shrinks and recommender list have different lenghts 
+BayesianSearch: Testing config: {'topK': range(20, 300), 'shrink': range(0, 50), 'normalize': False} - Exception Knns, Shrinks and recommender list have different lenghts 
+BayesianSearch: Testing config: {'topK': range(20, 300), 'shrink': range(0, 50), 'normalize': False} - Exception Knns, Shrinks and recommender list have different lenghts 
+BayesianSearch: Testing config: {'topK': range(20, 300), 'shrink': range(0, 50), 'normalize': False} - Exception Knns, Shrinks and recommender list have different lenghts 
+BayesianSearch: Testing config: {'topK': range(20, 300), 'shrink': range(0, 50), 'normalize': False} - Exception Knns, Shrinks and recommender list have different lenghts 
+BayesianSearch: Testing config: {'topK': range(20, 300), 'shrink': range(0, 50), 'normalize': False} - Exception Knns, Shrinks and recommender list have different lenghts 
+BayesianSearch: Testing config: {'topK': range(20, 300), 'shrink': range(0, 50), 'normalize': True} - Exception Knns, Shrinks and recommender list have different lenghts 
+BayesianSearch: Testing config: {'topK': range(20, 300), 'shrink': range(0, 50), 'normalize': False} - Exception Knns, Shrinks and recommender list have different lenghts 
+BayesianSearch: Testing config: {'topK': 300, 'shrink': 25, 'normalize': True} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 100, 'shrink': 5, 'normalize': True} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 200, 'shrink': 30, 'normalize': True} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 200, 'shrink': 5, 'normalize': True} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 400, 'shrink': 30, 'normalize': False} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 100, 'shrink': 30, 'normalize': True} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 100, 'shrink': 5, 'normalize': False} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 50, 'shrink': 25, 'normalize': False} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK1': 100, 'shrink1': 5, 'normalize': True} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 300, 'shrink1': 20, 'normalize': True} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 300, 'shrink1': 40, 'normalize': False} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 100, 'shrink1': 30, 'normalize': True} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 50, 'shrink1': 20, 'normalize': True} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 50, 'shrink1': 20, 'normalize': True} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 400, 'shrink1': 25, 'normalize': True} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 300, 'shrink1': 10, 'normalize': True} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 400, 'shrink1': 20, 'normalize': False} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 100, 'shrink1': 25, 'normalize': False} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 200, 'shrink1': 40, 'normalize': False} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 200, 'shrink1': 5, 'normalize': False} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 100, 'shrink1': 25, 'normalize': True} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 300, 'shrink1': 20, 'normalize': True} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 200, 'shrink1': 25, 'normalize': False} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK1': 50, 'shrink1': 30, 'normalize': False} - Exception object of type 'NoneType' has no len()
+BayesianSearch: Testing config: {'topK': 200, 'shrink': 25, 'normalize': False} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 100, 'shrink': 30, 'normalize': True} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 50, 'shrink': 5, 'normalize': True} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 100, 'shrink': 20, 'normalize': False} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 100, 'shrink': 20, 'normalize': True} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 300, 'shrink': 10, 'normalize': False} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 100, 'shrink': 20, 'normalize': True} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 200, 'shrink': 25, 'normalize': True} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 100, 'shrink': 10, 'normalize': False} - Exception zip argument #1 must support iteration
+BayesianSearch: Testing config: {'topK': 200, 'shrink': 10, 'normalize': True} - Exception zip argument #1 must support iteration
+BayesianSearch: Testing config: {'topK': 50, 'shrink': 25, 'normalize': False} - Exception zip argument #1 must support iteration
+BayesianSearch: Testing config: {'topK': 300, 'shrink': 5, 'normalize': False} - Exception zip argument #1 must support iteration
+BayesianSearch: Testing config: {'topK': 400, 'shrink': 25, 'normalize': False} - Exception zip argument #1 must support iteration
+BayesianSearch: Testing config: {'topK': 100, 'shrink': 25, 'normalize': True} - Exception zip argument #1 must support iteration
+BayesianSearch: Testing config: {'topK': 200, 'shrink': 20, 'normalize': False} - Exception zip argument #1 must support iteration
+BayesianSearch: Testing config: {'topK': 300, 'shrink': 5, 'normalize': False} - Exception zip argument #1 must support iteration

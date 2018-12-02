@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
     # content topk = 60 e shrink = 5
     # topK = [100, 150, 50, 150, 150]
-    topk = [200]
+    topk = [150]
 
     shrinks = [10]
 

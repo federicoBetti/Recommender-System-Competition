@@ -14,3 +14,15 @@ Dataset/new_train.csv
 
 .ipynb_checkpoints/
 
+
+# useless pychache files
+Base/Evaluation/__pycache__/
+Base/Similarity/__pycache__/
+Dataset/train_divided_keep_distrib.csv
+Dataset/train_sequential.csv
+MatrixFactorization/Cython/__pycache__/
+MatrixFactorization/Cython/build/
+SLIM_BPR/Cython/__pycache__/
+__pycache__/
+data/Movielens_10M/__pycache__/
+

@@ -145,9 +145,34 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             return self.d_weights[2]
             # return [0.48871102663065424,  0.9990436940488147, 0.018937108359614596, 0.1222775659407358, 0.9347154048622398, 0.04063991540944767, 0.3357399854429757, 0.9885927180644606]
 
-    def compute_score_hybrid(self, recommender, user_id_array, dict_pop):
+    def compute_score_hybrid(self, recommender, user_id_array, dict_pop, remove_seen_flag=True, remove_top_pop_flag=False,
+                  remove_CustomItems_flag=False):
         scores = []
         final_score = np.zeros(len(recommender.recommender_list))
+        for rec in recommender.recommender_list:
+            if rec.__class__ in [HybridRecommender]:
+                scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop))
+                continue
+            scores_batch = rec.compute_item_score(user_id_array)
+            # scores_batch = np.ravel(scores_batch) # because i'm not using batch
+
+            for user_index in range(len(user_id_array)):
+
+                user_id = user_id_array[user_index]
+
+                if remove_seen_flag:
+                    scores_batch[user_index, :] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
+
+            if remove_top_pop_flag:
+                scores_batch = self._remove_TopPop_on_scores(scores_batch)
+
+            if remove_CustomItems_flag:
+                scores_batch = self._remove_CustomItems_on_scores(scores_batch)
+
+            scores.append(scores_batch)
+
+        final_score = np.zeros(scores[0].shape)
+
         if recommender.dynamic:
             for user_index in range(len(user_id_array)):
                 user_id = user_id_array[user_index]
@@ -160,16 +185,14 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 else:
                     level = level_len
                 weights = recommender.change_weights(level, recommender.pop)
-                # print(weights)
-                dim = 20635
-                final_score_line = np.zeros(dim)
+                final_score_line = np.zeros(scores[0].shape[1])
                 for score, weight in zip(scores, weights):
                     final_score_line += (score[user_index] * weight)
                 final_score[user_index] = final_score_line
         else:
             for score, weight in zip(scores, recommender.weights):
                 final_score += (score * weight)
-        return final_score
+            return final_score
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
@@ -195,7 +218,9 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             # noinspection PyUnresolvedReferences
             for recommender in self.recommender_list:
                 if recommender.__class__ in [HybridRecommender]:
-                    scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop))
+                    scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop,
+                                                            remove_seen_flag=True, remove_top_pop_flag=False,
+                                                             remove_CustomItems_flag=False))
                     continue
                 scores_batch = recommender.compute_item_score(user_id_array)
                 # scores_batch = np.ravel(scores_batch) # because i'm not using batch
@@ -229,7 +254,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                     else:
                         level = level_len
                     weights = self.change_weights(level, self.pop)
-                    print(scores[0].shape[1])
+
                     final_score_line = np.zeros(scores[0].shape[1])
                     for score, weight in zip(scores, weights):
                         final_score_line += (score[user_index] * weight)

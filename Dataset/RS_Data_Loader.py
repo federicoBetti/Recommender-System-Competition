@@ -94,6 +94,7 @@ class RS_Data_Loader(object):
         print("RS_Data_Loader: loading data...")
 
         self.all_train = all_train
+        self.top10k = top10k
         train = pd.read_csv(os.path.join("Dataset", "train.csv"))
         self.tracks = pd.read_csv(os.path.join("Dataset", "tracks.csv"))
         self.target_playlist = pd.read_csv(os.path.join("Dataset", "target_playlists.csv"))
@@ -121,7 +122,7 @@ class RS_Data_Loader(object):
                         top10k_playlist = pickle.load(handle)
 
                     for top_play in top10k_playlist:
-                        my_train = train[train.playlist_id == top_play]
+                        my_Truetrain = train[train.playlist_id == top_play]
                         to_take = random.sample(list(my_train.index), 10)
                         start_mask[to_take] = True
 
@@ -145,6 +146,8 @@ class RS_Data_Loader(object):
                 self.URM_train = create_URM_matrix(train)
                 self.URM_test = create_URM_matrix(test)
                 self.URM_validation = self.URM_test
+                train.to_csv(os.path.join("Dataset", "new_train_no_top10k.csv"))
+                self.UCB_tfidf_artists = self.get_UCM_matrix_artists(train_path=os.path.join("Dataset", "new_train_no_top10k.csv"))
                 # URM_all = create_URM_matrix(train)
                 # self.URM_train, self.URM_test, self.URM_validation = split_train_validation_test(URM_all,
                 #                                                                                  split_train_test_validation_quota)
@@ -200,9 +203,15 @@ class RS_Data_Loader(object):
                     to_ret = pickle.load(handle)
                     return to_ret
             else:
-                with open(os.path.join("Dataset", "UserCBF_artists.pkl"), 'rb') as handle:
-                    to_ret = pickle.load(handle)
-                    return to_ret
+                if self.top10k:
+                    with open(os.path.join("Dataset", "UserCBF_artists.pkl"), 'rb') as handle:
+                        to_ret = pickle.load(handle)
+                        return to_ret
+                else:
+                    with open(os.path.join("Dataset", "UserCBF_artists_notop10.pkl"), 'rb') as handle:
+                        to_ret = pickle.load(handle)
+                        return to_ret
+
 
         except FileNotFoundError:
             train = pd.read_csv(train_path)
@@ -217,7 +226,6 @@ class RS_Data_Loader(object):
                     UCM_artists[entry.playlist_id][entry.artist_id] += 1
 
             tracks_for_playlist.apply(create_feature_artists, axis=1)
-
             UCM_tfidf = self._get_tfidf(UCM_artists)
 
             if self.all_train:
@@ -225,8 +233,10 @@ class RS_Data_Loader(object):
                 with open(os.path.join("Dataset", "UserCBF_artists_all.pkl"), 'wb') as handle:
                     pickle.dump(UCM_tfidf, handle, protocol=pickle.HIGHEST_PROTOCOL)
             else:
-                with open(os.path.join("Dataset", "UserCBF_artists.pkl"), 'wb') as handle:
-                    pickle.dump(UCM_tfidf, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                if self.top10k:
+                    with open(os.path.join("Dataset", "UserCBF_artists.pkl"), 'wb') as handle:
+                        pickle.dump(UCM_tfidf, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 
             return UCM_tfidf
 

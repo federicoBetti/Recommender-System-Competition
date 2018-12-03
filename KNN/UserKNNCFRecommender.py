@@ -32,8 +32,6 @@ class UserKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
 
         self.compute_item_score = self.compute_score_user_based
 
-
-
     def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True, **similarity_args):
 
         self.topK = topK
@@ -52,7 +50,8 @@ class UserKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
                 print("Saved User CF Similarity Matrix Used!")
                 return
 
-        similarity = Compute_Similarity(self.URM_train.T, shrink=shrink, topK=topK, normalize=normalize, similarity = similarity, **similarity_args)
+        similarity = Compute_Similarity(self.URM_train.T, shrink=shrink, topK=topK, normalize=normalize,
+                                        similarity=similarity, **similarity_args)
 
         if self.sparse_weights:
             print("HERE")
@@ -63,4 +62,3 @@ class UserKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
         else:
             self.W = similarity.compute_similarity()
             self.W = self.W.toarray()
-

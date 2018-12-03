@@ -558,7 +558,7 @@ def read_data_split_and_search():
 
     # this line removes old matrices saved, comment it if testing only the weights of hybrid
     delete_previous_intermediate_computations()
-    dataReader = RS_Data_Loader(top10k=True)
+    dataReader = RS_Data_Loader()
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()

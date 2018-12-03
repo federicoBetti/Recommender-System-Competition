@@ -197,49 +197,22 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     similarity_type_list = ['cosine', 'jaccard', "asymmetric", "dice", "tversky"]
 
     hyperparamethers_range_dictionary = {}
-    # hyperparamethers_range_dictionary["weights1"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    # hyperparamethers_range_dictionary["weights2"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    # hyperparamethers_range_dictionary["weights3"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    # hyperparamethers_range_dictionary["weights4"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    # hyperparamethers_range_dictionary["weights5"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    # hyperparamethers_range_dictionary["weights6"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    # hyperparamethers_range_dictionary["weights7"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    # hyperparamethers_range_dictionary["weights8"] = range(0, 1)  # list(np.linspace(0, 1, 11))
-    hyperparamethers_range_dictionary["pop1"] = list(range(80, 200))  # list(np.linspace(0, 1, 11))
-    hyperparamethers_range_dictionary["pop2"] = list(range(250, 450))  # list(np.linspace(0, 1, 11))
+    hyperparamethers_range_dictionary["weights1"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    hyperparamethers_range_dictionary["weights2"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    hyperparamethers_range_dictionary["weights3"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    hyperparamethers_range_dictionary["weights4"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    hyperparamethers_range_dictionary["weights5"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    hyperparamethers_range_dictionary["weights6"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    hyperparamethers_range_dictionary["weights7"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    hyperparamethers_range_dictionary["weights8"] = range(0, 1)  # list(np.linspace(0, 1, 11))
+    # hyperparamethers_range_dictionary["pop1"] = list(range(80, 200))  # list(np.linspace(0, 1, 11))
+    # hyperparamethers_range_dictionary["pop2"] = list(range(250, 450))  # list(np.linspace(0, 1, 11))
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
     lambda_i = 0.1
     lambda_j = 0.05
     old_similrity_matrix = None
     num_factors = 165
-
-    # recommender_list = [
-    #     # Random,
-    #     # TopPop,
-    #     ItemKNNCBFRecommender,
-    #     UserKNNCBRecommender,
-    #     ItemKNNCFRecommender,
-    #     UserKNNCFRecommender,
-    #     P3alphaRecommender,
-    #     RP3betaRecommender,
-    #     # MatrixFactorization_BPR_Cython,
-    #     # MatrixFactorization_FunkSVD_Cython,
-    #     SLIM_BPR_Cython,
-    #     # SLIMElasticNetRecommender
-    #     PureSVDRecommender
-    # ]
-    # if similarity_type == "asymmetric":
-    #     hyperparamethers_range_dictionary["asymmetric_alpha"] = range(0, 2)
-    #     hyperparamethers_range_dictionary["normalize"] = [True]
-    #
-    # elif similarity_type == "tversky":
-    #     hyperparamethers_range_dictionary["tversky_alpha"] = range(0, 2)
-    #     hyperparamethers_range_dictionary["tversky_beta"] = range(0, 2)
-    #     hyperparamethers_range_dictionary["normalize"] = [True]
-    #
-    # if similarity_type in ["cosine", "asymmetric"]:
-    #     hyperparamethers_range_dictionary["feature_weighting"] = ["none", "BM25", "TF-IDF"]
 
     dynamic_best = [
         [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731, 0.4112843940329439],
@@ -255,7 +228,6 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                                                                "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
                                                                # "pop": [130, 346],
                                                                "weights": [1, 1, 1, 1, 1, 1, 1, 1],
-                                                               # put -1 where useless in order to force you to change when the became useful
                                                                "force_compute_sim": False,
                                                                "old_similarity_matrix": old_similrity_matrix,
                                                                "epochs": 200, "lambda_i": lambda_i,
@@ -657,7 +629,7 @@ def read_data_split_and_search():
 
     # this line removes old matrices saved, comment it if testing only the weights of hybrid
     # delete_previous_intermediate_computations()
-    dataReader = RS_Data_Loader(top10k=True)
+    dataReader = RS_Data_Loader()
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()

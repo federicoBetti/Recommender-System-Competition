@@ -1,6 +1,7 @@
 from __future__ import print_function
 from __future__ import division
 
+import gc
 import numpy as np
 import warnings
 from sklearn.gaussian_process import GaussianProcessRegressor
@@ -308,6 +309,7 @@ class BayesianOptimization(object):
 
             # Keep track of total number of iterations
             self.i = i
+            gc.collect()
 
         # Print a final report if verbose active.
         if self.verbose:

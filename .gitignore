@@ -11,3 +11,6 @@ Dataset/UserCBF_album_all.pkl
 Dataset/UserCBF_artists.pkl
 Dataset/UserCBF_artists_all.pkl
 Dataset/new_train.csv
+
+.ipynb_checkpoints/
+

@@ -424,7 +424,36 @@ cdef class MatrixFactorization_Cython_Epoch:
         cdef long last_print_time = start_time_epoch
 
         for numCurrentBatch in range(totalNumberOfBatch):
-            print("Batch initiated: {}".format(numCurrentBatch))
+            '''
+            Internet implementation
+            u_vec = self.users[ua]['vec']
+            i_vec = self.Q[ia]
+            x_ui = np.inner(u_vec, i_vec)
+
+            unobserved = list(set(range(self.n_item)) - self.users[ua]['known_items'])
+
+            # choose one negative (i.e., unobserved) sample
+            j = np.random.choice(unobserved)
+
+            j_vec = self.Q[j]
+
+            x_uj = np.inner(u_vec, j_vec)
+            x_uij = x_ui - x_uj
+            sigmoid = np.e ** (-x_uij) / (1 + np.e ** (-x_uij))
+
+            grad = i_vec - j_vec
+            next_u_vec = u_vec + self.learn_rate * (sigmoid * grad + self.l2_reg_u * u_vec)
+
+            grad = u_vec
+            next_i_vec = i_vec + self.learn_rate * (sigmoid * grad + self.l2_reg_i * i_vec)
+
+            grad = -u_vec
+            next_j_vec = j_vec + self.learn_rate * (sigmoid * grad + self.l2_reg_j * j_vec)
+
+            self.users[ua]['vec'] = next_u_vec
+            self.Q[ia] = next_i_vec
+            self.Q[j] = next_j_vec
+            '''
 
             # Uniform user sampling with replacement
             sample = self.sampleBPR_Cython()
@@ -434,13 +463,22 @@ cdef class MatrixFactorization_Cython_Epoch:
             j = sample.neg_item
 
             x_uij = 0.0
+            u_vec = self.USER_factors[u]
+            i_vec = self.ITEM_factors[i]
+            j_vec = self.ITEM_factors[j]
 
-            for index in range(self.n_factors):
-                x_uij += self.USER_factors[u,index] * (self.ITEM_factors[i,index] - self.ITEM_factors[j,index])
-
-            # Use gradient of log(sigm(-x_uij))
-            sigmoid_item = 1 / (1 + exp(x_uij))
+            x_ui = np.inner(u_vec, i_vec)
+            x_uj = np.inner(u_vec, j_vec)
+            x_uij = x_ui - x_uj
+            sigmoid_item = np.e ** (-x_uij) / (1 + np.e ** (-x_uij))
             sigmoid_user = sigmoid_item
+
+            # for index in range(self.n_factors):
+            #     x_uij += self.USER_factors[u,index] * (self.ITEM_factors[i,index] - self.ITEM_factors[j,index])
+            #
+            # # Use gradient of log(sigm(-x_uij))
+            # sigmoid_item = 1 / (1 + exp(x_uij))
+            # sigmoid_user = sigmoid_item
 
             cumulative_loss += x_uij**2
 
@@ -449,6 +487,20 @@ cdef class MatrixFactorization_Cython_Epoch:
 
             sigmoid_user = self.adaptive_gradient_user(sigmoid_user, u)
 
+            # for index in range(self.ITEM_factors.shape[1]):
+            #
+            #     grad = i_vec[index] - j_vec[index]
+            #     next_u_vec = u_vec[index] + self.learning_rate * (sigmoid_user * grad + self.user_reg * u_vec[index])
+            #
+            #     grad = u_vec
+            #     next_i_vec = i_vec[index] + self.learning_rate * (sigmoid_item_i * grad + self.positive_reg * i_vec[index])
+            #
+            #     grad = -u_vec
+            #     next_j_vec = j_vec[index] + self.learning_rate * (sigmoid_item_j * grad + self.negative_reg * j_vec[index])
+            #
+            #     self.USER_factors[u, index] = next_u_vec
+            #     self.ITEM_factors[i, index] = next_i_vec
+            #     self.ITEM_factors[j, index] = next_j_vec
 
 
 
@@ -552,7 +604,6 @@ cdef class MatrixFactorization_Cython_Epoch:
 
     cdef double adaptive_gradient_user(self, double gradient, long user_id):
 
-        print("Adaptive gradient inizio")
 
         cdef double gradient_update
 
@@ -587,7 +638,6 @@ cdef class MatrixFactorization_Cython_Epoch:
 
             gradient_update = gradient
 
-        print("Adaptive gradient fine")
         return gradient_update
 
 

@@ -29,11 +29,15 @@ from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
     evaluate_algorithm = True
+    delete_old_computations = False
     slim_after_hybrid = False
 
-    delete_previous_intermediate_computations()
+    if not evaluate_algorithm:
+        delete_previous_intermediate_computations()
+    else:
+        print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
 
-    filename = "best_notop10.csv"
+    filename = "best_hybrid_new_dataset.csv"
 
     dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
 
@@ -48,7 +52,7 @@ if __name__ == '__main__':
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
+        UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
         P3alphaRecommender,
@@ -57,7 +61,7 @@ if __name__ == '__main__':
         # MatrixFactorization_FunkSVD_Cython,
         SLIM_BPR_Cython,
         # # SLIMElasticNetRecommender
-        # PureSVDRecommender
+        PureSVDRecommender
     ]
 
     weights = [
@@ -168,22 +172,22 @@ if __name__ == '__main__':
         onPop = True
         # On pop it used to choose if have dynamic weights for
         recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
-                                        d_weights=d_weights,
+                                        #d_weights=d_weights,
                                         URM_validation=URM_validation, onPop=onPop)
 
         lambda_i = 0.1
         lambda_j = 0.05
         old_similrity_matrix = None
         num_factors = 165
-        recommender.fit(**{"topK": [60, 100, 150, 56, 146, 50],
-                           "shrink": [5, 50, 10, -1, -1, -1],
+        recommender.fit(**{"topK": [60, 150, 100, 150, 56, 146, 50, -1],
+                           "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
                            # "topK": [100], "shrink": [50],
                            "pop": [136, 323],
-                           "weights": [1, 1, 1, 1, 1, 1],
+                           "weights": [1, 1, 1, 1, 1, 1, 1, 1],
                            # put -1 where useless in order to force you to change when the became useful
                            "force_compute_sim": False,
                            "old_similarity_matrix": old_similrity_matrix,
-                           "epochs": 20, "lambda_i": lambda_i,
+                           "epochs": 1, "lambda_i": lambda_i,
                            "lambda_j": lambda_j,
                            "num_factors": num_factors,
                            'alphaP3': 1.160296393373262,
@@ -214,4 +218,5 @@ if __name__ == '__main__':
         logFile.write("Algorithm: {} - Exception: {}\n".format(recommender_class, str(e)))
         logFile.flush()
 
-        # delete_previous_intermediate_computations()
+    if not evaluate_algorithm:
+        delete_previous_intermediate_computations()

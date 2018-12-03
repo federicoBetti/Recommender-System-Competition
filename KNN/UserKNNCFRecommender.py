@@ -54,7 +54,6 @@ class UserKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
                                         similarity=similarity, **similarity_args)
 
         if self.sparse_weights:
-            print("HERE")
             self.W_sparse = similarity.compute_similarity()
 
             with open(os.path.join("IntermediateComputations", "UserCFSimMatrix.pkl"), 'wb') as handle:

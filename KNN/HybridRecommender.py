@@ -5,6 +5,7 @@ Created on 23/11/18
 
 @author: Federico Betti
 """
+import time
 
 from Base.Recommender import Recommender
 from Base.Recommender_utils import check_matrix
@@ -79,7 +80,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             force_compute_sim=False, **similarity_args):
 
         if self.weights is None:
-            if weights is None:
+            if weights1 is not None:
                 weights = [weights1, weights2, weights3, weights4, weights5, weights6, weights7, weights8]
                 weights = [x for x in weights if x is not None]
             self.weights = weights
@@ -132,21 +133,23 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
     def change_weights(self, level, pop):
         if level < pop[0]:
             # return [0, 0, 0, 0, 0, 0, 0, 0]
-            return self.d_weights[0]
-            # return [0.9844911002619661, 0.3113236728221124, 0.3158093389868384, 0.0014751314468445242, 0.6585198016958426, 0.8587674552958615, 0.8129623926385413, 0.1348070186778627]
+            # return self.d_weights[0]
+            return [0.45590938562950867, 0, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228, 0.19081956929601618, 0, 0.11267140391070507]
 
         elif pop[0] < level < pop[1]:
+            # return self.weights
             # return [0, 0, 0, 0, 0, 0, 0, 0]
-            # return [0.46601913441887954, 0.5949346313874165, 0.025149148493800122, 0.010227684759653966, 0.965682727828649, 0.6734116014307487, 0.9651620832259757, 0.041956627293385895]
-            return self.d_weights[1]
+            return [0.973259052781316, 0, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645, 0.4723616073494711, 0, 0.4188403112229081]
+            # return self.d_weights[1]
         else:
             # return self.weights
             # return [0, 0, 0, 0, 0, 0, 0, 0]
-            return self.d_weights[2]
-            # return [0.48871102663065424,  0.9990436940488147, 0.018937108359614596, 0.1222775659407358, 0.9347154048622398, 0.04063991540944767, 0.3357399854429757, 0.9885927180644606]
+            # return self.d_weights[2]
+            return [0.9780713488404191, 0, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535, 0.9504112133900943, 0, 0.9034510004379944]
 
-    def compute_score_hybrid(self, recommender, user_id_array, dict_pop, remove_seen_flag=True, remove_top_pop_flag=False,
-                  remove_CustomItems_flag=False):
+    def compute_score_hybrid(self, recommender, user_id_array, dict_pop, remove_seen_flag=True,
+                             remove_top_pop_flag=False,
+                             remove_CustomItems_flag=False):
         scores = []
         final_score = np.zeros(len(recommender.recommender_list))
         for rec in recommender.recommender_list:
@@ -178,12 +181,11 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 user_id = user_id_array[user_index]
                 user_profile = recommender.URM_train.indices[
                                recommender.URM_train.indptr[user_id]:recommender.URM_train.indptr[user_id + 1]]
-                level_pop = int(ged.playlist_popularity(user_profile, dict_pop))
-                level_len = int(ged.lenght_playlist(user_profile))
+
                 if recommender.onPop:
-                    level = level_pop
+                    level = int(ged.playlist_popularity(user_profile, dict_pop))
                 else:
-                    level = level_len
+                    level = int(ged.lenght_playlist(user_profile))
                 weights = recommender.change_weights(level, recommender.pop)
                 final_score_line = np.zeros(scores[0].shape[1])
                 for score, weight in zip(scores, weights):
@@ -192,7 +194,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         else:
             for score, weight in zip(scores, recommender.weights):
                 final_score += (score * weight)
-            return final_score
+        return final_score
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
@@ -214,13 +216,12 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         # noinspection PyUnresolvedReferences
         if self.sparse_weights:
             scores = []
-            user_profile = self.URM_train[user_id_array]
             # noinspection PyUnresolvedReferences
             for recommender in self.recommender_list:
                 if recommender.__class__ in [HybridRecommender]:
                     scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop,
                                                             remove_seen_flag=True, remove_top_pop_flag=False,
-                                                             remove_CustomItems_flag=False))
+                                                            remove_CustomItems_flag=False))
                     continue
                 scores_batch = recommender.compute_item_score(user_id_array)
                 # scores_batch = np.ravel(scores_batch) # because i'm not using batch
@@ -247,17 +248,17 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                     user_id = user_id_array[user_index]
                     user_profile = self.URM_train.indices[
                                    self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                    level_pop = int(ged.playlist_popularity(user_profile, dict_pop))
-                    level_len = int(ged.lenght_playlist(user_profile))
                     if self.onPop:
-                        level = level_pop
+                        level = int(ged.playlist_popularity(user_profile, dict_pop))
                     else:
-                        level = level_len
+                        level = int(ged.lenght_playlist(user_profile))
                     weights = self.change_weights(level, self.pop)
+                    assert len(weights) == len(scores), "Scores and weights have different lengths"
 
                     final_score_line = np.zeros(scores[0].shape[1])
-                    for score, weight in zip(scores, weights):
-                        final_score_line += (score[user_index] * weight)
+                    if sum(weights) > 0:
+                        for score, weight in zip(scores, weights):
+                            final_score_line += score[user_index] * weight
                     final_score[user_index] = final_score_line
             else:
                 for score, weight in zip(scores, weights):
@@ -266,7 +267,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         else:
             raise NotImplementedError
 
-        scores = final_score
         # relevant_items_partition is block_size x cutoff
         relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
 

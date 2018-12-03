@@ -100,9 +100,10 @@ class RandomSearch(AbstractClassSearch):
         test_cases = itertools.product(*hyperparamethers_range_dictionary.values())
 
         paramether_dictionary_list = []
-
+        i = 0
         for current_case in test_cases:
-
+            print("Computing information related to test case number {}".format(i))
+            i += 1
             paramether_dictionary_to_evaluate = {}
 
             for index in range(len(key_list)):

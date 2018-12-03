@@ -19,3 +19,8 @@ On recommender <class 'SLIM_BPR.Cython.SLIM_BPR_Cython.SLIM_BPR_Cython'> Excepti
 On recommender <class 'MatrixFactorization.PureSVD.PureSVDRecommender'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
 On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_AsySVD_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
 On recommender <class 'KNN.UserKNNCBFRecommender.UserKNNCBRecommender'> Exception unhashable type: 'list'
+On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').

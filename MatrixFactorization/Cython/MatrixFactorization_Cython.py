@@ -56,6 +56,20 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
             stop_on_validation=False, lower_validatons_allowed=5, validation_metric="MAP",
             evaluator_object=None, validation_every_n=5, force_compute_sim=True):
 
+        if not force_compute_sim:
+            found = True
+            try:
+                with open(os.path.join("IntermediateComputations", "MFMatrix.pkl"), 'rb') as handle:
+                    (W_new, H_new) = pickle.load(handle)
+            except FileNotFoundError:
+                found = False
+
+            if found:
+                self.W = W_new
+                self.H = H_new
+                print("Saved MF Matrix Used!")
+                return
+
         self.num_factors = num_factors
         self.sgd_mode = sgd_mode
         self.batch_size = batch_size
@@ -110,20 +124,6 @@ class MatrixFactorization_Cython(Recommender, Incremental_Training_Early_Stoppin
                                                                 user_reg=user_reg,
                                                                 positive_reg=positive_reg,
                                                                 negative_reg=negative_reg)
-
-        if not force_compute_sim:
-            found = True
-            try:
-                with open(os.path.join("IntermediateComputations", "MFMatrix.pkl"), 'rb') as handle:
-                    (W_new, H_new) = pickle.load(handle)
-            except FileNotFoundError:
-                found = False
-
-            if found:
-                self.W = W_new
-                self.H = H_new
-                print("Saved MF Matrix Used!")
-                return
 
         self._train_with_early_stopping(epochs, validation_every_n, stop_on_validation,
                                         validation_metric, lower_validatons_allowed, evaluator_object,

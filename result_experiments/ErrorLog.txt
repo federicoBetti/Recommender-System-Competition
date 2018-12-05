@@ -24,3 +24,6 @@ On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.Mat
 On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
 On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
 On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'GraphBased.P3alphaRecommender.P3alphaRecommender'> Exception evaluate_on_test() takes 1 positional argument but 2 were given
+On recommender <class 'SLIM_ElasticNet.SLIMElasticNetRecommender.SLIMElasticNetRecommender'> Exception __init__() got an unexpected keyword argument 'URM_test'
+On recommender <class 'SLIM_BPR.Cython.SLIM_BPR_Cython.SLIM_BPR_Cython'> Exception BayesianSearch: for every parameter a range may be specified either by a 'range' object or by a list.Provided object type for parameter 'lambda_i' was '<class 'float'>'

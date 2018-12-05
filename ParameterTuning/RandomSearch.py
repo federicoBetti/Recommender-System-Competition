@@ -322,6 +322,7 @@ class RandomSearch(AbstractClassSearch):
                     num_cases_started += 1
                     num_cases_active += 1
                     process_object = None
+                    gc.collect()
 
                 if num_cases_started >= num_cases_max and not termination_sent:
                     print("Termination sent")
@@ -336,7 +337,7 @@ class RandomSearch(AbstractClassSearch):
                 try:
                     process_object = queue_job_done.get_nowait()
 
-                    self.update_on_new_result(process_object, num_cases_evaluated)
+                    # self.update_on_new_result(process_object, num_cases_evaluated)
                     num_cases_evaluated += 1
                     num_cases_active -= 1
                     process_object = None

@@ -7,6 +7,7 @@ import scipy.sparse as sps
 from Base.Recommender import Recommender
 from Base.Recommender_utils import check_matrix
 from sklearn.linear_model import ElasticNet
+import os, pickle
 
 from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 import time, sys
@@ -34,10 +35,23 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
 
         self.URM_train = URM_train
 
-    def fit(self, l1_ratio=0.1, positive_only=True, topK=100):
+    def fit(self, l1_ratio=0.1, positive_only=True, topK=100, force_compute_sim=True):
 
         assert 0 <= l1_ratio <= 1, "SLIM_ElasticNet: l1_ratio must be between 0 and 1, provided value was {}".format(
             l1_ratio)
+
+        if not force_compute_sim:
+            found = True
+            try:
+                with open(os.path.join("IntermediateComputations", "SLIM_ElasticNet_Matrix.pkl"), 'rb') as handle:
+                    (W_sparse_new) = pickle.load(handle)
+            except FileNotFoundError:
+                found = False
+
+            if found:
+                self.W_sparse = W_sparse_new
+                print("Saved ElasticNet SLIM Matrix Used!")
+                return
 
         self.l1_ratio = l1_ratio
         self.positive_only = positive_only
@@ -51,7 +65,7 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
                                 copy_X=False,
                                 precompute=True,
                                 selection='random',
-                                max_iter=100,
+                                max_iter=1000,
                                 tol=1e-4)
 
         URM_train = check_matrix(self.URM_train, 'csc', dtype=np.float32)
@@ -123,7 +137,7 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
             # finally, replace the original values of the j-th column
             URM_train.data[start_pos:end_pos] = current_item_data_backup
 
-            if time.time() - start_time_printBatch > 300 or currentItem == n_items - 1:
+            if time.time() - start_time_printBatch > 30 or currentItem == n_items - 1:
                 print("Processed {} ( {:.2f}% ) in {:.2f} minutes. Items per second: {:.0f}".format(
                     currentItem + 1,
                     100.0 * float(currentItem + 1) / n_items,
@@ -137,6 +151,10 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
         # generate the sparse weight matrix
         self.W_sparse = sps.csr_matrix((values[:numCells], (rows[:numCells], cols[:numCells])),
                                        shape=(n_items, n_items), dtype=np.float32)
+
+        with open(os.path.join("IntermediateComputations", "SLIM_ElasticNet_Matrix.pkl"), 'wb') as handle:
+            pickle.dump(self.W_sparse, handle,
+                        protocol=pickle.HIGHEST_PROTOCOL)
 
 
 import multiprocessing

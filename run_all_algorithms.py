@@ -32,6 +32,7 @@ if __name__ == '__main__':
     delete_old_computations = False
     slim_after_hybrid = False
 
+    # delete_previous_intermediate_computations()
     if not evaluate_algorithm:
         delete_previous_intermediate_computations()
     else:
@@ -187,7 +188,7 @@ if __name__ == '__main__':
                            # put -1 where useless in order to force you to change when the became useful
                            "force_compute_sim": False,
                            "old_similarity_matrix": old_similrity_matrix,
-                           "epochs": 1, "lambda_i": lambda_i,
+                           "epochs": 50, "lambda_i": lambda_i,
                            "lambda_j": lambda_j,
                            "num_factors": num_factors,
                            'alphaP3': 1.160296393373262,

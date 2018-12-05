@@ -36,6 +36,7 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
 
         self.train_with_sparse_weights = train_with_sparse_weights
         self.sparse_weights = final_model_sparse_weights
+        self.W_sparse = None
 
         if URM_validation is not None:
             self.URM_validation = URM_validation.copy()
@@ -164,6 +165,8 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
 
         self.get_S_incremental_and_set_W()
 
+        self.normalized_SLIM()
+
         with open(os.path.join("IntermediateComputations", "SLIM_BPR_Matrix.pkl"), 'wb') as handle:
             pickle.dump(self.W_sparse, handle,
                         protocol=pickle.HIGHEST_PROTOCOL)
@@ -254,3 +257,6 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
 
         # Command to generate html report
         # cython -a SLIM_BPR_Cython_Epoch.pyx
+
+    def normalized_SLIM(self):
+        self.W_sparse = self.W_sparse / self.W_sparse.max() * 0.55

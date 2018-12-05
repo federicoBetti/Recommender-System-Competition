@@ -52,7 +52,7 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
                 return
 
         # TODO: test tfidf
-        similarity = Compute_Similarity(ged.tfidf(self.URM_train), shrink=shrink, topK=topK, normalize=normalize, similarity = similarity, **similarity_args)
+        similarity = Compute_Similarity(self.URM_train, shrink=shrink, topK=topK, normalize=normalize, similarity = similarity, **similarity_args)
         print('Similarity item based CF computed')
 
         if self.sparse_weights:

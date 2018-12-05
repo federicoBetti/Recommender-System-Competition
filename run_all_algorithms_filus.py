@@ -28,7 +28,7 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     delete_old_computations = False
     slim_after_hybrid = False
 
@@ -60,7 +60,7 @@ if __name__ == '__main__':
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         SLIM_BPR_Cython,
-        # # SLIMElasticNetRecommender
+        # SLIMElasticNetRecommender
         PureSVDRecommender
     ]
 
@@ -78,13 +78,9 @@ if __name__ == '__main__':
 
     # For hybrid with weighted estimated rating
     d_weights = [
-        [0.8642092327923815, 0.09023653608965065, 0.3356654984425519, 0.06502355090627832, 0.9217237522638174,
-         0.19259398063460798],
-        [0.9362414321955719, 0.5473467964388334, 0.38025413157482246, 0.14003803288444827, 0.9948640241343997,
-         0.8437930124447167],
-        [0.4273762621281618, 0.7553261304127474, 0.09184673786737008, 0.15581187436280386, 0.7941195047691947,
-         0.010983916437545704]
-    ]
+        [0.45590938562950867, 0.017972928905949592, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228, 0.19081956929601618, 0.11601757370322985, 0.11267140391070507],
+        [0.973259052781316, 0.037386979507335605, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645, 0.4723616073494711, 0.5939341460905799, 0.4188403112229081],
+        [0.28230055912596863, 0.16247739973707465, 0.805610621042323, 0.8154550481439302, 0.9548692423411846, 0.6687733529933616, 0.7785004291094528, 0.9255473647188621]]
 
     d_best = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
                0.4112843940329439],
@@ -171,7 +167,7 @@ if __name__ == '__main__':
         onPop = True
         # On pop it used to choose if have dynamic weights for
         recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
-                                        #d_weights=d_weights,
+                                        d_weights=d_weights,
                                         URM_validation=URM_validation, onPop=onPop)
 
         lambda_i = 0.1
@@ -200,6 +196,9 @@ if __name__ == '__main__':
                                                                                                 plot_stats=True,
                                                                                                 onPop=onPop)
 
+        # print('max value in similarty slim', str(recommender.recommender_list[0].W_sparse.max()))
+        # print('min value in similarity slim: ', str(recommender.recommender_list[0].W_sparse.min()))
+        # print('Shape SLIM similarity: ', str(recommender.recommender_list[0].W_sparse.shape))
         print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
                                                     results_run_string))
         logFile.write("Algorithm: {}, results: \n{}\n".format(recommender.__class__, results_run_string))

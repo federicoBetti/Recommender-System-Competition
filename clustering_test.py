@@ -41,8 +41,6 @@ if __name__ == '__main__':
     recommender.fit(topK=200, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True)
 
 
-
-
     def delete_row_csr(mat, i):
 
         n = mat.indptr[i + 1] - mat.indptr[i]
@@ -69,16 +67,19 @@ if __name__ == '__main__':
 
     print(recommender.W_sparse.shape)
 
+    count = 1
     while True:
         connected_c = connected_components(recommender.W_sparse)
-        print(connected_c)
-        for x in connected_c[1]:
-            if x != 0:
-                # set disjoint set to 10 that is like a huge distance
-                recommender.W_sparse[x] = 10
+        print(str(connected_c[0]), ' ', str(connected_c[1][connected_c[1] != 0]))
+        if connected_c[0] != 1:
 
-        recommender = recommender_class(csr_matrix(URM_train))
-        recommender.fit(topK=200, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True)
+            for x in connected_c[1]:
+                if x != 0:
+                    # set disjoint set to 10 that is like a huge distance
+                    recommender.W_sparse[x, :] = count
+                    count+=1
+                    print(recommender.W_sparse[x])
+
         print(recommender.W_sparse.shape)
 
         try:
@@ -94,7 +95,6 @@ if __name__ == '__main__':
             print(message)
 
     print(recommender.W_sparse.shape)
-
 
     # print("Creating clusterer...")
     # clusterer = clust.HDBSCAN(metric='precomputed')

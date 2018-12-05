@@ -10,7 +10,7 @@ from Base.Recommender import Recommender
 from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 from Base.Recommender_utils import similarityMatrixTopK
 from Base.Incremental_Training_Early_Stopping import Incremental_Training_Early_Stopping
-
+from Support_functions import get_evaluate_data
 import subprocess
 import os, sys, time
 import pickle
@@ -163,6 +163,7 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
                                         algorithm_name=self.RECOMMENDER_NAME)
 
         self.get_S_incremental_and_set_W()
+
 
         with open(os.path.join("IntermediateComputations", "SLIM_BPR_Matrix.pkl"), 'wb') as handle:
             pickle.dump(self.W_sparse, handle,

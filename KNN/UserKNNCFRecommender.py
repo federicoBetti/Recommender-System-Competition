@@ -53,7 +53,7 @@ class UserKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
 
 
         # TODO: test tfidf
-        similarity = Compute_Similarity(ged.tfidf(self.URM_train.T), shrink=shrink, topK=topK, normalize=normalize,
+        similarity = Compute_Similarity(self.URM_train.T, shrink=shrink, topK=topK, normalize=normalize,
                                         similarity=similarity, **similarity_args)
 
         if self.sparse_weights:

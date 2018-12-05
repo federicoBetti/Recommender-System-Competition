@@ -197,14 +197,14 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     similarity_type_list = ['cosine', 'jaccard', "asymmetric", "dice", "tversky"]
 
     hyperparamethers_range_dictionary = {}
-    hyperparamethers_range_dictionary["weights1"] = list(np.linspace(0, 1, 10))  # range(0, 1)
-    hyperparamethers_range_dictionary["weights2"] = list(np.linspace(0, 1, 10))  # range(0, 1)
-    hyperparamethers_range_dictionary["weights3"] = list(np.linspace(0, 1, 10))  # range(0, 1)
-    hyperparamethers_range_dictionary["weights4"] = list(np.linspace(0, 1, 10))  # range(0, 1)
-    hyperparamethers_range_dictionary["weights5"] = list(np.linspace(0, 1, 10))  # range(0, 1)
-    hyperparamethers_range_dictionary["weights6"] = list(np.linspace(0, 1, 10))  # range(0, 1)
-    hyperparamethers_range_dictionary["weights7"] = list(np.linspace(0, 1, 10))  # range(0, 1)
-    hyperparamethers_range_dictionary["weights8"] = list(np.linspace(0, 1, 10))  # range(0, 1)
+    hyperparamethers_range_dictionary["weights1"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights2"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights3"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights4"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights5"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights6"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights7"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights8"] = range(0, 1)
     # hyperparamethers_range_dictionary["pop1"] = list(range(80, 200))  # list(np.linspace(0, 1, 11))
     # hyperparamethers_range_dictionary["pop2"] = list(range(250, 450))  # list(np.linspace(0, 1, 11))
 

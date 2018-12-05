@@ -15,7 +15,7 @@ from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
 from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
 from KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
-from ParameterTuning.RandomSearch import RandomSearch
+# from ParameterTuning.RandomSearch import RandomSearch
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender, MultiThreadSLIM_ElasticNet
 from GraphBased.P3alphaRecommender import P3alphaRecommender
@@ -192,7 +192,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
         "_".join([x.RECOMMENDER_NAME for x in recommender_list]))
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
-    parameterSearch = RandomSearch(recommender_class, evaluation_function_validation=evaluator_validation)
+    parameterSearch = BayesianSearch(recommender_class, evaluator_test)
 
     similarity_type_list = ['cosine', 'jaccard', "asymmetric", "dice", "tversky"]
 
@@ -666,14 +666,14 @@ def read_data_split_and_search():
         # RP3betaRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
-        MatrixFactorization_BPR_Cython,
+        # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # MatrixFactorization_AsySVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
         # MultiThreadSLIM_ElasticNet,
-        # HybridRecommender
+        HybridRecommender
     ]
 
     # if UserKNNCBRecommender in collaborative_algorithm_list:

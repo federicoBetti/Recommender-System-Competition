@@ -71,14 +71,11 @@ if __name__ == '__main__':
 
     while True:
         connected_c = connected_components(recommender.W_sparse)
-        index = 0
-
         print(connected_c)
         for x in connected_c[1]:
             if x != 0:
-                delete_row_csr(URM_train, index)
-                print(index)
-            index += 1
+                # set disjoint set to 10 that is like a huge distance
+                recommender.W_sparse[x] = 10
 
         recommender = recommender_class(csr_matrix(URM_train))
         recommender.fit(topK=200, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True)
@@ -86,7 +83,9 @@ if __name__ == '__main__':
 
         try:
             clusterer = clust.HDBSCAN(metric='precomputed')
+            print("Fitting..")
             clusterer.fit(recommender.W_sparse)
+            print('Fitted!')
             print(clusterer.labels_)
             break
         except Exception as ex:

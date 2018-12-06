@@ -385,7 +385,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                         for score, weight in zip(scores, weights):
                             final_score_line += score[user_index] * weight
                         for ind, score in enumerate(scores):
-                            self.gradients[ind] += sum(np.sign(1 - final_score_line[test_songs])*score[user_index, test_songs])
+                            self.gradients[ind] += sum(np.sign(final_score_line[test_songs] - 1)*score[user_index, test_songs])
                     self.MAE += sum(1 - final_score_line[test_songs])
                     final_score[user_index] = final_score_line
             else:

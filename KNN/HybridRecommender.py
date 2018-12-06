@@ -54,7 +54,12 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         self.topK = None
         self.shrink = None
 
-        #TODO: HO MESSO TFIDF PER VEDERE RISULTATO. NEL CASO FACCIA CAGARE TOGLIERE
+        self.recommender_number = len(recommender_list)
+        if self.d_weights is None:
+            # 3 because we have divided in 3 intervals
+            self.d_weights = [[0]*self.recommender_number, [0]*self.recommender_number, [0]*self.recommender_number]
+
+        # TODO: HO MESSO TFIDF PER VEDERE RISULTATO. NEL CASO FACCIA CAGARE TOGLIERE
 
         for recommender in recommender_list:
             if recommender in [SLIM_BPR_Cython, MatrixFactorization_BPR_Cython, MatrixFactorization_FunkSVD_Cython,
@@ -80,7 +85,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             weights5=None, weights6=None, weights7=None, weights8=None, pop1=None, pop2=None, similarity='cosine',
             normalize=True,
             old_similarity_matrix=None, epochs=1,
-            force_compute_sim=False, **similarity_args):
+            force_compute_sim=False, weights_to_dweights=-1, **similarity_args):
 
         if self.weights is None:
             if weights1 is not None:
@@ -93,6 +98,9 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 pop = [pop1, pop2]
                 pop = [x for x in pop if x is not None]
             self.pop = pop
+
+        if weights_to_dweights != -1:
+            self.d_weights[weights_to_dweights] = self.weights
 
         assert self.weights is not None, "Weights Are None!"
 
@@ -139,19 +147,19 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
     def change_weights(self, level, pop):
         if level < pop[0]:
             # return [0, 0, 0, 0, 0, 0, 0, 0]
-            # return self.d_weights[0]
-            return [0.45590938562950867, 0, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228, 0.19081956929601618, 0, 0.11267140391070507]
+            return self.d_weights[0]
+            # return [0.45590938562950867, 0, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228, 0.19081956929601618, 0, 0.11267140391070507]
 
         elif pop[0] < level < pop[1]:
             # return self.weights
             # return [0, 0, 0, 0, 0, 0, 0, 0]
-            return [0.973259052781316, 0, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645, 0.4723616073494711, 0, 0.4188403112229081]
-            # return self.d_weights[1]
+            # return [0.973259052781316, 0, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645, 0.4723616073494711, 0, 0.4188403112229081]
+            return self.d_weights[1]
         else:
             # return self.weights
             # return [0, 0, 0, 0, 0, 0, 0, 0]
-            # return self.d_weights[2]
-            return [0.9780713488404191, 0, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535, 0.9504112133900943, 0, 0.9034510004379944]
+            return self.d_weights[2]
+            # return [0.9780713488404191, 0, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535, 0.9504112133900943, 0, 0.9034510004379944]
 
     def compute_score_hybrid(self, recommender, user_id_array, dict_pop, remove_seen_flag=True,
                              remove_top_pop_flag=False,

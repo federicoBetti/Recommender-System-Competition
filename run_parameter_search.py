@@ -244,7 +244,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                              DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 100, 150, 146, 50, 100],
                                                                "shrink": [5, 50, 10, -1, -1, -1],
                                                                "pop": [130, 346],
-                                                               "weights": [1, 1, 1, 1, 1, 1, 1, 1],
+                                                               "weights": [1, 1, 1, 1, 1, 1],
                                                                "force_compute_sim": False,
                                                                "old_similarity_matrix": old_similrity_matrix,
                                                                "epochs": 50, "lambda_i": lambda_i,

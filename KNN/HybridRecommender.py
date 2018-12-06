@@ -118,7 +118,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 recommender.fit(epochs=epochs, force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [SLIMElasticNetRecommender]:
-                recommender.fit(topK=knn, l1_ratio=similarity_args["l1_ratio"])
+                recommender.fit(topK=knn, l1_ratio=similarity_args["l1_ratio"], force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [PureSVDRecommender]:
                 recommender.fit(num_factors=similarity_args["num_factors"], force_compute_sim=force_compute_sim)
@@ -136,18 +136,19 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     def change_weights(self, level, pop):
         if level < pop[0]:
-            return [0, 0, 0, 0, 0, 0, 0, 0]
+            # return self.weights
+            return [0, 0, 0, 0, 0, 0]
             # return self.d_weights[0]
             # return [0.45590938562950867, 0.017972928905949592, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228, 0.19081956929601618, 0.11601757370322985, 0.11267140391070507]
 
         elif pop[0] < level < pop[1]:
             # return self.weights
-            return [0, 0, 0, 0, 0, 0, 0, 0]
+            return [0, 0, 0, 0, 0, 0]
             # return [0.973259052781316, 0.037386979507335605, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645, 0.4723616073494711, 0.5939341460905799, 0.4188403112229081]
             # return self.d_weights[1]
         else:
             return self.weights
-            # return [0, 0, 0, 0, 0, 0, 0, 0]
+            # return [0, 0, 0, 0, 0, 0]
             # return self.d_weights[2]
             # return [0.9780713488404191, 0.3775300211729561, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535, 0.9504112133900943, 0.39589768333136754, 0.9034510004379944]
 

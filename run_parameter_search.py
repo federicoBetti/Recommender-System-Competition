@@ -253,7 +253,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                                                                'alphaP3': 1.160296393373262,
                                                                'alphaRP3': 0.4156476217553893,
                                                                'betaRP': 0.20430089442930188,
-                                                               'l1_ratio': l1_ratio},
+                                                               'l1_ratio': l1_ratio,
+                                                               "weights_to_dweights": 0},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path

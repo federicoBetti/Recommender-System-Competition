@@ -86,6 +86,7 @@ class SLIM_BPR(Recommender):
         # To be used in the product URM*S must be transposed to be column-wise
         self.W = self.S.T
 
+
         del self.S
 
     def epochIteration(self):

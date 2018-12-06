@@ -12,7 +12,7 @@ from Base.Recommender import Recommender
 from Base.Recommender_utils import check_matrix
 from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 
-
+from Support_functions import get_evaluate_data as ged
 from Base.Similarity.Compute_Similarity import Compute_Similarity
 
 
@@ -51,6 +51,7 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
                 print("Saved Item CF Similarity Matrix Used!")
                 return
 
+        # TODO: test tfidf
         similarity = Compute_Similarity(self.URM_train, shrink=shrink, topK=topK, normalize=normalize, similarity = similarity, **similarity_args)
         print('Similarity item based CF computed')
 

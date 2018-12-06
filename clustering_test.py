@@ -41,8 +41,6 @@ if __name__ == '__main__':
     recommender.fit(topK=200, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True)
 
 
-
-
     def delete_row_csr(mat, i):
 
         n = mat.indptr[i + 1] - mat.indptr[i]
@@ -69,24 +67,26 @@ if __name__ == '__main__':
 
     print(recommender.W_sparse.shape)
 
+    count = 1
     while True:
         connected_c = connected_components(recommender.W_sparse)
-        index = 0
+        print(str(connected_c[0]), ' ', str(connected_c[1][connected_c[1] != 0]))
+        if connected_c[0] != 1:
 
-        print(connected_c)
-        for x in connected_c[1]:
-            if x != 0:
-                delete_row_csr(URM_train, index)
-                print(index)
-            index += 1
+            for x in connected_c[1]:
+                if x != 0:
+                    # set disjoint set to 10 that is like a huge distance
+                    recommender.W_sparse[x, :] = count
+                    count+=1
+                    print(recommender.W_sparse[x])
 
-        recommender = recommender_class(csr_matrix(URM_train))
-        recommender.fit(topK=200, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True)
         print(recommender.W_sparse.shape)
 
         try:
             clusterer = clust.HDBSCAN(metric='precomputed')
+            print("Fitting..")
             clusterer.fit(recommender.W_sparse)
+            print('Fitted!')
             print(clusterer.labels_)
             break
         except Exception as ex:
@@ -95,7 +95,6 @@ if __name__ == '__main__':
             print(message)
 
     print(recommender.W_sparse.shape)
-
 
     # print("Creating clusterer...")
     # clusterer = clust.HDBSCAN(metric='precomputed')

@@ -10,7 +10,7 @@ from Base.Recommender import Recommender
 from Base.Recommender_utils import check_matrix
 from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 from Base.IR_feature_weighting import okapi_BM_25, TF_IDF
-
+from Support_functions import get_evaluate_data as ged
 import numpy as np
 import os, pickle
 
@@ -69,7 +69,7 @@ class ItemKNNCBFRecommender(SimilarityMatrixRecommender, Recommender):
             self.ICM = self.ICM.astype(np.float32)
             self.ICM = TF_IDF(self.ICM)
 
-        similarity = Compute_Similarity(self.ICM.T, shrink=shrink, topK=topK, normalize=normalize,
+        similarity = Compute_Similarity(ged.tfidf(self.ICM.T), shrink=shrink, topK=topK, normalize=normalize,
                                         similarity=similarity, **similarity_args)
 
         if self.sparse_weights:

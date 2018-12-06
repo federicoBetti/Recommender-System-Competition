@@ -188,7 +188,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
 
     ##########################################################################################################
 
-    this_output_root_path = output_root_path + "Hy_6_3:" + "{}".format(
+    this_output_root_path = output_root_path + "Hybrid_8_new3:" + "{}".format(
         "_".join([x.RECOMMENDER_NAME for x in recommender_list]))
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
@@ -457,9 +457,6 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
             ##########################################################################################################
 
         if recommender_class is P3alphaRecommender:
-
-            parameterSearch = RandomSearch(recommender_class, URM_test=URM_validation,
-                                           evaluation_function_validation=evaluator_validation)
             hyperparamethers_range_dictionary = {}
             hyperparamethers_range_dictionary["topK"] = list(range(1, 800, 5))
             hyperparamethers_range_dictionary["alpha"] = range(0, 2)
@@ -567,11 +564,11 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         if recommender_class is SLIM_BPR_Cython:
             hyperparamethers_range_dictionary = {}
-            hyperparamethers_range_dictionary["topK"] = [50] #list(range(1, 800))
+            hyperparamethers_range_dictionary["topK"] = list(range(1, 800))
             # hyperparamethers_range_dictionary["epochs"] = [1, 5, 10, 20, 30, 50, 70, 90, 110]
-            hyperparamethers_range_dictionary["sgd_mode"] = ["adagrad"] # ["adagrad", "adam"]
-            hyperparamethers_range_dictionary["lambda_i"] = [0.1]#range(0, 1)
-            hyperparamethers_range_dictionary["lambda_j"] = [0.05]#range(0, 1)
+            hyperparamethers_range_dictionary["sgd_mode"] = ["adagrad", "adam"]
+            hyperparamethers_range_dictionary["lambda_i"] = range(0, 1)
+            hyperparamethers_range_dictionary["lambda_j"] = range(0, 1)
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {'train_with_sparse_weights': False,
@@ -579,12 +576,12 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                                                                'positive_threshold': 1,
                                                                                "URM_validation": URM_validation},
                                      DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                                     DictionaryKeys.FIT_KEYWORD_ARGS: {"validation_every_n": 40,
+                                     DictionaryKeys.FIT_KEYWORD_ARGS: {"validation_every_n": 5,
                                                                        "stop_on_validation": True,
                                                                        "evaluator_object": evaluator_validation_earlystopping,
                                                                        "lower_validatons_allowed": 2,
                                                                        "validation_metric": metric_to_optimize,
-                                                                       "epochs": 400},
+                                                                       "epochs": 50},
                                      DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
         ##########################################################################################################

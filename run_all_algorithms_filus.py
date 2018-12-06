@@ -51,22 +51,22 @@ if __name__ == '__main__':
     recommender_list = [
         # Random,
         # TopPop,
-        ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        P3alphaRecommender,
-        RP3betaRecommender,
+        # ItemKNNCBFRecommender,
+        # UserKNNCBRecommender,
+        # ItemKNNCFRecommender,
+        # UserKNNCFRecommender,
+        # P3alphaRecommender,
+        # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
-        PureSVDRecommender
+        # PureSVDRecommender
     ]
 
     weights = [
         1,
-        1
+        # 1
     ]
 
     # content topk = 60 e shrink = 5
@@ -166,7 +166,7 @@ if __name__ == '__main__':
         '''
         onPop = True
         # On pop it used to choose if have dynamic weights for
-        recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
+        recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=False,
                                         d_weights=d_weights,
                                         URM_validation=URM_validation, onPop=onPop)
 
@@ -174,11 +174,11 @@ if __name__ == '__main__':
         lambda_j = 0.05
         old_similrity_matrix = None
         num_factors = 165
-        recommender.fit(**{"topK": [60, 150, 100, 150, 56, 146, 50, -1],
-                           "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
+        recommender.fit(**{"topK": [60],# 150, 100, 150, 56, 146, 50, -1],
+                           # "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
                            # "topK": [100], "shrink": [50],
                            "pop": [136, 323],
-                           "weights": [1, 1, 1, 1, 1, 1, 1, 1],
+                           "weights": [1],# 1, 1, 1, 1, 1, 1, 1],
                            # put -1 where useless in order to force you to change when the became useful
                            "force_compute_sim": False,
                            "old_similarity_matrix": old_similrity_matrix,

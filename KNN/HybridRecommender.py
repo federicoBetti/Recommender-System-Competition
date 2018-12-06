@@ -159,23 +159,24 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
     def change_weights(self, user_id):
         if user_id in self.cluster_0:
             # print("primo cluster")
-            # return self.weights
+            return self.d_weights[0]
             # return [0.45590938562950867, 0, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228,
             #         0.19081956929601618, 0, 0.11267140391070507]
-            return [0, 0, 0, 0, 0, 0, 0, 0]
+            # return [0, 0, 0, 0, 0, 0, 0, 0]
 
         elif user_id in self.cluster_1:
             # print("secondo cluster")
-            return self.weights
+            return self.d_weights[1]
             # return [0.973259052781316, 0, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645,
             #         0.4723616073494711, 0, 0.4188403112229081]
             # return [0, 0, 0, 0, 0, 0, 0, 0]
 
         else:
             # print("terzo cluster")
+            return self.d_weights[2]
             # return [0.9780713488404191, 0, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535,
             #         0.9504112133900943, 0, 0.9034510004379944]
-            return [0, 0, 0, 0, 0, 0, 0, 0]
+            # return [0, 0, 0, 0, 0, 0, 0, 0]
 
     # def change_weights(self, level, pop):
     #     if level < pop[0]:

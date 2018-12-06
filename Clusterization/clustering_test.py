@@ -1,3 +1,5 @@
+import pickle
+
 from scipy.sparse import csr_matrix
 
 from Dataset.RS_Data_Loader import RS_Data_Loader
@@ -7,6 +9,7 @@ from scipy.sparse.csgraph import connected_components
 import traceback, os
 import numpy as np
 import hdbscan as clust
+from sklearn.cluster import KMeans
 
 if __name__ == '__main__':
     evaluate_algorithm = True
@@ -67,38 +70,53 @@ if __name__ == '__main__':
 
     print(recommender.W_sparse.shape)
 
-    count = 1
-    while True:
-        connected_c = connected_components(recommender.W_sparse)
-        print(str(connected_c[0]), ' ', str(connected_c[1][connected_c[1] != 0]))
-        if connected_c[0] != 1:
+    labeler = KMeans(n_clusters=4)
 
-            for x in connected_c[1]:
-                if x != 0:
-                    # set disjoint set to 10 that is like a huge distance
-                    recommender.W_sparse[x, :] = count
-                    count+=1
-                    print(recommender.W_sparse[x])
+    labeler.fit(recommender.URM_train)
+    with open(os.path.join("IntermediateComputations", "Clusterization_Kmeans_4.pkl"), 'wb') as handle:
+        pickle.dump(labeler.labels_, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-        print(recommender.W_sparse.shape)
+    print("cluster 0: ", str(len(labeler.labels_[labeler.labels_ == 0])))
+    print("cluster 1: ", str(len(labeler.labels_[labeler.labels_ == 1])))
+    print("cluster 2: ", str(len(labeler.labels_[labeler.labels_ == 2])))
+    print("cluster 3: ", str(len(labeler.labels_[labeler.labels_ == 3])))
 
-        try:
-            clusterer = clust.HDBSCAN(metric='precomputed')
-            print("Fitting..")
-            clusterer.fit(recommender.W_sparse)
-            print('Fitted!')
-            print(clusterer.labels_)
-            break
-        except Exception as ex:
-            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
-            message = template.format(type(ex).__name__, ex.args)
-            print(message)
 
-    print(recommender.W_sparse.shape)
 
-    # print("Creating clusterer...")
-    # clusterer = clust.HDBSCAN(metric='precomputed')
-    # print("Clusterizing...")
-    # clusterer.fit(recommender.W_sparse)
+
+
+    # count = 1
+    # while True:
+    #     connected_c = connected_components(recommender.W_sparse)
+    #     print(str(connected_c[0]), ' ', str(connected_c[1][connected_c[1] != 0]))
+    #     if connected_c[0] != 1:
     #
-    print(clusterer.labels_)
+    #         for x in connected_c[1]:
+    #             if x != 0:
+    #                 # set disjoint set to 10 that is like a huge distance
+    #                 recommender.W_sparse[x, :] = count
+    #                 count+=1
+    #                 print(recommender.W_sparse[x])
+    #
+    #     print(recommender.W_sparse.shape)
+    #
+    #     try:
+    #         clusterer = clust.HDBSCAN(metric='precomputed')
+    #         print("Fitting..")
+    #         clusterer.fit(recommender.W_sparse)
+    #         print('Fitted!')
+    #         print(clusterer.labels_)
+    #         break
+    #     except Exception as ex:
+    #         template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+    #         message = template.format(type(ex).__name__, ex.args)
+    #         print(message)
+    #
+    # print(recommender.W_sparse.shape)
+    #
+    # # print("Creating clusterer...")
+    # # clusterer = clust.HDBSCAN(metric='precomputed')
+    # # print("Clusterizing...")
+    # # clusterer.fit(recommender.W_sparse)
+    # #
+    # print(clusterer.labels_)

@@ -46,12 +46,12 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         self.dataset = None
         self.onPop = onPop
         self.moreHybrids = moreHybrids
-        with open(os.path.join("Dataset", "Cluster_0_dict_Kmeans_3.pkl"), 'rb') as handle:
-            self.cluster_0 = pickle.load(handle)
-        with open(os.path.join("Dataset", "Cluster_1_dict_Kmeans_3.pkl"), 'rb') as handle:
-            self.cluster_1 = pickle.load(handle)
-        with open(os.path.join("Dataset", "Cluster_2_dict_Kmeans_3.pkl"), 'rb') as handle:
-            self.cluster_2 = pickle.load(handle)
+        # with open(os.path.join("Dataset", "Cluster_0_dict_Kmeans_3.pkl"), 'rb') as handle:
+        #     self.cluster_0 = pickle.load(handle)
+        # with open(os.path.join("Dataset", "Cluster_1_dict_Kmeans_3.pkl"), 'rb') as handle:
+        #     self.cluster_1 = pickle.load(handle)
+        # with open(os.path.join("Dataset", "Cluster_2_dict_Kmeans_3.pkl"), 'rb') as handle:
+        #     self.cluster_2 = pickle.load(handle)
 
         self.sparse_weights = sparse_weights
 
@@ -89,6 +89,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
                 self.recommender_list.append(recommender(URM_train))
 
+
     def fit(self, topK=None, shrink=None, weights=None, pop=None, weights1=None, weights2=None, weights3=None,
             weights4=None,
             weights5=None, weights6=None, weights7=None, weights8=None, pop1=None, pop2=None, similarity='cosine',
@@ -113,7 +114,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         assert self.weights is not None, "Weights Are None!"
 
-        assert len(self.recommender_list) == len(self.weights), "Weights and recommender list have different lenghts"
+        assert len(self.recommender_list) == len(self.weights), "Weights: {} and recommender list: {} have different lenghts".format(len(self.weights), len(self.recommender_list))
 
         assert len(topK) == len(shrink) == len(self.recommender_list), "Knns, Shrinks and recommender list have " \
                                                                        "different lenghts "
@@ -300,8 +301,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                         level = int(ged.playlist_popularity(user_profile, dict_pop))
                     else:
                         level = int(ged.lenght_playlist(user_profile))
-                    weights = self.change_weights(user_id)
-                    # weights = self.change_weights(level, self.pop)
+                    # weights = self.change_weights(user_id)
+                    weights = self.change_weights(level, self.pop)
                     assert len(weights) == len(scores), "Scores and weights have different lengths"
 
                     final_score_line = np.zeros(scores[0].shape[1])

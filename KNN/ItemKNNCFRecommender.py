@@ -57,8 +57,6 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
 
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
-            print("Max item collaborative", self.W_sparse.max())
-            print("Min item collaborative", self.W_sparse.min())
             with open(os.path.join("IntermediateComputations", "ItemCFMatrix.pkl"), 'wb') as handle:
                 pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
                 print("Item CF similarity matrix saved")

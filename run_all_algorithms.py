@@ -28,7 +28,7 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     delete_old_computations = False
     slim_after_hybrid = False
 
@@ -49,19 +49,21 @@ if __name__ == '__main__':
     UCM_tfidf = dataReader.get_tfidf_artists()
     # _ = dataReader.get_tfidf_album()
 
+    URM_train = dataReader.get_page_rank_URM()
+
     recommender_list = [
         # Random,
         # TopPop,
-        ItemKNNCBFRecommender,
+        # ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
         ItemKNNCFRecommender,
-        UserKNNCFRecommender,
+        # UserKNNCFRecommender,
         # P3alphaRecommender,
-        RP3betaRecommender,
+        # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
-        SLIMElasticNetRecommender
+        # SLIM_BPR_Cython,
+        # SLIMElasticNetRecommender
         # PureSVDRecommender
     ]
 
@@ -172,7 +174,7 @@ if __name__ == '__main__':
         '''
         onPop = True
         # On pop it used to choose if have dynamic weights for
-        recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
+        recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=False,
                                         d_weights=d_weights,
                                         URM_validation=URM_validation, onPop=onPop)
 
@@ -181,8 +183,8 @@ if __name__ == '__main__':
         old_similrity_matrix = None
         num_factors = 165
         l1_ratio = 1e-06
-        recommender.fit(**{"topK": [60, 100, 150, 146, 50, 100],
-                           "shrink": [5, 50, 10, -1, -1, -1],
+        recommender.fit(**{"topK": [100],
+                           "shrink": [50],
                            "pop": [130, 346],
                            "weights": [1, 1, 1, 1, 1, 1],
                            "force_compute_sim": False,

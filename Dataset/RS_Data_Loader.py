@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import scipy
 import scipy.sparse as sps
+import time
 from scipy import sparse
 from scipy.sparse import csr_matrix
 import pickle
@@ -20,6 +21,7 @@ import pickle
 from sklearn.feature_extraction.text import TfidfTransformer
 
 from Support_functions import get_evaluate_data as ged
+
 
 def create_URM_matrix(train):
     row = list(train.playlist_id)
@@ -41,6 +43,48 @@ def get_icm_matrix(tracks):
     to_ret = csr_matrix(feature_tracks)
     del feature_tracks
     return to_ret
+
+
+def compute_PageRank(G, beta=0.85, epsilon=10 ** -4):
+    '''
+    Efficient computation of the PageRank values using a sparse adjacency
+    matrix and the iterative power method.
+
+    Parameters
+    ----------
+    G : boolean adjacency matrix. np.bool8
+        If the element j,i is True, means that there is a link from i to j.
+    beta: 1-teleportation probability.
+    epsilon: stop condition. Minimum allowed amount of change in the PageRanks
+        between iterations.
+
+    Returns
+    -------
+    output : tuple
+        PageRank array normalized top one.
+        Number of iterations.
+
+    '''
+    # Test adjacency matrix is OK
+    n, _ = G.shape
+    assert (G.shape == (n, n))
+    # Constants Speed-UP
+    deg_out_beta = G.sum(axis=0).T / beta  # vector
+    # Initialize
+    ranks = np.ones((n, 1)) / n  # vector
+    time = 0
+    flag = True
+    while flag:
+        time += 1
+        with np.errstate(divide='ignore'):  # Ignore division by 0 on ranks/deg_out_beta
+            new_ranks = G.dot((ranks / deg_out_beta))  # vector
+        # Leaked PageRank
+        new_ranks += (1 - new_ranks.sum()) / n
+        # Stop condition
+        if np.linalg.norm(ranks - new_ranks, ord=1) <= epsilon:
+            flag = False
+        ranks = new_ranks
+    return ranks / ranks.max()
 
 
 def get_fake_test():
@@ -216,6 +260,37 @@ class RS_Data_Loader(object):
             self.ICM = get_icm_matrix(self.tracks)
         return self.ICM
 
+    def get_page_rank_URM(self):
+        try:
+            with open(os.path.join("Dataset", "URM_pagerank.pkl"), 'rb') as handle:
+                to_ret = pickle.load(handle)
+                return to_ret
+        except FileNotFoundError:
+            self.URM_train = self.URM_train.astype(float)
+            l = range(self.URM_train.shape[1])
+            s_all = set(l)
+            relation_mat_gen = self.URM_train.transpose().dot(self.URM_train).tocsc()
+            t = time.time()
+            for user_id in range(self.URM_train.shape[0]):
+                if user_id % 100 == 0:
+                    print(user_id)
+                    print("Avg time spent: {}".format((time.time() - t) / 100))
+                    t = time.time()
+                relation_mat = relation_mat_gen.copy()
+                songs_in_playlist = self.URM_train.indices[
+                                    self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
+                s_i = s_all - set(songs_in_playlist)
+                for i in s_i:
+                    relation_mat.data[relation_mat.indptr[i]:relation_mat.indptr[i + 1]].fill(0)
+                relation_mat.eliminate_zeros()
+                page_rank = compute_PageRank(relation_mat.transpose()).A1
+                self.URM_train[user_id].data *= page_rank[songs_in_playlist]
+                del relation_mat
+            print("URM modified")
+            with open(os.path.join("Dataset", "URM_pagerank.pkl"), 'wb') as handle:
+                pickle.dump(self.URM_train, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            return self.URM_train
+
     def create_complete_test(self):
         row = 50446
         col = 20635
@@ -305,7 +380,6 @@ class RS_Data_Loader(object):
                 else:
                     with open(os.path.join("Dataset", "UserCBF_album_random.pkl"), 'wb') as handle:
                         pickle.dump(UCM_tfidf, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
 
             return UCM_tfidf
 

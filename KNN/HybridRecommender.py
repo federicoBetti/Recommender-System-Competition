@@ -156,44 +156,44 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             else:  # ItemCF, UserCF, ItemCBF, UserCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
 
-    def change_weights(self, user_id):
-        if user_id in self.cluster_0:
-            # print("primo cluster")
-            return self.d_weights[0]
-            # return [0.45590938562950867, 0, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228,
-            #         0.19081956929601618, 0, 0.11267140391070507]
-            # return [0, 0, 0, 0, 0, 0, 0, 0]
-
-        elif user_id in self.cluster_1:
-            # print("secondo cluster")
-            return self.d_weights[1]
-            # return [0.973259052781316, 0, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645,
-            #         0.4723616073494711, 0, 0.4188403112229081]
-            # return [0, 0, 0, 0, 0, 0, 0, 0]
-
-        else:
-            # print("terzo cluster")
-            return self.d_weights[2]
-            # return [0.9780713488404191, 0, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535,
-            #         0.9504112133900943, 0, 0.9034510004379944]
-            # return [0, 0, 0, 0, 0, 0, 0, 0]
-
-    # def change_weights(self, level, pop):
-    #     if level < pop[0]:
+    # def change_weights(self, user_id):
+    #     if user_id in self.cluster_0:
+    #         # print("primo cluster")
+    #         return self.d_weights[0]
+    #         # return [0.45590938562950867, 0, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228,
+    #         #         0.19081956929601618, 0, 0.11267140391070507]
     #         # return [0, 0, 0, 0, 0, 0, 0, 0]
-    #         # return self.d_weights[0]
-    #         return [0.45590938562950867, 0, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228, 0.19081956929601618, 0, 0.11267140391070507]
     #
-    #     elif pop[0] < level < pop[1]:
-    #         # return self.weights
+    #     elif user_id in self.cluster_2:
+    #         # print("secondo cluster")
+    #         return self.d_weights[2]
+    #         # return [0.973259052781316, 0, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645,
+    #         #         0.4723616073494711, 0, 0.4188403112229081]
     #         # return [0, 0, 0, 0, 0, 0, 0, 0]
-    #         return [0.973259052781316, 0, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645, 0.4723616073494711, 0, 0.4188403112229081]
-    #         # return self.d_weights[1]
+    #
     #     else:
-    #         # return self.weights
+    #         # print("terzo cluster")
+    #         return self.d_weights[1]
+    #         # return [0.9780713488404191, 0, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535,
+    #         #         0.9504112133900943, 0, 0.9034510004379944]
     #         # return [0, 0, 0, 0, 0, 0, 0, 0]
-    #         # return self.d_weights[2]
-    #         return [0.9780713488404191, 0, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535, 0.9504112133900943, 0, 0.9034510004379944]
+
+    def change_weights(self, level, pop):
+        if level < pop[0]:
+            # return [0, 0, 0, 0, 0, 0, 0, 0]
+            return self.d_weights[0]
+            # return [0.45590938562950867, 0, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228, 0.19081956929601618, 0, 0.11267140391070507]
+
+        elif pop[0] < level < pop[1]:
+            # return self.weights
+            # return [0, 0, 0, 0, 0, 0, 0, 0]
+            # return [0.973259052781316, 0, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645, 0.4723616073494711, 0, 0.4188403112229081]
+            return self.d_weights[1]
+        else:
+            # return self.weights
+            # return [0, 0, 0, 0, 0, 0, 0, 0]
+            return self.d_weights[2]
+            # return [0.9780713488404191, 0, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535, 0.9504112133900943, 0, 0.9034510004379944]
 
     def compute_score_hybrid(self, recommender, user_id_array, dict_pop, remove_seen_flag=True,
                              remove_top_pop_flag=False,
@@ -416,7 +416,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                         for score, weight in zip(scores, weights):
                             final_score_line += score[user_index] * weight
                         for ind, score in enumerate(scores):
-                            self.gradients[ind] += sum(np.sign(final_score_line[test_songs] - 1)*score[user_index, test_songs])
+                            self.gradients[ind] += sum(np.sign(1 - final_score_line[test_songs])*score[user_index, test_songs])
                     self.MAE += sum(1 - final_score_line[test_songs])
                     final_score[user_index] = final_score_line
             else:

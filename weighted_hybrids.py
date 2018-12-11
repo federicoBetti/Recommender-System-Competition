@@ -122,9 +122,10 @@ if __name__ == '__main__':
         num_factors = 165
         l1_ratio = 1e-06
         # alpha = [1.9959734038074426, 0.10609858937191907, 0.4608371142966865, 1.905978868103585, 1.6329874929834254, 1.7878599729785276]
-        alpha = [1 / len(recommender_list)]*len(recommender_list)
+        # alpha = [1 / len(recommender_list)]*len(recommender_list)
+        alpha = [1.9776363304711735, 1.9608680480088492, 1.0335048246847351, 1.6497748563754502, 0.23766992546744725, 1.9529888767778305]
         i = 0
-        while i < 30:
+        while i < 80:
             recommender_class = HybridRecommender
             recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
                                             # d_weights=d_weights,
@@ -144,7 +145,7 @@ if __name__ == '__main__':
                                'alphaRP3': 0.4156476217553893,
                                'betaRP': 0.20430089442930188,
                                'l1_ratio': l1_ratio,
-                               "weights_to_dweights": 0})
+                               "weights_to_dweights": 1})
 
             print("Starting Evaluations...")
             t = time.time()
@@ -211,7 +212,7 @@ if __name__ == '__main__':
             # learning rate
             lr = 0.1
             # gradient descent
-            alpha = [a - lr * g for a, g in zip(alpha, grad)]
+            alpha = [a + lr * g for a, g in zip(alpha, grad)]
             # normalization
             alpha = [float(index) / sum(alpha) for index in alpha]
 

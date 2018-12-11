@@ -46,11 +46,11 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         self.dataset = None
         self.onPop = onPop
         self.moreHybrids = moreHybrids
-        with open(os.path.join("IntermediateComputations", "Cluster_0_dict_Kmeans_3.pkl"), 'rb') as handle:
+        with open(os.path.join("Dataset", "Cluster_0_dict_Kmeans_3.pkl"), 'rb') as handle:
             self.cluster_0 = pickle.load(handle)
-        with open(os.path.join("IntermediateComputations", "Cluster_1_dict_Kmeans_3.pkl"), 'rb') as handle:
+        with open(os.path.join("Dataset", "Cluster_1_dict_Kmeans_3.pkl"), 'rb') as handle:
             self.cluster_1 = pickle.load(handle)
-        with open(os.path.join("IntermediateComputations", "Cluster_2_dict_Kmeans_3.pkl"), 'rb') as handle:
+        with open(os.path.join("Dataset", "Cluster_2_dict_Kmeans_3.pkl"), 'rb') as handle:
             self.cluster_2 = pickle.load(handle)
 
         self.sparse_weights = sparse_weights

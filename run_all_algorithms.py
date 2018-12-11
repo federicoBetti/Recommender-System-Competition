@@ -28,7 +28,7 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = True
+    evaluate_algorithm = False
     delete_old_computations = False
     slim_after_hybrid = False
 
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     else:
         print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
 
-    filename = "best_hybrid_new_dataset.csv"
+    filename = "hybrid_new_clusterization.csv"
 
     dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
 
@@ -53,16 +53,16 @@ if __name__ == '__main__':
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
+        # UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        P3alphaRecommender,
+        # P3alphaRecommender,
         RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         SLIM_BPR_Cython,
-        # # SLIMElasticNetRecommender
-        PureSVDRecommender
+        SLIMElasticNetRecommender
+        # PureSVDRecommender
     ]
 
     weights = [
@@ -80,12 +80,12 @@ if __name__ == '__main__':
 
     # For hybrid with weighted estimated rating
     d_weights = [
-        [0.8642092327923815, 0.09023653608965065, 0.3356654984425519, 0.06502355090627832, 0.9217237522638174,
-         0.19259398063460798],
-        [0.9362414321955719, 0.5473467964388334, 0.38025413157482246, 0.14003803288444827, 0.9948640241343997,
-         0.8437930124447167],
-        [0.4273762621281618, 0.7553261304127474, 0.09184673786737008, 0.15581187436280386, 0.7941195047691947,
-         0.010983916437545704]
+        [1.9230570603809505, 1.2499920157425073, 1.7712219594081422, 1.140638919857436, 0.9347702592960672,
+         0.09912620695241592],
+        [1.7517282474658789, 0.2058105696805692, 0.008177466960371138, 1.8812715206401047, 1.907393629502697,
+         0.01804069758728377],
+        [1.60626412584349, 1.1918631997835885, 1.1575206790255415, 0.46866811198310976, 0.9671184276762437,
+         0.3074867937491681]
     ]
 
     d_best = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
@@ -173,19 +173,18 @@ if __name__ == '__main__':
         onPop = True
         # On pop it used to choose if have dynamic weights for
         recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
-                                        #d_weights=d_weights,
+                                        d_weights=d_weights,
                                         URM_validation=URM_validation, onPop=onPop)
 
         lambda_i = 0.1
         lambda_j = 0.05
         old_similrity_matrix = None
         num_factors = 165
-        recommender.fit(**{"topK": [60, 150, 100, 150, 56, 146, 50, -1],
-                           "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
-                           # "topK": [100], "shrink": [50],
-                           "pop": [136, 323],
-                           "weights": [1, 1, 1, 1, 1, 1, 1, 1],
-                           # put -1 where useless in order to force you to change when the became useful
+        l1_ratio = 1e-06
+        recommender.fit(**{"topK": [60, 100, 150, 146, 50, 100],
+                           "shrink": [5, 50, 10, -1, -1, -1],
+                           "pop": [130, 346],
+                           "weights": [1, 1, 1, 1, 1, 1],
                            "force_compute_sim": False,
                            "old_similarity_matrix": old_similrity_matrix,
                            "epochs": 50, "lambda_i": lambda_i,
@@ -193,7 +192,9 @@ if __name__ == '__main__':
                            "num_factors": num_factors,
                            'alphaP3': 1.160296393373262,
                            'alphaRP3': 0.4156476217553893,
-                           'betaRP': 0.20430089442930188})
+                           'betaRP': 0.20430089442930188,
+                           'l1_ratio': l1_ratio,
+                           "weights_to_dweights": -1})
 
         print("Starting Evaluations...")
         # to indicate if plotting for lenght or for pop

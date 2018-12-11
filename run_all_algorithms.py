@@ -186,7 +186,7 @@ if __name__ == '__main__':
         recommender.fit(**{"topK": [100],
                            "shrink": [50],
                            "pop": [130, 346],
-                           "weights": [1, 1, 1, 1, 1, 1],
+                           "weights": [1],
                            "force_compute_sim": False,
                            "old_similarity_matrix": old_similrity_matrix,
                            "epochs": 50, "lambda_i": lambda_i,

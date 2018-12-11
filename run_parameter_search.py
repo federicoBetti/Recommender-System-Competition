@@ -202,7 +202,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     hyperparamethers_range_dictionary["weights3"] = range(0, 1)
     hyperparamethers_range_dictionary["weights4"] = range(0, 1)
     hyperparamethers_range_dictionary["weights5"] = range(0, 1)
-    # hyperparamethers_range_dictionary["weights6"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights6"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights7"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["weights8"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["pop1"] = list(range(80, 200))  # list(np.linspace(0, 1, 11))
@@ -213,7 +213,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
         # TopPop,
         ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
-        # ItemKNNCFRecommender,
+        ItemKNNCFRecommender,
         UserKNNCFRecommender,
         # P3alphaRecommender,
         RP3betaRecommender,
@@ -241,10 +241,10 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": True,
                                                                        "UCM_train": UCM_train},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 150, 146, 50, 100],
-                                                               "shrink": [5, 10, -1, -1, -1],
+                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 100, 150, 146, 50, 100],
+                                                               "shrink": [5, 50, 10, -1, -1, -1],
                                                                "pop": [130, 346],
-                                                               "weights": [1, 1, 1, 1, 1],
+                                                               "weights": [1, 1, 1, 1, 1, 1],
                                                                "force_compute_sim": False,
                                                                "old_similarity_matrix": old_similrity_matrix,
                                                                "epochs": 50, "lambda_i": lambda_i,

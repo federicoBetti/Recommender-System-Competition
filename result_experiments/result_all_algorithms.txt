@@ -811,3 +811,10 @@ CUTOFF: 10 - ROC_AUC: 0.3042412, PRECISION: 0.1696586, RECALL: 0.1666123, RECALL
 Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
 CUTOFF: 10 - ROC_AUC: 0.1706022, PRECISION: 0.0975727, RECALL: 0.0965287, RECALL_TEST_LEN: 0.0975727, MAP: 0.0495189, MRR: 0.1275267, NDCG: 0.0807356, F1: 0.0970479, HIT_RATE: 0.4234032, ARHR: 0.1631641, NOVELTY: 0.0070034, DIVERSITY_MEAN_INTER_LIST: 0.9972950, DIVERSITY_HERFINDAHL: 0.9997275, COVERAGE_ITEM: 0.7100073, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.3184171, SHANNON_ENTROPY: 12.5673516, 
 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'NoneType' object has no attribute 'tocsr'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Knns, Shrinks and recommender list have different lenghts 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'feature_weighting_index'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: TopK not valid. Acceptable values are either False or a positive integer value. Provided value was '-1'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3184560, PRECISION: 0.1794510, RECALL: 0.1763006, RECALL_TEST_LEN: 0.1794510, MAP: 0.0985343, MRR: 0.2680269, NDCG: 0.1588481, F1: 0.1778618, HIT_RATE: 0.8562423, ARHR: 0.3533488, NOVELTY: 0.0062735, DIVERSITY_MEAN_INTER_LIST: 0.9956204, DIVERSITY_HERFINDAHL: 0.9995601, COVERAGE_ITEM: 0.7208626, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2644320, SHANNON_ENTROPY: 12.2190128, 
+

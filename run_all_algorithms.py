@@ -163,8 +163,8 @@ if __name__ == '__main__':
         '''
         onPop = True
         # On pop it used to choose if have dynamic weights for
-        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=False,
-                                        d_weights=d_weights,
+        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=True,
+                                        d_weights=d_weights, UCM_train=UCM_tfidf,
                                         URM_validation=URM_validation, onPop=onPop)
 
         lambda_i = 0.1
@@ -172,20 +172,22 @@ if __name__ == '__main__':
         old_similrity_matrix = None
         num_factors = 165
         l1_ratio = 1e-06
-        recommender.fit(**{"topK": [60],
-                           "shrink": [5],
-                           "pop": [130, 346],
-                           "weights": [1],
-                           "force_compute_sim": False,
-                           "old_similarity_matrix": old_similrity_matrix,
-                           "epochs": 50, "lambda_i": lambda_i,
-                           "lambda_j": lambda_j,
-                           "num_factors": num_factors,
-                           'alphaP3': 1.160296393373262,
-                           'alphaRP3': 0.49774549098196397,
-                           'betaRP': 0.2333486973947896,
-                           'l1_ratio': l1_ratio,
-                           "weights_to_dweights": -1})
+        recommender.fit(**{
+            "topK": [60, 100, 130, 240, 146, 91, 50, -1],
+            "shrink": [5, 10, 2, 19, -1, -1, -1, -1],
+            "pop": [130, 346],
+            "weights": [1, 1, 1, 1, 1, 1, 1, 1],
+            "force_compute_sim": True,
+            "feature_weighting_index": 0,
+            "old_similarity_matrix": old_similrity_matrix,
+            "epochs": 50, "lambda_i": lambda_i,
+            "lambda_j": lambda_j,
+            "num_factors": num_factors,
+            'alphaP3': 1.160296393373262,
+            'alphaRP3': 0.49774549098196397,
+            'betaRP': 0.2333486973947896,
+            'l1_ratio': l1_ratio,
+            "weights_to_dweights": -1})
 
         print("Starting Evaluations...")
         # to indicate if plotting for lenght or for pop

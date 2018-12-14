@@ -1,0 +1,49 @@
+BayesianSearch: New best config found. Config: {'top1': 355, 'shrink1': 32, 'normalize': False} - MAP results: 0.020968926896822077 - time: 2018-12-14 21:09:29.679497
+BayesianSearch: Config is suboptimal. Config: {'top1': 545, 'shrink1': 35, 'normalize': False} - MAP results: 0.02073608618979623 - time: 2018-12-14 21:10:33.438583
+BayesianSearch: New best config found. Config: {'top1': 35, 'shrink1': 39, 'normalize': True} - MAP results: 0.021871538360814683 - time: 2018-12-14 21:11:23.003887
+BayesianSearch: Config is suboptimal. Config: {'top1': 205, 'shrink1': 25, 'normalize': False} - MAP results: 0.021434509241810947 - time: 2018-12-14 21:12:25.744415
+BayesianSearch: Config is suboptimal. Config: {'top1': 335, 'shrink1': 25, 'normalize': False} - MAP results: 0.021243212784342075 - time: 2018-12-14 21:13:34.855214
+BayesianSearch: New best config found. Config: {'top1': 155, 'shrink1': 14, 'normalize': True} - MAP results: 0.022126619889836847 - time: 2018-12-14 21:14:33.458682
+BayesianSearch: New best config found. Config: {'top1': 515, 'shrink1': 3, 'normalize': True} - MAP results: 0.023349366913695678 - time: 2018-12-14 21:15:32.287657
+BayesianSearch: Config is suboptimal. Config: {'top1': 185, 'shrink1': 7, 'normalize': False} - MAP results: 0.02272936005751845 - time: 2018-12-14 21:16:32.974518
+BayesianSearch: Config is suboptimal. Config: {'top1': 525, 'shrink1': 0, 'normalize': False} - MAP results: 0.021993180657834153 - time: 2018-12-14 21:17:51.367963
+BayesianSearch: Config is suboptimal. Config: {'top1': 185, 'shrink1': 49, 'normalize': True} - MAP results: 0.021033201142358408 - time: 2018-12-14 21:19:07.522957
+BayesianSearch: Config is suboptimal. Config: {'top1': 5, 'shrink1': 0, 'normalize': True} - MAP results: 0.01849223208459005 - time: 2018-12-14 21:20:10.171119
+BayesianSearch: Config is suboptimal. Config: {'top1': 295, 'shrink1': 0, 'normalize': True} - MAP results: 0.021938323183157336 - time: 2018-12-14 21:21:23.619983
+BayesianSearch: Config is suboptimal. Config: {'top1': 595, 'shrink1': 14, 'normalize': True} - MAP results: 0.02159329935953405 - time: 2018-12-14 21:22:39.928385
+BayesianSearch: Config is suboptimal. Config: {'top1': 585, 'shrink1': 49, 'normalize': True} - MAP results: 0.02053637126246829 - time: 2018-12-14 21:23:54.057082
+BayesianSearch: Config is suboptimal. Config: {'top1': 5, 'shrink1': 48, 'normalize': False} - MAP results: 0.019991444259383182 - time: 2018-12-14 21:24:50.766747
+BayesianSearch: Config is suboptimal. Config: {'top1': 455, 'shrink1': 8, 'normalize': False} - MAP results: 0.02230780898669585 - time: 2018-12-14 21:25:50.204885
+BayesianSearch: Config is suboptimal. Config: {'top1': 425, 'shrink1': 49, 'normalize': True} - MAP results: 0.020632525459197738 - time: 2018-12-14 21:27:05.003068
+BayesianSearch: Config is suboptimal. Config: {'top1': 5, 'shrink1': 23, 'normalize': False} - MAP results: 0.020372903965586386 - time: 2018-12-14 21:28:02.107790
+BayesianSearch: Config is suboptimal. Config: {'top1': 485, 'shrink1': 13, 'normalize': True} - MAP results: 0.021774140520675 - time: 2018-12-14 21:29:14.517800
+BayesianSearch: Config is suboptimal. Config: {'top1': 295, 'shrink1': 9, 'normalize': True} - MAP results: 0.02222815653306744 - time: 2018-12-14 21:30:41.375892
+BayesianSearch: Config is suboptimal. Config: {'top1': 115, 'shrink1': 41, 'normalize': False} - MAP results: 0.0213002901402183 - time: 2018-12-14 21:31:59.018497
+BayesianSearch: New best config found. Config: {'top1': 455, 'shrink1': 3, 'normalize': True} - MAP results: 0.023355260594269546 - time: 2018-12-14 21:33:09.706016
+BayesianSearch: New best config found. Config: {'top1': 145, 'shrink1': 2, 'normalize': True} - MAP results: 0.023695734807672227 - time: 2018-12-14 21:34:19.712629
+BayesianSearch: Config is suboptimal. Config: {'top1': 185, 'shrink1': 5, 'normalize': True} - MAP results: 0.023039500192922578 - time: 2018-12-14 21:35:31.525671
+BayesianSearch: Config is suboptimal. Config: {'top1': 155, 'shrink1': 0, 'normalize': False} - MAP results: 0.021730361125472743 - time: 2018-12-14 21:36:52.632763
+BayesianSearch: Config is suboptimal. Config: {'top1': 65, 'shrink1': 7, 'normalize': True} - MAP results: 0.023163262072182597 - time: 2018-12-14 21:38:31.979269
+BayesianSearch: Config is suboptimal. Config: {'top1': 285, 'shrink1': 49, 'normalize': False} - MAP results: 0.02084760568070929 - time: 2018-12-14 21:39:47.992896
+BayesianSearch: Config is suboptimal. Config: {'top1': 595, 'shrink1': 2, 'normalize': True} - MAP results: 0.02362133546168026 - time: 2018-12-14 21:41:11.513225
+BayesianSearch: Config is suboptimal. Config: {'top1': 115, 'shrink1': 5, 'normalize': True} - MAP results: 0.023245542951006504 - time: 2018-12-14 21:42:23.059433
+BayesianSearch: Config is suboptimal. Config: {'top1': 505, 'shrink1': 49, 'normalize': False} - MAP results: 0.020564518850632898 - time: 2018-12-14 21:43:42.656788
+BayesianSearch: Config is suboptimal. Config: {'top1': 5, 'shrink1': 12, 'normalize': True} - MAP results: 0.020814717152328497 - time: 2018-12-14 21:44:40.477763
+BayesianSearch: Config is suboptimal. Config: {'top1': 85, 'shrink1': 27, 'normalize': False} - MAP results: 0.02183650256192461 - time: 2018-12-14 21:45:51.929447
+BayesianSearch: Config is suboptimal. Config: {'top1': 85, 'shrink1': 49, 'normalize': False} - MAP results: 0.021474756413032522 - time: 2018-12-14 21:46:55.709462
+BayesianSearch: Config is suboptimal. Config: {'top1': 595, 'shrink1': 41, 'normalize': False} - MAP results: 0.020636380059533863 - time: 2018-12-14 21:48:14.533200
+BayesianSearch: Config is suboptimal. Config: {'top1': 595, 'shrink1': 5, 'normalize': True} - MAP results: 0.02274664624642174 - time: 2018-12-14 21:49:27.677273
+BayesianSearch: Config is suboptimal. Config: {'top1': 595, 'shrink1': 27, 'normalize': True} - MAP results: 0.02095248114208512 - time: 2018-12-14 21:50:47.709947
+BayesianSearch: Config is suboptimal. Config: {'top1': 235, 'shrink1': 15, 'normalize': False} - MAP results: 0.021881651171674607 - time: 2018-12-14 21:52:04.534008
+BayesianSearch: Config is suboptimal. Config: {'top1': 375, 'shrink1': 5, 'normalize': True} - MAP results: 0.022828058990324345 - time: 2018-12-14 21:53:20.645691
+BayesianSearch: Config is suboptimal. Config: {'top1': 565, 'shrink1': 0, 'normalize': True} - MAP results: 0.02201366136748533 - time: 2018-12-14 21:54:53.309614
+BayesianSearch: Config is suboptimal. Config: {'top1': 475, 'shrink1': 25, 'normalize': False} - MAP results: 0.021120100440028544 - time: 2018-12-14 21:56:04.078832
+BayesianSearch: New best config found. Config: {'top1': 595, 'shrink1': 1, 'normalize': False} - MAP results: 0.023733606478386113 - time: 2018-12-14 21:57:31.783268
+BayesianSearch: Config is suboptimal. Config: {'top1': 5, 'shrink1': 38, 'normalize': False} - MAP results: 0.020100909567933953 - time: 2018-12-14 21:58:34.008832
+BayesianSearch: Config is suboptimal. Config: {'top1': 75, 'shrink1': 17, 'normalize': True} - MAP results: 0.02233115949644511 - time: 2018-12-14 21:59:35.403086
+BayesianSearch: Config is suboptimal. Config: {'top1': 255, 'shrink1': 36, 'normalize': False} - MAP results: 0.02108249752657294 - time: 2018-12-14 22:00:37.458314
+BayesianSearch: Config is suboptimal. Config: {'top1': 105, 'shrink1': 1, 'normalize': True} - MAP results: 0.023657525499278537 - time: 2018-12-14 22:01:27.240892
+BayesianSearch: Config is suboptimal. Config: {'top1': 595, 'shrink1': 0, 'normalize': True} - MAP results: 0.02200628305255089 - time: 2018-12-14 22:02:29.960593
+BayesianSearch: Config is suboptimal. Config: {'top1': 555, 'shrink1': 19, 'normalize': False} - MAP results: 0.02127469981496468 - time: 2018-12-14 22:03:38.345755
+BayesianSearch: Config is suboptimal. Config: {'top1': 455, 'shrink1': 40, 'normalize': True} - MAP results: 0.020733943848235806 - time: 2018-12-14 22:04:36.255494
+BayesianSearch: Best config is: Config {'top1': 595, 'shrink1': 1, 'normalize': False}, MAP value is 0.0237

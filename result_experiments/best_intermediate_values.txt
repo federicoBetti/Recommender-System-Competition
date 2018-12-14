@@ -1,4 +1,16 @@
 OLD
-1st sector best: 0.0275
-2nd sector best: 0.557
-3rd sector best: 0.05577 (forse)
+1st sector best: 0.0275 {'weights1': 0.45590938562950867, 'weights2': 0.017972928905949592, 'weights3': 0.23905548168035573, 'weights4': 0.017005850670624212, 'weights5': 0.9443556793576228, 'weights6': 0.19081956929601618, 'weights7': 0.11601757370322985, 'weights8': 0.11267140391070507, 'normalize': False}
+2nd sector best: 0.0557 'weights1': 0.973259052781316, 'weights2': 0.037386979507335605, 'weights3': 0.8477517414017691, 'weights4': 0.33288193455193427, 'weights5': 0.9696801027638645, 'weights6': 0.4723616073494711, 'weights7': 0.5939341460905799, 'weights8': 0.4188403112229081, 'normalize': False
+3rd sector best: 0.05577 (forse) {'weights1': 0.3569921593580413, 'weights2': 0.9069604700163437, 'weights3': 0.6758882528797271, 'weights4': 0.9532270513762395, 'weights5': 0.7214902163242063, 'weights6': 0.318974162283415, 'weights7': 0.2676390127613081, 'weights8': 0.004375906784252703
+
+Strange recommender parameters:
+
+    lambda_i = 0.1
+    lambda_j = 0.05
+    old_similrity_matrix = None
+    num_factors = 165
+    l1_ratio = 1e-06
+
+    'alphaP3': 1.160296393373262,
+    'alphaRP3': 0.4156476217553893,
+    'betaRP': 0.20430089442930188,

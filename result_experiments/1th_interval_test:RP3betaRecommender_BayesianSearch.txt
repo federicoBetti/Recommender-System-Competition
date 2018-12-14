@@ -44,3 +44,4 @@ BayesianSearch: Config is suboptimal. Config: {'top1': 35, 'normalize_similarity
 BayesianSearch: Config is suboptimal. Config: {'top1': 75, 'normalize_similarity': False, 'alphaRP3': 0.4296432865731463, 'betaRP': 0.30946292585170343} - MAP results: 0.024006827837813154 - time: 2018-12-14 23:13:53.382769
 BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'normalize_similarity': False, 'alphaRP3': 2.0, 'betaRP': 0.33750501002004013} - MAP results: 0.01458622162869557 - time: 2018-12-14 23:14:44.884458
 BayesianSearch: Config is suboptimal. Config: {'top1': 795, 'normalize_similarity': True, 'alphaRP3': 0.30946292585170343, 'betaRP': 0.24136072144288578} - MAP results: 0.02186836065280816 - time: 2018-12-14 23:15:54.435329
+BayesianSearch: New best config found. Config: {'top1': 30, 'normalize_similarity': False, 'alphaRP3': 0.48172144288577157, 'betaRP': 0.2774148296593187} - MAP results: 0.024344454045874455 - time: 2018-12-14 23:16:53.027794

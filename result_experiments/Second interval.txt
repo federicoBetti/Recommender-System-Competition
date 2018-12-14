@@ -6,5 +6,5 @@ USER CF:  {'top1': 160, 'shrink1': 150} - MAP results: 0.05131
 P3: {'top1': 50, 'shrink1': -1, 'alphaP3': 1.2989478957915832}, MAP value is 0.0524
 PURE SVD: {'num_factors': 391},  MAP value is 0.0411
 ITEM CB: {'top1': 21, 'shrink1': 75, 'feature_weighting_index': 1} - MAP results: 0.02643
-SLIM: {'top1': 290, 'sgd_mode': 'adagrad', 'lambda_i': 0.21830913494129978, 'lambda_j': 0.6874107058863184} - MAP results: 0.04876
+SLIM: Config {'top1': 290, 'sgd_mode': 'adagrad', 'lambda_i': 0.21830913494129978, 'lambda_j': 0.6874107058863184}, MAP value is 0.0488
 R3:{'top1': 70, 'normalize_similarity': True, 'alphaRP3': 0.9223827655310622, 'betaRP': 0.2213306613226453}, MAP value is 0.0540

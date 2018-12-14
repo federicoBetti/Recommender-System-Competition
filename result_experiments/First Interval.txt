@@ -1,3 +1,4 @@
 FIRST INTERVAL
 
 P3: {'top1': 15, 'alphaP3': 0.7100641282565131}, MAP value is 0.0231
+RP3: {'top1': 30, 'normalize_similarity': False, 'alphaRP3': 0.48172144288577157, 'betaRP': 0.2774148296593187}, MAP value is 0.0243

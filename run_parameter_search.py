@@ -248,8 +248,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                                                                        "UCM_train": UCM_train},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {
-                                 "topK": [15, 595, 105, 20, 131],
-                                 "shrink": [210, 1, 30, -1, -1],
+                                 "topK": [15, 595, 105, 20],
+                                 "shrink": [210, 1, 30, -1],
                                  "pop": [130, 346],
                                  "weights": [1, 1, 1, 1, 1],
                                  "force_compute_sim": False,

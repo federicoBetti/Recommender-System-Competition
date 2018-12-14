@@ -128,16 +128,20 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         self.gradients = [0] * self.recommender_number
         self.MAE = 0
+        p3counter = 0
+        rp3bcounter = 0
+        slim_counter = 0
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
             if recommender.__class__ is SLIM_BPR_Cython:
                 if "lambda_i" in list(similarity_args.keys()):  # lambda i and j provided in args
                     recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
-                                    force_compute_sim=force_compute_sim, topK=knn, lambda_i=similarity_args["lambda_i"],
-                                    lambda_j=similarity_args["lambda_j"])
+                                    force_compute_sim=force_compute_sim, topK=knn, lambda_i=similarity_args["lambda_i"][slim_counter],
+                                    lambda_j=similarity_args["lambda_j"][slim_counter])
                 else:
                     recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
                                     force_compute_sim=force_compute_sim, topK=knn)
+                slim_counter += 1
 
             elif recommender.__class__ in [MatrixFactorization_BPR_Cython, MatrixFactorization_FunkSVD_Cython,
                                            MatrixFactorization_AsySVD_Cython]:
@@ -150,12 +154,15 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 recommender.fit(num_factors=similarity_args["num_factors"], force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [P3alphaRecommender]:
-                recommender.fit(topK=knn, alpha=similarity_args["alphaP3"], min_rating=0, implicit=True,
+                recommender.fit(topK=knn, alpha=similarity_args["alphaP3"][p3counter], min_rating=0, implicit=True,
                                 normalize_similarity=True, force_compute_sim=force_compute_sim)
+                p3counter += 1
 
             elif recommender.__class__ in [RP3betaRecommender]:
-                recommender.fit(alpha=similarity_args["alphaRP3"], beta=similarity_args["betaRP"], min_rating=0,
+                recommender.fit(alpha=similarity_args["alphaRP3"][rp3bcounter],
+                                beta=similarity_args["betaRP"][rp3bcounter], min_rating=0,
                                 topK=knn, implicit=True, normalize_similarity=True, force_compute_sim=force_compute_sim)
+                rp3bcounter += 1
 
             elif recommender.__class__ in [ItemKNNCBFRecommender]:
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,

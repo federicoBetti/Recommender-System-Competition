@@ -55,16 +55,16 @@ if __name__ == '__main__':
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
+        # UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        P3alphaRecommender,
+        # P3alphaRecommender,
         RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
+        # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
-        PureSVDRecommender
+        # PureSVDRecommender
     ]
     recommender_list2 = [
         # Random,
@@ -97,12 +97,10 @@ if __name__ == '__main__':
         # PureSVDRecommender
     ]
 
-    d_weights_3 = [0, 0.10003298046702414, 0.7151535303946209, 0.7485507094041199]
+
     # For hybrid with weighted estimated rating
     d_weights = [
-        [0.45590938562950867, 0.017972928905949592, 0.23905548168035573,
-         0.017005850670624212, 0.9443556793576228, 0.19081956929601618,
-         0.11601757370322985, 0.11267140391070507] + [0] * len(recommender_list2) + [0] * len(recommender_list3),
+        [0.6936763453666485, 0.8818900949901204, 0.028286087945956884, 0.9108661028648041] + [0] * len(recommender_list2) + [0] * len(recommender_list3),
         [0] * len(recommender_list1) + [0.973259052781316, 0.037386979507335605, 0.8477517414017691,
                                         0.33288193455193427, 0.9696801027638645,
                                         0.4723616073494711, 0.5939341460905799, 0.4188403112229081]
@@ -205,8 +203,8 @@ if __name__ == '__main__':
         num_factors = 165
         l1_ratio = 1e-06
         recommender.fit(**{
-            "topK": [0, 0, 0, 0, 0] + [0, 0, 0, 0, 0] + [250, 180, 240, 91],
-            "shrink": [0, 0, 0, 0, 0] + [0, 0, 0, 0, 0] + [55, 2, 19, -1],
+            "topK": [15, 595, 105, 20] + [0, 0, 0, 0, 0] + [250, 180, 240, 91],
+            "shrink": [210, 1, 30, -1] + [0, 0, 0, 0, 0] + [55, 2, 19, -1],
             "pop": [130, 346],
             "weights": [1, 1, 1, 1, 1, 1, 1, 1],
             "force_compute_sim": True,
@@ -216,8 +214,8 @@ if __name__ == '__main__':
             "lambda_j": lambda_j,
             "num_factors": num_factors,
             'alphaP3': 1.160296393373262,
-            'alphaRP3': [0.49774549098196397],
-            'betaRP': [0.2333486973947896],
+            'alphaRP3': [0.457685370741483,    0.49774549098196397],
+            'betaRP': [0.289432865731463,    0.2333486973947896],
             'l1_ratio': l1_ratio,
             "weights_to_dweights": -1})
 

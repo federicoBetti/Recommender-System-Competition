@@ -351,8 +351,6 @@ class SequentialEvaluator(Evaluator):
                 is_relevant = np.in1d(recommended_items, relevant_items, assume_unique=True)
 
                 user_profile = self.URM_train.indices[self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                key_pop = int(ged.playlist_popularity(user_profile, pop_dict=dict_song_pop))
-                key_len = int(ged.lenght_playlist(user_profile))
 
                 # added to_ret here
                 to_ret.append((user_id, recommended_items[:self.max_cutoff]))
@@ -401,15 +399,20 @@ class SequentialEvaluator(Evaluator):
                             recommended_items_current_cutoff)
 
                 # create both data structures for plotting: lenght and popularity
-                if key_pop not in data_stats_pop:
-                    data_stats_pop[key_pop] = [current_map]
-                else:
-                    data_stats_pop[key_pop].append(current_map)
+                if plot_stats:
 
-                if key_len not in data_stats_len:
-                    data_stats_len[key_len] = [current_map]
-                else:
-                    data_stats_len[key_len].append(current_map)
+                    key_pop = int(ged.playlist_popularity(user_profile, pop_dict=dict_song_pop))
+                    key_len = int(ged.lenght_playlist(user_profile))
+
+                    if key_pop not in data_stats_pop:
+                        data_stats_pop[key_pop] = [current_map]
+                    else:
+                        data_stats_pop[key_pop].append(current_map)
+
+                    if key_len not in data_stats_len:
+                        data_stats_len[key_len] = [current_map]
+                    else:
+                        data_stats_len[key_len].append(current_map)
 
                 if time.time() - start_time_print > 30 or n_users_evaluated == len(self.usersToEvaluate):
                     print(

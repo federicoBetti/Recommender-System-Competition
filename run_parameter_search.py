@@ -42,7 +42,7 @@ def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, UR
     # it saves best results in the txt file
     hyperparamethers_range_dictionary = {}
     hyperparamethers_range_dictionary["topK"] = list(range(10, 800, 10))
-    hyperparamethers_range_dictionary["shrink"] = list(range(1, 200, 5))
+    hyperparamethers_range_dictionary["shrink"] = list(range(2, 100, 2)) + list(range(100, 300, 20))
     hyperparamethers_range_dictionary["similarity"] = [similarity_type]
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
@@ -55,10 +55,12 @@ def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, UR
         hyperparamethers_range_dictionary["tversky_beta"] = range(0, 2)
         hyperparamethers_range_dictionary["normalize"] = [True]
 
-    if UCM_train is None:
+    if UCM_train is None: # Collaborative Filtering Algorithms
         first_dict = [URM_train]
-    else:
+        hyperparamethers_range_dictionary["tfidf"] = [True, False]
+    else: # Content Base Filtering Algorithms
         first_dict = [UCM_train, URM_train]
+        hyperparamethers_range_dictionary["feature_weighting_index"] = [0, 1, 2]
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: first_dict,
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
@@ -71,6 +73,7 @@ def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, UR
     # questo runna fit del recommender
     best_parameters = parameterSearch.search(recommenderDictionary,
                                              n_cases=n_cases,
+                                             init_points=20,
                                              output_root_path=output_root_path_similarity,
                                              metric=metric_to_optimize)
     print(best_parameters)
@@ -270,7 +273,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
 def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, metric_to_optimize="MAP",
                                      evaluator_validation=None, evaluator_test=None,
                                      evaluator_validation_earlystopping=None,
-                                     output_root_path="result_experiments/", parallelizeKNN=True, n_cases=30,
+                                     output_root_path="result_experiments/", parallelizeKNN=False, n_cases=30,
                                      URM_validation=None, UCM_train=None):
     from ParameterTuning.AbstractClassSearch import DictionaryKeys
 
@@ -282,8 +285,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         output_root_path_rec_name = output_root_path + recommender_class.RECOMMENDER_NAME
 
-        parameterSearch = BayesianSearch(recommender_class, evaluator_validation=evaluator_validation,
-                                         evaluator_test=evaluator_test)
+        parameterSearch = BayesianSearch(recommender_class, evaluator_validation=evaluator_validation)
 
         if recommender_class in [TopPop, Random]:
             recommender = recommender_class(URM_train)
@@ -338,12 +340,12 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         if recommender_class is ItemKNNCFRecommender:
 
-            similarity_type_list = ['cosine', 'jaccard', "asymmetric", "dice", "tversky"]
+            similarity_type_list = ['cosine']#, 'jaccard', "asymmetric", "dice", "tversky"]
 
             run_KNNCFRecommender_on_similarity_type_partial = partial(run_KNNCFRecommender_on_similarity_type,
                                                                       parameterSearch=parameterSearch,
                                                                       URM_train=URM_train,
-                                                                      n_cases=1,  # = n_cases
+                                                                      n_cases=30,  # = n_cases
                                                                       output_root_path=output_root_path_rec_name,
                                                                       metric_to_optimize=metric_to_optimize)
 
@@ -393,7 +395,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
             run_KNNCFRecommender_on_similarity_type_partial = partial(run_KNNCFRecommender_on_similarity_type,
                                                                       parameterSearch=parameterSearch,
                                                                       URM_train=URM_train,
-                                                                      n_cases=n_cases,
+                                                                      n_cases=30,
                                                                       output_root_path=output_root_path_rec_name,
                                                                       metric_to_optimize=metric_to_optimize,
                                                                       UCM_train=UCM_train)
@@ -680,7 +682,7 @@ def read_data_split_and_search():
     collaborative_algorithm_list = [
         # Random,
         # TopPop,
-        # ItemKNNCBFRecommender,
+        ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
         # P3alphaRecommender,
         # RP3betaRecommender,
@@ -693,7 +695,7 @@ def read_data_split_and_search():
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
         # MultiThreadSLIM_ElasticNet,
-        HybridRecommender
+        # HybridRecommender
     ]
 
     # if UserKNNCBRecommender in collaborative_algorithm_list:

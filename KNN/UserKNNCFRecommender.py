@@ -13,6 +13,7 @@ from Base.Recommender_utils import check_matrix
 from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 
 from Base.Similarity.Compute_Similarity import Compute_Similarity
+from Dataset.RS_Data_Loader import get_tfidf
 from Support_functions import get_evaluate_data as ged
 
 
@@ -33,7 +34,7 @@ class UserKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
 
         self.compute_item_score = self.compute_score_user_based
 
-    def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True, **similarity_args):
+    def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True, tfidf=False, **similarity_args):
 
         self.topK = topK
         self.shrink = shrink
@@ -51,9 +52,11 @@ class UserKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
                 print("Saved User CF Similarity Matrix Used!")
                 return
 
-
-        # TODO: test tfidf
-        similarity = Compute_Similarity(self.URM_train.T, shrink=shrink, topK=topK, normalize=normalize,
+        if tfidf:
+            sim_matrix_pre = get_tfidf(self.URM_train)
+        else:
+            sim_matrix_pre = self.URM_train
+        similarity = Compute_Similarity(sim_matrix_pre.T, shrink=shrink, topK=topK, normalize=normalize,
                                         similarity=similarity, **similarity_args)
 
         if self.sparse_weights:

@@ -37,3 +37,11 @@ BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 780, 'simil
 BayesianSearch: Config is suboptimal. Config: {'topK': 460, 'shrink': 370, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.03310626984127011 - time: 2018-12-01 11:58:27.299677
 BayesianSearch: Config is suboptimal. Config: {'topK': 500, 'shrink': 770, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.033093531746032016 - time: 2018-12-01 11:58:41.529152
 BayesianSearch: Best config is: Config {'topK': 10, 'shrink': 680, 'similarity': 'cosine', 'normalize': True}, MAP value is 0.0348
+BayesianSearch: New best config found. Config: {'topK': 250, 'shrink': 220, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 2} - MAP results: 0.04947521131162381 - time: 2018-12-14 08:34:01.643032
+BayesianSearch: New best config found. Config: {'topK': 250, 'shrink': 92, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 1} - MAP results: 0.0514228952616689 - time: 2018-12-14 08:36:43.883236
+BayesianSearch: New best config found. Config: {'topK': 290, 'shrink': 64, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 1} - MAP results: 0.05146861251104569 - time: 2018-12-14 08:39:00.673146
+BayesianSearch: Config is suboptimal. Config: {'topK': 740, 'shrink': 200, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 2} - MAP results: 0.04951100953056353 - time: 2018-12-14 08:41:16.625191
+BayesianSearch: New best config found. Config: {'topK': 610, 'shrink': 12, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 2} - MAP results: 0.04952164344275864 - time: 2018-12-14 08:45:02.746941
+BayesianSearch: New best config found. Config: {'topK': 160, 'shrink': 56, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 0} - MAP results: 0.05151696578038195 - time: 2018-12-14 08:45:44.563367
+BayesianSearch: New best config found. Config: {'topK': 130, 'shrink': 120, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 1} - MAP results: 0.051537146632637164 - time: 2018-12-14 08:46:30.111057
+BayesianSearch: New best config found. Config: {'topK': 20, 'shrink': 52, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 1} - MAP results: 0.05272826678294754 - time: 2018-12-14 08:47:10.574598

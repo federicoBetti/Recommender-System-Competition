@@ -1,0 +1,14 @@
+In questo file prendo un po di note che uso mentre si testano gli algoritmi.
+L'item Collaborative con knn=100 and shrink=50 gave results of 9.7%. Now i'm doing parameter tuning on it, testing normalization=True/False but also if to use or not the tfidf of the URM train and i'm also going to test more similarity functions
+Results: per ora ancora niente di meglio
+
+
+
+Sto anche testando lo user CF, con i parametri che usiamo di solito (150, 10) ottengo 9.63%
+Results: per ora ancora niente di meglio
+
+
+
+
+Sto anche testando il content base filter, con aggiunta di tfidf o bm25. Il risultato in locale con (60, 5, no tfidf) è: 4.951%
+{'topK': 20, 'shrink': 52, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 1} - MAP results: 0.05272826678294754

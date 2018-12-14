@@ -11,6 +11,7 @@ import pickle
 from Base.Recommender import Recommender
 from Base.Recommender_utils import check_matrix
 from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
+from Dataset.RS_Data_Loader import RS_Data_Loader, get_tfidf
 
 from Support_functions import get_evaluate_data as ged
 from Base.Similarity.Compute_Similarity import Compute_Similarity
@@ -32,7 +33,7 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
         self.sparse_weights = sparse_weights
         self.W_sparse = None
 
-    def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True, **similarity_args):
+    def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True, tfidf=False, **similarity_args):
 
         self.topK = topK
         self.shrink = shrink
@@ -51,8 +52,12 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
                 print("Saved Item CF Similarity Matrix Used!")
                 return
 
-        # TODO: test tfidf
-        similarity = Compute_Similarity(self.URM_train, shrink=shrink, topK=topK, normalize=normalize, similarity = similarity, **similarity_args)
+        if tfidf:
+            sim_matrix_pre = get_tfidf(self.URM_train)
+        else:
+            sim_matrix_pre = self.URM_train
+
+        similarity = Compute_Similarity(sim_matrix_pre, shrink=shrink, topK=topK, normalize=normalize, similarity = similarity, **similarity_args)
         print('Similarity item based CF computed')
 
         if self.sparse_weights:

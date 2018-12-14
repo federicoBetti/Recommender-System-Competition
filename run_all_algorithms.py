@@ -49,14 +49,14 @@ if __name__ == '__main__':
     UCM_tfidf = dataReader.get_tfidf_artists()
     # _ = dataReader.get_tfidf_album()
 
-    URM_train = dataReader.get_page_rank_URM()
+    # URM_train = dataReader.get_page_rank_URM()
 
     recommender_list = [
         # Random,
         # TopPop,
-        # ItemKNNCBFRecommender,
+        ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
-        ItemKNNCFRecommender,
+        # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # P3alphaRecommender,
         # RP3betaRecommender,
@@ -174,7 +174,7 @@ if __name__ == '__main__':
         '''
         onPop = True
         # On pop it used to choose if have dynamic weights for
-        recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=False,
+        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=False,
                                         d_weights=d_weights,
                                         URM_validation=URM_validation, onPop=onPop)
 
@@ -183,8 +183,8 @@ if __name__ == '__main__':
         old_similrity_matrix = None
         num_factors = 165
         l1_ratio = 1e-06
-        recommender.fit(**{"topK": [100],
-                           "shrink": [50],
+        recommender.fit(**{"topK": [60],
+                           "shrink": [5],
                            "pop": [130, 346],
                            "weights": [1],
                            "force_compute_sim": False,
@@ -202,7 +202,7 @@ if __name__ == '__main__':
         # to indicate if plotting for lenght or for pop
 
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
-                                                                                                plot_stats=True,
+                                                                                                plot_stats=False,
                                                                                                 onPop=onPop)
 
         print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],

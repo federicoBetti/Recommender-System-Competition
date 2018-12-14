@@ -69,7 +69,7 @@ class ItemKNNCBFRecommender(SimilarityMatrixRecommender, Recommender):
             self.ICM = self.ICM.astype(np.float32)
             self.ICM = TF_IDF(self.ICM)
 
-        similarity = Compute_Similarity(ged.tfidf(self.ICM.T), shrink=shrink, topK=topK, normalize=normalize,
+        similarity = Compute_Similarity(self.ICM.T, shrink=shrink, topK=topK, normalize=normalize,
                                         similarity=similarity, **similarity_args)
 
         if self.sparse_weights:

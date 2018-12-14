@@ -68,8 +68,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             self.d_weights = [[0] * self.recommender_number, [0] * self.recommender_number,
                               [0] * self.recommender_number]
 
-        # TODO: HO MESSO TFIDF PER VEDERE RISULTATO. NEL CASO FACCIA CAGARE TOGLIERE
-
         for recommender in recommender_list:
             if recommender in [SLIM_BPR_Cython, MatrixFactorization_BPR_Cython, MatrixFactorization_FunkSVD_Cython,
                                MatrixFactorization_AsySVD_Cython]:

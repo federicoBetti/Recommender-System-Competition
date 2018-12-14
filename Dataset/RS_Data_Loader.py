@@ -107,6 +107,15 @@ def add_dataframe(df, playlist_id, songs_list):
     return df
 
 
+def get_tfidf(matrix):
+    transformer = TfidfTransformer(smooth_idf=False)
+    tfidf = transformer.fit_transform(matrix)
+    if isinstance(tfidf, csr_matrix):
+        return tfidf
+    else:
+        return csr_matrix(tfidf.toarray())
+
+
 class RS_Data_Loader(object):
     def __init__(self, split_train_test_validation_quota=[0.8, 0.0, 0.2], distr_split=True, top10k=False,
                  all_train=False):
@@ -264,6 +273,7 @@ class RS_Data_Loader(object):
         try:
             with open(os.path.join("Dataset", "URM_pagerank.pkl"), 'rb') as handle:
                 to_ret = pickle.load(handle)
+                # print(to_ret)
                 return to_ret
         except FileNotFoundError:
             self.URM_train = self.URM_train.astype(float)
@@ -271,6 +281,7 @@ class RS_Data_Loader(object):
             s_all = set(l)
             relation_mat_gen = self.URM_train.transpose().dot(self.URM_train).tocsc()
             t = time.time()
+            URM_new = self.URM_train
             for user_id in range(self.URM_train.shape[0]):
                 if user_id % 100 == 0:
                     print(user_id)
@@ -284,11 +295,13 @@ class RS_Data_Loader(object):
                     relation_mat.data[relation_mat.indptr[i]:relation_mat.indptr[i + 1]].fill(0)
                 relation_mat.eliminate_zeros()
                 page_rank = compute_PageRank(relation_mat.transpose()).A1
-                self.URM_train[user_id].data *= page_rank[songs_in_playlist]
+                # print(type(self.URM_train[user_id].data))
+                # URM_new[user_id].data = np.multiply(URM_new[user_id].data, page_rank[songs_in_playlist])
+                URM_new[user_id] = URM_new[user_id].multiply(page_rank)
                 del relation_mat
             print("URM modified")
             with open(os.path.join("Dataset", "URM_pagerank.pkl"), 'wb') as handle:
-                pickle.dump(self.URM_train, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(URM_new, handle, protocol=pickle.HIGHEST_PROTOCOL)
             return self.URM_train
 
     def create_complete_test(self):
@@ -325,7 +338,7 @@ class RS_Data_Loader(object):
                     UCM_artists[entry.playlist_id][entry.artist_id] += 1
 
             tracks_for_playlist.apply(create_feature_artists, axis=1)
-            UCM_tfidf = self._get_tfidf(UCM_artists)
+            UCM_tfidf = get_tfidf(UCM_artists)
 
             if self.all_train:
                 print("All train artists matrix saved")
@@ -368,7 +381,7 @@ class RS_Data_Loader(object):
 
             tracks_for_playlist.apply(create_feature_album, axis=1)
 
-            UCM_tfidf = self._get_tfidf(UCM_albums)
+            UCM_tfidf = get_tfidf(UCM_albums)
 
             if self.all_train:
                 with open(os.path.join("Dataset", "UserCBF_album_all.pkl"), 'wb') as handle:
@@ -382,8 +395,3 @@ class RS_Data_Loader(object):
                         pickle.dump(UCM_tfidf, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
             return UCM_tfidf
-
-    def _get_tfidf(self, matrix):
-        transformer = TfidfTransformer(smooth_idf=False)
-        tfidf = transformer.fit_transform(matrix)
-        return csr_matrix(tfidf.toarray())

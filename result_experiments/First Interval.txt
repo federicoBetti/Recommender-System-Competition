@@ -1,0 +1,3 @@
+FIRST INTERVAL
+
+P3: {'top1': 15, 'alphaP3': 0.7100641282565131}, MAP value is 0.0231

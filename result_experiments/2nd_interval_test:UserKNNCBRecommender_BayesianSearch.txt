@@ -1,0 +1,5 @@
+BayesianSearch: New best config found. Config: {'top1': 121, 'shrink1': -1} - MAP results: 0.007934842763397077 - time: 2018-12-14 21:03:38.529547
+BayesianSearch: New best config found. Config: {'top1': 271, 'shrink1': 25} - MAP results: 0.007741081475635909 - time: 2018-12-14 21:05:51.469878
+BayesianSearch: New best config found. Config: {'top1': 251, 'shrink1': 80} - MAP results: 0.0077550569030071835 - time: 2018-12-14 21:06:50.863270
+BayesianSearch: Config is suboptimal. Config: {'top1': 251, 'shrink1': 185} - MAP results: 0.0077550569030071835 - time: 2018-12-14 21:07:53.013194
+BayesianSearch: New best config found. Config: {'top1': 151, 'shrink1': 140} - MAP results: 0.007927270187318888 - time: 2018-12-14 21:08:59.039674

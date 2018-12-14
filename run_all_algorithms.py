@@ -55,26 +55,27 @@ if __name__ == '__main__':
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
+        UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        # P3alphaRecommender,
+        P3alphaRecommender,
         RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        # SLIM_BPR_Cython,
+        SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
-        # PureSVDRecommender
+        PureSVDRecommender
     ]
 
     d_weights_3 = [0, 0.10003298046702414, 0.7151535303946209, 0.7485507094041199]
     # For hybrid with weighted estimated rating
     d_weights = [
-        [1.9230570603809505, 1.2499920157425073, 1.7712219594081422, 1.140638919857436, 0.9347702592960672,
-         0.09912620695241592],
-        [1.7517282474658789, 0.2058105696805692, 0.008177466960371138, 1.8812715206401047, 1.907393629502697,
-         0.01804069758728377],
-        [1.60626412584349, 1.1918631997835885, 1.1575206790255415, 0.46866811198310976, 0.9671184276762437,
+        [0.45590938562950867, 0.017972928905949592, 0.23905548168035573,
+         0.017005850670624212, 0.9443556793576228, 0.19081956929601618,
+         0.11601757370322985, 0.11267140391070507],
+        [0.973259052781316, 0.037386979507335605, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645,
+         0.4723616073494711, 0.5939341460905799, 0.4188403112229081],
+        [0, 0, 0.10003298046702414, 0.7151535303946209, 0, 0.7485507094041199, 0,
          0.3074867937491681]
     ]
     #
@@ -181,8 +182,8 @@ if __name__ == '__main__':
                            "lambda_j": lambda_j,
                            "num_factors": num_factors,
                            'alphaP3': 1.160296393373262,
-                           'alphaRP3': 0.4156476217553893,
-                           'betaRP': 0.20430089442930188,
+                           'alphaRP3': 0.49774549098196397,
+                           'betaRP': 0.2333486973947896,
                            'l1_ratio': l1_ratio,
                            "weights_to_dweights": -1})
 

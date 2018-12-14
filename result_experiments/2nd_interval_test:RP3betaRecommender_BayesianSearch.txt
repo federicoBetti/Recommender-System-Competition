@@ -1,0 +1,81 @@
+BayesianSearch: Testing config: {'top1': 170, 'shrink1': -1, 'alphaP3': 1.0986472945891783} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 160, 'shrink1': -1, 'alphaP3': 1.9879819639278558} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 250, 'shrink1': -1, 'alphaP3': 1.3149719438877756} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 180, 'shrink1': -1, 'alphaP3': 0.8542805611222446} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 450, 'shrink1': -1, 'alphaP3': 0.24136072144288578} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 320, 'shrink1': -1, 'alphaP3': 1.9359038076152306} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 180, 'shrink1': -1, 'alphaP3': 1.5673507014028056} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 110, 'shrink1': -1, 'alphaP3': 1.1987975951903809} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'topK': 530, 'normalize_similarity': False, 'alphaRP3': 1.5913867735470943, 'betaRP': 1.6795190380761524} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 710, 'normalize_similarity': True, 'alphaRP3': 1.5793687374749499, 'betaRP': 1.623434869739479} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 555, 'normalize_similarity': False, 'alphaRP3': 0.2613907815631263, 'betaRP': 0.8662985971943888} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 100, 'normalize_similarity': True, 'alphaRP3': 1.0585871743486974, 'betaRP': 0.5738597194388778} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 225, 'normalize_similarity': False, 'alphaRP3': 0.8943406813627256, 'betaRP': 0.15723446893787577} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 405, 'normalize_similarity': True, 'alphaRP3': 0.20931262525050104, 'betaRP': 0.4376553106212425} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 765, 'normalize_similarity': False, 'alphaRP3': 1.166749498997996, 'betaRP': 0.830244488977956} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 295, 'normalize_similarity': False, 'alphaRP3': 0.9023527054108217, 'betaRP': 1.547320641282565} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 770, 'normalize_similarity': False, 'betaRP': 1.6154228456913828} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 15, 'normalize_similarity': False, 'betaRP': 1.8998496993987977} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 265, 'normalize_similarity': False, 'betaRP': 1.1186773547094189} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 90, 'normalize_similarity': False, 'betaRP': 0.6019018036072145} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 465, 'normalize_similarity': True, 'betaRP': 1.2388577154308618} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 85, 'normalize_similarity': False, 'betaRP': 0.3535290581162325} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 105, 'normalize_similarity': True, 'betaRP': 1.4832244488977957} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'topK': 370, 'normalize_similarity': False, 'betaRP': 1.783675350701403} - Exception object of type 'int' has no len()
+BayesianSearch: Testing config: {'top1': 60, 'normalize_similarity': False, 'betaRP': 0.5057575150300602} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 235, 'normalize_similarity': False, 'betaRP': 1.6034048096192386} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 405, 'normalize_similarity': True, 'betaRP': 1.8397595190380762} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 90, 'normalize_similarity': True, 'betaRP': 1.8878316633266534} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 715, 'normalize_similarity': False, 'betaRP': 1.4111162324649298} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 115, 'normalize_similarity': True, 'betaRP': 0.9944909819639279} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 310, 'normalize_similarity': False, 'betaRP': 0.9263887775551103} - Exception 'alphaRP3'
+BayesianSearch: Testing config: {'top1': 150, 'normalize_similarity': False, 'betaRP': 1.827741482965932} - Exception 'alphaRP3'
+BayesianSearch: New best config found. Config: {'top1': 650, 'normalize_similarity': False, 'alphaRP3': 1.619428857715431, 'betaRP': 0.5217815631262526} - MAP results: 0.03253388759728586 - time: 2018-12-14 22:12:53.164937
+BayesianSearch: New best config found. Config: {'top1': 390, 'normalize_similarity': False, 'alphaRP3': 0.49373947895791587, 'betaRP': 0.10515631262525052} - MAP results: 0.049458182601769735 - time: 2018-12-14 22:13:41.010339
+BayesianSearch: Config is suboptimal. Config: {'top1': 670, 'normalize_similarity': True, 'alphaRP3': 0.2213306613226453, 'betaRP': 1.6835250501002004} - MAP results: 0.0005658571304857627 - time: 2018-12-14 22:14:35.329535
+BayesianSearch: Config is suboptimal. Config: {'top1': 785, 'normalize_similarity': False, 'alphaRP3': 0.6379559118236474, 'betaRP': 0.9784669338677355} - MAP results: 0.005144104943565758 - time: 2018-12-14 22:15:33.566599
+BayesianSearch: Config is suboptimal. Config: {'top1': 685, 'normalize_similarity': True, 'alphaRP3': 1.006509018036072, 'betaRP': 0.6099138276553107} - MAP results: 0.03418996030777103 - time: 2018-12-14 22:16:32.656961
+BayesianSearch: Config is suboptimal. Config: {'top1': 395, 'normalize_similarity': False, 'alphaRP3': 0.3655470941883768, 'betaRP': 1.4912364729458918} - MAP results: 0.0007505626187548931 - time: 2018-12-14 22:17:28.930964
+BayesianSearch: Config is suboptimal. Config: {'top1': 390, 'normalize_similarity': False, 'alphaRP3': 1.7556332665330663, 'betaRP': 0.826238476953908} - MAP results: 0.009381171253127527 - time: 2018-12-14 22:18:29.081923
+BayesianSearch: Config is suboptimal. Config: {'top1': 570, 'normalize_similarity': False, 'alphaRP3': 1.5152725450901805, 'betaRP': 1.5633446893787575} - MAP results: 0.0007792958465813753 - time: 2018-12-14 22:19:32.833679
+BayesianSearch: Config is suboptimal. Config: {'top1': 20, 'normalize_similarity': True, 'alphaRP3': 1.451176352705411, 'betaRP': 0.01301803607214429} - MAP results: 0.048992253856872114 - time: 2018-12-14 22:20:25.416147
+BayesianSearch: Config is suboptimal. Config: {'top1': 790, 'normalize_similarity': False, 'alphaRP3': 1.0025030060120241, 'betaRP': 0.005006012024048097} - MAP results: 0.046768814602568924 - time: 2018-12-14 22:21:33.281803
+BayesianSearch: New best config found. Config: {'top1': 20, 'normalize_similarity': True, 'alphaRP3': 0.04907214428857716, 'betaRP': 0.017024048096192387} - MAP results: 0.05103513552535489 - time: 2018-12-14 22:22:22.920535
+BayesianSearch: Config is suboptimal. Config: {'top1': 15, 'normalize_similarity': True, 'alphaRP3': 0.8062084168336674, 'betaRP': 0.021030060120240484} - MAP results: 0.050470295272294075 - time: 2018-12-14 22:23:15.533891
+BayesianSearch: Config is suboptimal. Config: {'top1': 20, 'normalize_similarity': True, 'alphaRP3': 0.06509619238476955, 'betaRP': 1.995993987975952} - MAP results: 0.0003836705442329703 - time: 2018-12-14 22:24:04.255103
+BayesianSearch: Config is suboptimal. Config: {'top1': 780, 'normalize_similarity': True, 'alphaRP3': 2.0, 'betaRP': 0.005006012024048097} - MAP results: 0.04408557942068347 - time: 2018-12-14 22:25:13.429930
+BayesianSearch: Config is suboptimal. Config: {'top1': 480, 'normalize_similarity': True, 'alphaRP3': 1.3550320641282565, 'betaRP': 0.001} - MAP results: 0.04796602230440124 - time: 2018-12-14 22:26:24.384968
+BayesianSearch: Config is suboptimal. Config: {'top1': 790, 'normalize_similarity': False, 'alphaRP3': 0.01301803607214429, 'betaRP': 0.021030060120240484} - MAP results: 0.04404404147980613 - time: 2018-12-14 22:27:37.752713
+BayesianSearch: Config is suboptimal. Config: {'top1': 770, 'normalize_similarity': False, 'alphaRP3': 1.9879819639278558, 'betaRP': 1.991987975951904} - MAP results: 0.0005011476765573092 - time: 2018-12-14 22:28:53.924257
+BayesianSearch: Config is suboptimal. Config: {'top1': 65, 'normalize_similarity': False, 'alphaRP3': 1.9679519038076154, 'betaRP': 0.001} - MAP results: 0.047521927401406705 - time: 2018-12-14 22:29:51.630431
+BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'normalize_similarity': True, 'alphaRP3': 0.009012024048096194, 'betaRP': 0.2774148296593187} - MAP results: 0.05061571604542745 - time: 2018-12-14 22:30:48.063261
+BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'normalize_similarity': True, 'alphaRP3': 0.577865731462926, 'betaRP': 0.2734088176352706} - MAP results: 0.05069406216216332 - time: 2018-12-14 22:31:44.475041
+BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'normalize_similarity': True, 'alphaRP3': 0.34151102204408823, 'betaRP': 0.12118036072144289} - MAP results: 0.04937125348380309 - time: 2018-12-14 22:32:42.048288
+BayesianSearch: New best config found. Config: {'top1': 20, 'normalize_similarity': False, 'alphaRP3': 1.0345511022044087, 'betaRP': 0.24536673346693388} - MAP results: 0.05256281628493706 - time: 2018-12-14 22:33:40.748308
+BayesianSearch: Config is suboptimal. Config: {'top1': 270, 'normalize_similarity': False, 'alphaRP3': 0.9263887775551103, 'betaRP': 0.15322845691382767} - MAP results: 0.05183347783238443 - time: 2018-12-14 22:34:48.318592
+BayesianSearch: Config is suboptimal. Config: {'top1': 255, 'normalize_similarity': False, 'alphaRP3': 0.005006012024048097, 'betaRP': 0.05307815631262526} - MAP results: 0.04803779856931436 - time: 2018-12-14 22:35:58.558509
+BayesianSearch: New best config found. Config: {'top1': 70, 'normalize_similarity': True, 'alphaRP3': 0.9223827655310622, 'betaRP': 0.2213306613226453} - MAP results: 0.05403735507816567 - time: 2018-12-14 22:37:00.918466
+BayesianSearch: Config is suboptimal. Config: {'top1': 110, 'normalize_similarity': True, 'alphaRP3': 1.0145210420841684, 'betaRP': 0.19729458917835674} - MAP results: 0.05369406257982893 - time: 2018-12-14 22:38:05.490964
+BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'normalize_similarity': True, 'alphaRP3': 0.8903346693386774, 'betaRP': 0.20530661322645294} - MAP results: 0.049490272237751994 - time: 2018-12-14 22:39:06.684752
+BayesianSearch: Config is suboptimal. Config: {'top1': 15, 'normalize_similarity': False, 'alphaRP3': 1.8878316633266534, 'betaRP': 1.995993987975952} - MAP results: 0.0004345541467514657 - time: 2018-12-14 22:40:04.265620
+BayesianSearch: Config is suboptimal. Config: {'top1': 795, 'normalize_similarity': True, 'alphaRP3': 0.914370741482966, 'betaRP': 1.995993987975952} - MAP results: 0.00046297823365191976 - time: 2018-12-14 22:41:27.034594
+BayesianSearch: Config is suboptimal. Config: {'top1': 15, 'normalize_similarity': True, 'alphaRP3': 0.9744609218436875, 'betaRP': 0.8462685370741484} - MAP results: 0.007782297115074904 - time: 2018-12-14 22:42:27.022222
+BayesianSearch: Config is suboptimal. Config: {'top1': 355, 'normalize_similarity': True, 'alphaRP3': 0.005006012024048097, 'betaRP': 0.9263887775551103} - MAP results: 0.006227637952082663 - time: 2018-12-14 22:43:38.891770
+BayesianSearch: Config is suboptimal. Config: {'top1': 30, 'normalize_similarity': False, 'alphaRP3': 1.086629258517034, 'betaRP': 1.995993987975952} - MAP results: 0.00041641957305960597 - time: 2018-12-14 22:44:39.412619
+BayesianSearch: Config is suboptimal. Config: {'top1': 775, 'normalize_similarity': False, 'alphaRP3': 1.6915370741482967, 'betaRP': 0.001} - MAP results: 0.04590706085953711 - time: 2018-12-14 22:45:58.056730
+BayesianSearch: Config is suboptimal. Config: {'top1': 140, 'normalize_similarity': True, 'alphaRP3': 1.4631943887775551, 'betaRP': 0.3815711422845692} - MAP results: 0.047342840468463855 - time: 2018-12-14 22:47:07.623622
+BayesianSearch: Config is suboptimal. Config: {'top1': 250, 'normalize_similarity': False, 'alphaRP3': 0.7741603206412826, 'betaRP': 0.48572745490981967} - MAP results: 0.04874526774085295 - time: 2018-12-14 22:48:27.614491
+BayesianSearch: Config is suboptimal. Config: {'top1': 395, 'normalize_similarity': False, 'alphaRP3': 1.7796693386773548, 'betaRP': 0.005006012024048097} - MAP results: 0.047075813215131455 - time: 2018-12-14 22:49:42.954801
+BayesianSearch: Config is suboptimal. Config: {'top1': 205, 'normalize_similarity': True, 'alphaRP3': 1.1066593186372746, 'betaRP': 0.4416613226452906} - MAP results: 0.04858418123865044 - time: 2018-12-14 22:50:59.053432
+BayesianSearch: Config is suboptimal. Config: {'top1': 25, 'normalize_similarity': False, 'alphaRP3': 1.995993987975952, 'betaRP': 0.3695531062124249} - MAP results: 0.033909471876570264 - time: 2018-12-14 22:52:16.846564
+BayesianSearch: Config is suboptimal. Config: {'top1': 775, 'normalize_similarity': True, 'alphaRP3': 1.995993987975952, 'betaRP': 1.1106653306613226} - MAP results: 0.00241412493415873 - time: 2018-12-14 22:53:53.232235
+BayesianSearch: Config is suboptimal. Config: {'top1': 225, 'normalize_similarity': False, 'alphaRP3': 0.6259378757515031, 'betaRP': 0.005006012024048097} - MAP results: 0.049648780921547335 - time: 2018-12-14 22:55:19.469675
+BayesianSearch: Config is suboptimal. Config: {'top1': 795, 'normalize_similarity': True, 'alphaRP3': 0.005006012024048097, 'betaRP': 0.48172144288577157} - MAP results: 0.04693425910093411 - time: 2018-12-14 22:56:47.872035
+BayesianSearch: Config is suboptimal. Config: {'top1': 795, 'normalize_similarity': True, 'alphaRP3': 0.4056072144288578, 'betaRP': 0.34952304609218443} - MAP results: 0.050764248536713824 - time: 2018-12-14 22:58:30.009185
+BayesianSearch: Config is suboptimal. Config: {'top1': 300, 'normalize_similarity': False, 'alphaRP3': 0.289432865731463, 'betaRP': 0.4056072144288578} - MAP results: 0.051862060304298574 - time: 2018-12-14 22:59:48.348086
+BayesianSearch: Config is suboptimal. Config: {'top1': 790, 'normalize_similarity': False, 'alphaRP3': 1.286929859719439, 'betaRP': 0.24136072144288578} - MAP results: 0.04907849870937644 - time: 2018-12-14 23:01:22.953136
+BayesianSearch: Config is suboptimal. Config: {'top1': 255, 'normalize_similarity': False, 'alphaRP3': 0.5578356713426854, 'betaRP': 0.2734088176352706} - MAP results: 0.052895724265279054 - time: 2018-12-14 23:02:50.307682
+BayesianSearch: Config is suboptimal. Config: {'top1': 795, 'normalize_similarity': False, 'alphaRP3': 0.4056072144288578, 'betaRP': 0.021030060120240484} - MAP results: 0.04560181099682802 - time: 2018-12-14 23:04:18.684059
+BayesianSearch: Config is suboptimal. Config: {'top1': 775, 'normalize_similarity': False, 'alphaRP3': 0.1412104208416834, 'betaRP': 0.2293426853707415} - MAP results: 0.04958158279794578 - time: 2018-12-14 23:06:00.403565
+BayesianSearch: Config is suboptimal. Config: {'top1': 790, 'normalize_similarity': True, 'alphaRP3': 0.02503607214428858, 'betaRP': 1.991987975951904} - MAP results: 0.0004261409585779305 - time: 2018-12-14 23:07:33.759572
+BayesianSearch: Best config is: Config {'top1': 70, 'normalize_similarity': True, 'alphaRP3': 0.9223827655310622, 'betaRP': 0.2213306613226453}, MAP value is 0.0540

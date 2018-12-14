@@ -1,0 +1,3 @@
+BayesianSearch: New best config found. Config: {'top1': 220, 'shrink1': 150, 'alphaRP3': 1.2148216432865733, 'betaRP': 0.5337995991983968} - MAP results: 0.000496825384838593 - time: 2018-12-14 22:17:24.363721
+BayesianSearch: New best config found. Config: {'top1': 205, 'shrink1': 130, 'alphaRP3': 1.0906352705410822, 'betaRP': 1.0625931863727456} - MAP results: 0.0005009623368422407 - time: 2018-12-14 22:18:21.325620
+BayesianSearch: Config is suboptimal. Config: {'top1': 700, 'shrink1': 25, 'alphaRP3': 0.6179258517034069, 'betaRP': 1.6835250501002004} - MAP results: 0.00045627936136445493 - time: 2018-12-14 22:19:17.896771

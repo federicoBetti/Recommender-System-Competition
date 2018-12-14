@@ -1,0 +1,49 @@
+BayesianSearch: New best config found. Config: {'top1': 285, 'alphaP3': 0.49774549098196397} - MAP results: 0.020849993002578247 - time: 2018-12-14 22:19:55.617261
+BayesianSearch: Config is suboptimal. Config: {'top1': 530, 'alphaP3': 1.6755130260521043} - MAP results: 0.0198774937509544 - time: 2018-12-14 22:20:52.264851
+BayesianSearch: New best config found. Config: {'top1': 210, 'alphaP3': 0.8903346693386774} - MAP results: 0.021479575826235157 - time: 2018-12-14 22:21:41.688818
+BayesianSearch: Config is suboptimal. Config: {'top1': 780, 'alphaP3': 0.6299438877755512} - MAP results: 0.02031644207903345 - time: 2018-12-14 22:22:39.247834
+BayesianSearch: Config is suboptimal. Config: {'top1': 470, 'alphaP3': 1.5192785571142284} - MAP results: 0.02020290793723915 - time: 2018-12-14 22:23:32.286705
+BayesianSearch: Config is suboptimal. Config: {'top1': 755, 'alphaP3': 0.7701543086172346} - MAP results: 0.020380502091662304 - time: 2018-12-14 22:24:27.143992
+BayesianSearch: Config is suboptimal. Config: {'top1': 495, 'alphaP3': 1.0505751503006011} - MAP results: 0.020700917384204227 - time: 2018-12-14 22:25:23.240066
+BayesianSearch: Config is suboptimal. Config: {'top1': 645, 'alphaP3': 0.457685370741483} - MAP results: 0.020128109215283182 - time: 2018-12-14 22:26:24.783455
+BayesianSearch: New best config found. Config: {'top1': 15, 'alphaP3': 0.8102144288577156} - MAP results: 0.022866645361745583 - time: 2018-12-14 22:27:18.202129
+BayesianSearch: Config is suboptimal. Config: {'top1': 15, 'alphaP3': 0.005006012024048097} - MAP results: 0.022692112103298908 - time: 2018-12-14 22:28:08.674676
+BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'alphaP3': 1.991987975951904} - MAP results: 0.01738807318562214 - time: 2018-12-14 22:28:59.173964
+BayesianSearch: New best config found. Config: {'top1': 15, 'alphaP3': 0.7100641282565131} - MAP results: 0.02310819772836683 - time: 2018-12-14 22:29:52.025380
+BayesianSearch: Config is suboptimal. Config: {'top1': 795, 'alphaP3': 0.005006012024048097} - MAP results: 0.019139861600559815 - time: 2018-12-14 22:30:56.482567
+BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'alphaP3': 0.32548697394789583} - MAP results: 0.021899964820103528 - time: 2018-12-14 22:31:48.475118
+BayesianSearch: Config is suboptimal. Config: {'top1': 790, 'alphaP3': 1.995993987975952} - MAP results: 0.018930050974783362 - time: 2018-12-14 22:32:57.457092
+BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'alphaP3': 0.7260881763527055} - MAP results: 0.021923397077359463 - time: 2018-12-14 22:33:47.267727
+BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'alphaP3': 1.4672004008016033} - MAP results: 0.019787376402190072 - time: 2018-12-14 22:34:38.232623
+BayesianSearch: Config is suboptimal. Config: {'top1': 795, 'alphaP3': 1.4471703406813627} - MAP results: 0.020164538526971826 - time: 2018-12-14 22:35:44.505826
+BayesianSearch: Config is suboptimal. Config: {'top1': 385, 'alphaP3': 2.0} - MAP results: 0.019161079373799753 - time: 2018-12-14 22:36:45.452691
+BayesianSearch: Config is suboptimal. Config: {'top1': 405, 'alphaP3': 0.001} - MAP results: 0.019529939534839277 - time: 2018-12-14 22:37:46.305055
+BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'alphaP3': 1.1507254509018037} - MAP results: 0.02086854267867134 - time: 2018-12-14 22:38:39.337952
+BayesianSearch: Config is suboptimal. Config: {'top1': 795, 'alphaP3': 1.0986472945891783} - MAP results: 0.020436864088181208 - time: 2018-12-14 22:39:44.029857
+BayesianSearch: Config is suboptimal. Config: {'top1': 115, 'alphaP3': 1.7676513026052105} - MAP results: 0.021036290369645737 - time: 2018-12-14 22:40:41.897838
+BayesianSearch: Config is suboptimal. Config: {'top1': 795, 'alphaP3': 0.24937274549098198} - MAP results: 0.019659902599899838 - time: 2018-12-14 22:41:48.560341
+BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'alphaP3': 0.5217815631262526} - MAP results: 0.022028123549627895 - time: 2018-12-14 22:42:40.729170
+BayesianSearch: Config is suboptimal. Config: {'top1': 195, 'alphaP3': 0.15723446893787577} - MAP results: 0.020920314902932797 - time: 2018-12-14 22:43:38.038512
+BayesianSearch: Config is suboptimal. Config: {'top1': 795, 'alphaP3': 1.7756633266533066} - MAP results: 0.01950510480589733 - time: 2018-12-14 22:44:44.852963
+BayesianSearch: Config is suboptimal. Config: {'top1': 280, 'alphaP3': 1.2709058116232466} - MAP results: 0.020977388940587007 - time: 2018-12-14 22:45:44.591680
+BayesianSearch: Config is suboptimal. Config: {'top1': 605, 'alphaP3': 1.2749118236472947} - MAP results: 0.020450614313470703 - time: 2018-12-14 22:46:53.044144
+BayesianSearch: Config is suboptimal. Config: {'top1': 585, 'alphaP3': 0.1452164328657315} - MAP results: 0.019645294784330792 - time: 2018-12-14 22:48:03.458864
+BayesianSearch: Config is suboptimal. Config: {'top1': 160, 'alphaP3': 0.6459679358717435} - MAP results: 0.021889025235039446 - time: 2018-12-14 22:49:01.998363
+BayesianSearch: Config is suboptimal. Config: {'top1': 15, 'alphaP3': 0.9824729458917837} - MAP results: 0.02277433401578697 - time: 2018-12-14 22:49:57.560680
+BayesianSearch: Config is suboptimal. Config: {'top1': 230, 'alphaP3': 1.5873807615230462} - MAP results: 0.020718960071551024 - time: 2018-12-14 22:50:58.692892
+BayesianSearch: Config is suboptimal. Config: {'top1': 615, 'alphaP3': 1.91587374749499} - MAP results: 0.01925919141519674 - time: 2018-12-14 22:52:20.091376
+BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'alphaP3': 0.15322845691382767} - MAP results: 0.021854778355152142 - time: 2018-12-14 22:53:24.573795
+BayesianSearch: Config is suboptimal. Config: {'top1': 395, 'alphaP3': 0.30946292585170343} - MAP results: 0.020208295759072653 - time: 2018-12-14 22:54:37.447081
+BayesianSearch: Config is suboptimal. Config: {'top1': 315, 'alphaP3': 1.8397595190380762} - MAP results: 0.019752251482660264 - time: 2018-12-14 22:55:43.767244
+BayesianSearch: Config is suboptimal. Config: {'top1': 540, 'alphaP3': 0.6900340681362727} - MAP results: 0.020519082813553025 - time: 2018-12-14 22:56:52.089218
+BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'alphaP3': 1.6675010020040082} - MAP results: 0.018843388194862958 - time: 2018-12-14 22:58:01.343265
+BayesianSearch: Config is suboptimal. Config: {'top1': 165, 'alphaP3': 0.001} - MAP results: 0.020894261930743292 - time: 2018-12-14 22:59:03.017199
+BayesianSearch: Config is suboptimal. Config: {'top1': 190, 'alphaP3': 1.0906352705410822} - MAP results: 0.02164314062203342 - time: 2018-12-14 23:00:06.580242
+BayesianSearch: Config is suboptimal. Config: {'top1': 660, 'alphaP3': 0.9464188376753508} - MAP results: 0.020604752527335225 - time: 2018-12-14 23:01:22.123638
+BayesianSearch: Config is suboptimal. Config: {'top1': 105, 'alphaP3': 1.3149719438877756} - MAP results: 0.02232257936080908 - time: 2018-12-14 23:02:30.415480
+BayesianSearch: Config is suboptimal. Config: {'top1': 10, 'alphaP3': 0.621931863727455} - MAP results: 0.02195096687971613 - time: 2018-12-14 23:03:31.575311
+BayesianSearch: Config is suboptimal. Config: {'top1': 145, 'alphaP3': 0.3975951903807616} - MAP results: 0.02181389021143291 - time: 2018-12-14 23:04:34.673388
+BayesianSearch: Config is suboptimal. Config: {'top1': 180, 'alphaP3': 2.0} - MAP results: 0.019778174385539176 - time: 2018-12-14 23:05:47.367488
+BayesianSearch: Config is suboptimal. Config: {'top1': 795, 'alphaP3': 1.2749118236472947} - MAP results: 0.02032252403047057 - time: 2018-12-14 23:06:59.454908
+BayesianSearch: Config is suboptimal. Config: {'top1': 85, 'alphaP3': 0.8863286573146294} - MAP results: 0.022963212684926546 - time: 2018-12-14 23:07:59.322916
+BayesianSearch: Best config is: Config {'top1': 15, 'alphaP3': 0.7100641282565131}, MAP value is 0.0231

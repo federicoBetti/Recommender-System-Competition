@@ -14,5 +14,4 @@ Sto anche testando il content base filter, con aggiunta di tfidf o bm25. Il risu
 
 
 Qua c'è il test del RP3B.
-Per ora i risultati migliori sono 'topK': 146, 'alpha': 0.4156476217553893, 'beta': 0.20430089442930188, MAP value is 0.0951
-Ma ci sono miglioramenti: {'topK': 406, 'alpha': 0.5498236472945892, 'beta': 0.3895831663326654, 'normalize_similarity': True} - MAP results: 0.0992
+Ci sono miglioramenti: {'topK': 581, 'alpha': 0.7260881763527055, 'beta': 0.3655470941883768, 'normalize_similarity': False} - MAP results: 0.10014

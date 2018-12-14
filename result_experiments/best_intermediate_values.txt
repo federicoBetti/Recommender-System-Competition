@@ -1,0 +1,4 @@
+OLD
+1st sector best: 0.0275
+2nd sector best: 0.557
+3rd sector best: 0.05577 (forse)

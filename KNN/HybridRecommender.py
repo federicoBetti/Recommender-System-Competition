@@ -92,8 +92,12 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             weights4=None,
             weights5=None, weights6=None, weights7=None, weights8=None, pop1=None, pop2=None, similarity='cosine',
             normalize=True,
-            old_similarity_matrix=None, epochs=1,
+            old_similarity_matrix=None, epochs=1, top1=None, shrink1=None,
             force_compute_sim=False, weights_to_dweights=-1, **similarity_args):
+
+        if topK is None: # IT MEANS THAT I'M TESTING ONE RECOMMENDER ON A SPECIIFC INTERVAL
+            topK = [top1]
+            shrink = [shrink1]
 
         if self.weights is None:
             if weights1 is not None:

@@ -287,8 +287,8 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
         # UserKNNCBRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
-        # P3alphaRecommender,
-        RP3betaRecommender,
+        P3alphaRecommender,
+        # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # SLIM_BPR_Cython,
@@ -310,12 +310,14 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
     # hyperparamethers_range_dictionary["weights5"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights6"] = range(0, 1)
     hyperparamethers_range_dictionary["top1"] = list(range(0, 600, 10))
-    hyperparamethers_range_dictionary["shrink1"] = [-1] #list(range(0, 200, 5))
+    hyperparamethers_range_dictionary["shrink1"] = [-1]#list(range(0, 200, 5))
+    # hyperparamethers_range_dictionary["feature_weighting_index"] = [0, 1, 2]
     # hyperparamethers_range_dictionary["feature_weighting_index"] = [0, 1, 2]
 
-    hyperparamethers_range_dictionary["top1"] = list(range(1, 800, 5))
-    hyperparamethers_range_dictionary["alphaRP3"] = list(np.linspace(0.001, 2.0, 500))  # range(0, 2)
-    hyperparamethers_range_dictionary["betaRP"] = list(np.linspace(0.001, 2.0, 500))
+    hyperparamethers_range_dictionary["alphaP3"] = list(np.linspace(0.001, 2.0, 500))
+    # hyperparamethers_range_dictionary["top1"] = list(range(1, 800, 5))
+    # hyperparamethers_range_dictionary["alphaRP3"] = list(np.linspace(0.001, 2.0, 500))  # range(0, 2)
+    # hyperparamethers_range_dictionary["betaRP"] = list(np.linspace(0.001, 2.0, 500))
     # hyperparamethers_range_dictionary["weights7"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["weights8"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["pop1"] = list(range(80, 200))  # list(np.linspace(0, 1, 11))
@@ -854,7 +856,8 @@ def read_data_split_and_search():
                     else:
                         transfer_matrix = None
 
-                    single = False
+                    # runna single algorithm
+                    single = True
                     if single is False:
                         # old similarity matrix is the starting matrix for the SLIM recommender
                         runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recommender_list,

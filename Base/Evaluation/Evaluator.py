@@ -435,7 +435,7 @@ class SequentialEvaluator(Evaluator):
 
         return results_dict, n_users_evaluated, to_ret
 
-    def evaluateRecommender(self, recommender_object, plot_stats=True, onPop=True):
+    def evaluateRecommender(self, recommender_object, plot_stats=False, onPop=True):
         """
         :param recommender_object: the trained recommenderURM_validation object, a Recommender subclass
         :param URM_test_list: list of URMs to test the recommender against, or a single URM object

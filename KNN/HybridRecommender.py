@@ -87,7 +87,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
                 self.recommender_list.append(recommender(URM_train))
 
-
     def fit(self, topK=None, shrink=None, weights=None, pop=None, weights1=None, weights2=None, weights3=None,
             weights4=None,
             weights5=None, weights6=None, weights7=None, weights8=None, pop1=None, pop2=None, similarity='cosine',
@@ -95,7 +94,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             old_similarity_matrix=None, epochs=1, top1=None, shrink1=None,
             force_compute_sim=False, weights_to_dweights=-1, **similarity_args):
 
-        if topK is None: # IT MEANS THAT I'M TESTING ONE RECOMMENDER ON A SPECIIFC INTERVAL
+        if topK is None:  # IT MEANS THAT I'M TESTING ONE RECOMMENDER ON A SPECIIFC INTERVAL
             topK = [top1]
             shrink = [shrink1]
 
@@ -116,7 +115,9 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         assert self.weights is not None, "Weights Are None!"
 
-        assert len(self.recommender_list) == len(self.weights), "Weights: {} and recommender list: {} have different lenghts".format(len(self.weights), len(self.recommender_list))
+        assert len(self.recommender_list) == len(
+            self.weights), "Weights: {} and recommender list: {} have different lenghts".format(len(self.weights), len(
+            self.recommender_list))
 
         assert len(topK) == len(shrink) == len(self.recommender_list), "Knns, Shrinks and recommender list have " \
                                                                        "different lenghts "
@@ -125,7 +126,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         self.topK = topK
         self.shrink = shrink
 
-        self.gradients = [0]*self.recommender_number
+        self.gradients = [0] * self.recommender_number
         self.MAE = 0
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
@@ -155,6 +156,10 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             elif recommender.__class__ in [RP3betaRecommender]:
                 recommender.fit(alpha=similarity_args["alphaRP3"], beta=similarity_args["betaRP"], min_rating=0,
                                 topK=knn, implicit=True, normalize_similarity=True, force_compute_sim=force_compute_sim)
+
+            elif recommender.__class__ in [ItemKNNCBFRecommender]:
+                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
+                                feature_weighting_index=similarity_args["feature_weighting_index"])
 
             else:  # ItemCF, UserCF, ItemCBF, UserCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
@@ -346,11 +351,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         return ranking
 
-
-
-
-
-
     def recommend_gradient_descent(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True,
                                    remove_top_pop_flag=False,
                                    remove_CustomItems_flag=False):
@@ -406,7 +406,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                                    self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
                     # user profile sono gli 1 nella URM train
                     test_songs = self.URM_validation.indices[
-                                   self.URM_validation.indptr[user_id]:self.URM_validation.indptr[user_id + 1]]
+                                 self.URM_validation.indptr[user_id]:self.URM_validation.indptr[user_id + 1]]
                     if self.onPop:
                         level = int(ged.playlist_popularity(user_profile, dict_pop))
                     else:
@@ -419,7 +419,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                         for score, weight in zip(scores, weights):
                             final_score_line += score[user_index] * weight
                         for ind, score in enumerate(scores):
-                            self.gradients[ind] += sum(np.sign(1 - final_score_line[test_songs])*score[user_index, test_songs])
+                            self.gradients[ind] += sum(
+                                np.sign(1 - final_score_line[test_songs]) * score[user_index, test_songs])
                     self.MAE += sum(1 - final_score_line[test_songs])
                     final_score[user_index] = final_score_line
             else:
@@ -429,13 +430,14 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                                    self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
                     # user profile sono gli 1 nella URM train
                     test_songs = self.URM_validation.indices[
-                                   self.URM_validation.indptr[user_id]:self.URM_validation.indptr[user_id + 1]]
+                                 self.URM_validation.indptr[user_id]:self.URM_validation.indptr[user_id + 1]]
 
                     final_score_line = np.zeros(scores[0].shape[1])
                     for score, weight in zip(scores, weights):
                         final_score_line += score[user_index] * weight
                     for ind, score in enumerate(scores):
-                        self.gradients[ind] += sum(np.sign(1 - final_score_line[test_songs])*score[user_index, test_songs])
+                        self.gradients[ind] += sum(
+                            np.sign(1 - final_score_line[test_songs]) * score[user_index, test_songs])
                     self.MAE += sum(1 - final_score_line[test_songs])
                     final_score[user_index] = final_score_line
 
@@ -468,4 +470,3 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             ranking_list = ranking_list[0]
 
         return ranking
-

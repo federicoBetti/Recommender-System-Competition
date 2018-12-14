@@ -70,14 +70,14 @@ if __name__ == '__main__':
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
+        # UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        P3alphaRecommender,
+        # P3alphaRecommender,
         RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
+        # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
         PureSVDRecommender
     ]
@@ -99,13 +99,18 @@ if __name__ == '__main__':
 
     d_weights_3 = [0, 0.10003298046702414, 0.7151535303946209, 0.7485507094041199]
     # For hybrid with weighted estimated rating
+
+    # I PESI SONO RISPETTIVAMENTE DI: ItemCB, itemCF, UserCF, RP3beta, PureSVD
+    # STESSO ORDINE PER SHRINK E KNN
+
+    #'weights1': 0.06522977240989092, 'weights2': 0.18473200718460092, 'weights3': 0.48619405150100203, 'weights4': 0.404944119100937, 'weights5': 0.00024154894436601015}
+
     d_weights = [
         [0.45590938562950867, 0.017972928905949592, 0.23905548168035573,
          0.017005850670624212, 0.9443556793576228, 0.19081956929601618,
          0.11601757370322985, 0.11267140391070507] + [0] * len(recommender_list2) + [0] * len(recommender_list3),
-        [0] * len(recommender_list1) + [0.973259052781316, 0.037386979507335605, 0.8477517414017691,
-                                        0.33288193455193427, 0.9696801027638645,
-                                        0.4723616073494711, 0.5939341460905799, 0.4188403112229081]
+        [0] * len(recommender_list1) + [0.06522977240989092, 0.18473200718460092, 0.48619405150100203,
+                                        0.404944119100937, 0.00024154894436601015]
         + [0] * len(recommender_list3),
         [0] * len(recommender_list1) + [0] * len(recommender_list2) + [0, 0, 0.10003298046702414, 0.7151535303946209, 0,
                                                                        0.7485507094041199, 0,
@@ -205,9 +210,16 @@ if __name__ == '__main__':
         old_similrity_matrix = None
         num_factors = 165
         l1_ratio = 1e-06
+
+        # Variabili secondo intervallo
+        alphaRP3_2 = 0.9223827655310622
+        betaRP3_2 =  0.2213306613226453
+        num_factors_2 =  391
+
+
         recommender.fit(**{
-            "topK": [0, 0, 0, 0, 0] + [0, 0, 0, 0, 0] + [0, 0, 0, 0, 0],
-            "shrink": [0, 0, 0, 0, 0] + [0, 0, 0, 0, 0] + [0, 0, 0, 0, 0],
+            "topK": [0, 0, 0, 0, 0] + [21, 220, 160, 70, -1] + [0, 0, 0, 0, 0],
+            "shrink": [0, 0, 0, 0, 0] + [75, 1, 150, -1, -1] + [0, 0, 0, 0, 0],
             "pop": [130, 346],
             "weights": [1, 1, 1, 1, 1, 1, 1, 1],
             "force_compute_sim": True,

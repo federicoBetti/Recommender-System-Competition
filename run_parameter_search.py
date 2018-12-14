@@ -234,6 +234,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
 
     alphaRP3_1 = 0.457685370741483
     betaRP_1 = 0.289432865731463
+    lambda_i_1 = 0.6892356201296567
+    lambda_j_1 = 0.35586838378889707
 
     dynamic_best = [
         [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731, 0.4112843940329439],
@@ -246,22 +248,22 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                                                                        "UCM_train": UCM_train},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {
-                                 "topK": [15, 595, 105, 20],
-                                 "shrink": [210, 1, 30, -1],
+                                 "topK": [15, 595, 105, 20, 131],
+                                 "shrink": [210, 1, 30, -1, -1],
                                  "pop": [130, 346],
                                  "weights": [1, 1, 1, 1, 1],
                                  "force_compute_sim": False,
                                  "feature_weighting_index": 0,
                                  "old_similarity_matrix": old_similrity_matrix,
                                  "epochs": 50,
-                                 "lambda_i": lambda_i,
-                                 "lambda_j": lambda_j,
+                                 "lambda_i": lambda_i_1,
+                                 "lambda_j": lambda_j_1,
                                  "num_factors": num_factors,
                                  'alphaP3': 1.160296393373262,
                                  'alphaRP3': alphaRP3_1,
                                  'betaRP': betaRP_1,
                                  'l1_ratio': l1_ratio,
-                                 "weights_to_dweights": 2},
+                                 "weights_to_dweights": 0},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path

@@ -92,6 +92,7 @@ class BayesianOptimization(object):
             print("Initial test number {}/{} to understand best starting points...".format(count, len(self.init_points)))
             y = self._observe_point(x)
             count += 1
+            gc.collect()
 
         # Add the points from `self.initialize` to the observations
         if self.x_init:

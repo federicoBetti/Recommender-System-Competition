@@ -309,19 +309,12 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
     # hyperparamethers_range_dictionary["weights4"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights5"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights6"] = range(0, 1)
-    hyperparamethers_range_dictionary["top1"] = list(range(10, 800, 5))
-    # hyperparamethers_range_dictionary["alpha"] = list(np.linspace(0.001, 2.0, 500))  # range(0, 2)
-    # hyperparamethers_range_dictionary["beta"] = list(np.linspace(0.001, 2.0, 500))  # range(0, 2) np.linespace()
-    hyperparamethers_range_dictionary["normalize_similarity"] = [True, False]
-    # hyperparamethers_range_dictionary["top1"] = list(range(10, 600, 10))
-    # hyperparamethers_range_dictionary["sgd_mode"] = ["adagrad"]
-    # hyperparamethers_range_dictionary["lambda_i"] = range(0, 1)
-    # hyperparamethers_range_dictionary["lambda_j"] = range(0, 1)
-    # hyperparamethers_range_dictionary["shrink1"] = list(range(0, 200, 5))
-    # hyperparamethers_range_dictionary["num_factors"] = list(range(1,400,5))
+    hyperparamethers_range_dictionary["top1"] = list(range(0, 600, 10))
+    hyperparamethers_range_dictionary["shrink1"] = [-1]#list(range(0, 200, 5))
+    # hyperparamethers_range_dictionary["feature_weighting_index"] = [0, 1, 2]
     # hyperparamethers_range_dictionary["feature_weighting_index"] = [0, 1, 2]
 
-    # hyperparamethers_range_dictionary["alphaP3"] = list(np.linspace(0.001, 2.0, 500))
+    hyperparamethers_range_dictionary["alphaP3"] = list(np.linspace(0.001, 2.0, 500))
     # hyperparamethers_range_dictionary["top1"] = list(range(1, 800, 5))
     hyperparamethers_range_dictionary["alphaRP3"] = list(np.linspace(0.001, 2.0, 500))  # range(0, 2)
     hyperparamethers_range_dictionary["betaRP"] = list(np.linspace(0.001, 2.0, 500))

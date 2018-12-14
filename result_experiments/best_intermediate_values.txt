@@ -27,3 +27,13 @@ Recommenders used:
  RP3betaRecommender,
  SLIM_BPR_Cython,
  PureSVDRecommender
+
+NEW!!!
+3rd sector: ItemCF, UserCF, RP3b
+{'weights1': 0.023574800557095155, 'weights2': 0.3954614055660033, 'weights3': 0.4605427159971659}
+
+ 'alphaRP3': 0.49774549098196397,
+ 'betaRP': 0.2333486973947896,
+ "topK": [130, 240, 91],
+ "shrink": [2, 19, -1],
+  MAP results: 0.028627281415957516

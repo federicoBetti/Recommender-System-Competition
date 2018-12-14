@@ -55,47 +55,36 @@ if __name__ == '__main__':
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
-        # ItemKNNCFRecommender,
-        # UserKNNCFRecommender,
-        # P3alphaRecommender,
-        # RP3betaRecommender,
+        UserKNNCBRecommender,
+        ItemKNNCFRecommender,
+        UserKNNCFRecommender,
+        P3alphaRecommender,
+        RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        # SLIM_BPR_Cython,
+        SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
-        # PureSVDRecommender
+        PureSVDRecommender
     ]
 
-    weights = [
-        1,
-        1,
-
-    ]
-
-    # content topk = 60 e shrink = 5
-    # topK = [100, 150]
-    # topk = [60, 100, 150, 56, 146, 50, -1, -1]
-
-    # shrinks = [5, 10, 50, 10, -1, -1, -1, -1]
-    # shrinks = [5, 50]
-
+    d_weights_3 = [0, 0.10003298046702414, 0.7151535303946209, 0.7485507094041199]
     # For hybrid with weighted estimated rating
     d_weights = [
-        [1.9230570603809505, 1.2499920157425073, 1.7712219594081422, 1.140638919857436, 0.9347702592960672,
-         0.09912620695241592],
-        [1.7517282474658789, 0.2058105696805692, 0.008177466960371138, 1.8812715206401047, 1.907393629502697,
-         0.01804069758728377],
-        [1.60626412584349, 1.1918631997835885, 1.1575206790255415, 0.46866811198310976, 0.9671184276762437,
+        [0.45590938562950867, 0.017972928905949592, 0.23905548168035573,
+         0.017005850670624212, 0.9443556793576228, 0.19081956929601618,
+         0.11601757370322985, 0.11267140391070507],
+        [0.973259052781316, 0.037386979507335605, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645,
+         0.4723616073494711, 0.5939341460905799, 0.4188403112229081],
+        [0, 0, 0.10003298046702414, 0.7151535303946209, 0, 0.7485507094041199, 0,
          0.3074867937491681]
     ]
-
-    d_best = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
-               0.4112843940329439],
-              [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
-               0.6888103295594851],
-              [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
-               0.5873532658846817]]
+    #
+    # d_best = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
+    #            0.4112843940329439],
+    #           [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
+    #            0.6888103295594851],
+    #           [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
+    #            0.5873532658846817]]
 
     # BEST RESULT : d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
 
@@ -174,8 +163,8 @@ if __name__ == '__main__':
         '''
         onPop = True
         # On pop it used to choose if have dynamic weights for
-        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=False,
-                                        d_weights=d_weights,
+        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=True,
+                                        d_weights=d_weights, UCM_train=UCM_tfidf,
                                         URM_validation=URM_validation, onPop=onPop)
 
         lambda_i = 0.1
@@ -183,20 +172,22 @@ if __name__ == '__main__':
         old_similrity_matrix = None
         num_factors = 165
         l1_ratio = 1e-06
-        recommender.fit(**{"topK": [60],
-                           "shrink": [5],
-                           "pop": [130, 346],
-                           "weights": [1],
-                           "force_compute_sim": False,
-                           "old_similarity_matrix": old_similrity_matrix,
-                           "epochs": 50, "lambda_i": lambda_i,
-                           "lambda_j": lambda_j,
-                           "num_factors": num_factors,
-                           'alphaP3': 1.160296393373262,
-                           'alphaRP3': 0.4156476217553893,
-                           'betaRP': 0.20430089442930188,
-                           'l1_ratio': l1_ratio,
-                           "weights_to_dweights": -1})
+        recommender.fit(**{
+            "topK": [60, 100, 130, 240, 146, 91, 50, -1],
+            "shrink": [5, 10, 2, 19, -1, -1, -1, -1],
+            "pop": [130, 346],
+            "weights": [1, 1, 1, 1, 1, 1, 1, 1],
+            "force_compute_sim": True,
+            "feature_weighting_index": 0,
+            "old_similarity_matrix": old_similrity_matrix,
+            "epochs": 50, "lambda_i": lambda_i,
+            "lambda_j": lambda_j,
+            "num_factors": num_factors,
+            'alphaP3': 1.160296393373262,
+            'alphaRP3': 0.49774549098196397,
+            'betaRP': 0.2333486973947896,
+            'l1_ratio': l1_ratio,
+            "weights_to_dweights": -1})
 
         print("Starting Evaluations...")
         # to indicate if plotting for lenght or for pop

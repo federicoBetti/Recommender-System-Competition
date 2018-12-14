@@ -1,0 +1,49 @@
+BayesianSearch: New best config found. Config: {'top1': 165, 'shrink1': 10, 'feature_weighting_index': 0} - MAP results: 0.018516755721628756 - time: 2018-12-14 22:03:46.974779
+BayesianSearch: New best config found. Config: {'top1': 35, 'shrink1': 185, 'feature_weighting_index': 1} - MAP results: 0.01875077736609601 - time: 2018-12-14 22:04:23.341552
+BayesianSearch: Config is suboptimal. Config: {'top1': 555, 'shrink1': 170, 'feature_weighting_index': 1} - MAP results: 0.01866877938833477 - time: 2018-12-14 22:04:59.732089
+BayesianSearch: Config is suboptimal. Config: {'top1': 305, 'shrink1': 80, 'feature_weighting_index': 0} - MAP results: 0.018630416898573875 - time: 2018-12-14 22:05:37.983989
+BayesianSearch: Config is suboptimal. Config: {'top1': 175, 'shrink1': 95, 'feature_weighting_index': 0} - MAP results: 0.018638443097147656 - time: 2018-12-14 22:06:15.761251
+BayesianSearch: Config is suboptimal. Config: {'top1': 175, 'shrink1': 15, 'feature_weighting_index': 2} - MAP results: 0.01816700460214365 - time: 2018-12-14 22:06:53.282218
+BayesianSearch: Config is suboptimal. Config: {'top1': 585, 'shrink1': 35, 'feature_weighting_index': 0} - MAP results: 0.01855458385901714 - time: 2018-12-14 22:07:31.989411
+BayesianSearch: Config is suboptimal. Config: {'top1': 75, 'shrink1': 35, 'feature_weighting_index': 2} - MAP results: 0.01819848904811161 - time: 2018-12-14 22:08:08.503427
+BayesianSearch: Config is suboptimal. Config: {'top1': 55, 'shrink1': 240, 'feature_weighting_index': 0} - MAP results: 0.018658570083701958 - time: 2018-12-14 22:08:49.594261
+BayesianSearch: New best config found. Config: {'top1': 15, 'shrink1': 135, 'feature_weighting_index': 1} - MAP results: 0.01876324205034905 - time: 2018-12-14 22:09:36.676396
+BayesianSearch: Config is suboptimal. Config: {'top1': 475, 'shrink1': 140, 'feature_weighting_index': 0} - MAP results: 0.018628059893330245 - time: 2018-12-14 22:10:20.771862
+BayesianSearch: Config is suboptimal. Config: {'top1': 25, 'shrink1': 170, 'feature_weighting_index': 0} - MAP results: 0.018725977854634184 - time: 2018-12-14 22:11:08.203475
+BayesianSearch: Config is suboptimal. Config: {'top1': 525, 'shrink1': 245, 'feature_weighting_index': 2} - MAP results: 0.018184137706448115 - time: 2018-12-14 22:11:56.107753
+BayesianSearch: Config is suboptimal. Config: {'top1': 5, 'shrink1': 240, 'feature_weighting_index': 2} - MAP results: 0.018569947046145334 - time: 2018-12-14 22:12:42.389292
+BayesianSearch: Config is suboptimal. Config: {'top1': 125, 'shrink1': 210, 'feature_weighting_index': 1} - MAP results: 0.01866199462310428 - time: 2018-12-14 22:13:24.923135
+BayesianSearch: Config is suboptimal. Config: {'top1': 475, 'shrink1': 125, 'feature_weighting_index': 0} - MAP results: 0.018654714094270056 - time: 2018-12-14 22:14:12.014518
+BayesianSearch: Config is suboptimal. Config: {'top1': 375, 'shrink1': 170, 'feature_weighting_index': 1} - MAP results: 0.01866877938833477 - time: 2018-12-14 22:14:59.448345
+BayesianSearch: Config is suboptimal. Config: {'top1': 545, 'shrink1': 185, 'feature_weighting_index': 0} - MAP results: 0.018666108475537548 - time: 2018-12-14 22:15:51.303481
+BayesianSearch: Config is suboptimal. Config: {'top1': 325, 'shrink1': 125, 'feature_weighting_index': 1} - MAP results: 0.018622058150468905 - time: 2018-12-14 22:16:37.264415
+BayesianSearch: Config is suboptimal. Config: {'top1': 385, 'shrink1': 150, 'feature_weighting_index': 0} - MAP results: 0.018632634657110046 - time: 2018-12-14 22:17:20.503091
+BayesianSearch: New best config found. Config: {'top1': 15, 'shrink1': 95, 'feature_weighting_index': 0} - MAP results: 0.01880062917323708 - time: 2018-12-14 22:18:03.688300
+BayesianSearch: Config is suboptimal. Config: {'top1': 25, 'shrink1': 110, 'feature_weighting_index': 1} - MAP results: 0.018691913795360136 - time: 2018-12-14 22:18:44.634278
+BayesianSearch: Config is suboptimal. Config: {'top1': 365, 'shrink1': 90, 'feature_weighting_index': 0} - MAP results: 0.01864087309391212 - time: 2018-12-14 22:19:25.698883
+BayesianSearch: Config is suboptimal. Config: {'top1': 185, 'shrink1': 225, 'feature_weighting_index': 0} - MAP results: 0.01867129788142629 - time: 2018-12-14 22:20:08.163905
+BayesianSearch: Config is suboptimal. Config: {'top1': 265, 'shrink1': 205, 'feature_weighting_index': 1} - MAP results: 0.0186719136660275 - time: 2018-12-14 22:20:48.330871
+BayesianSearch: Config is suboptimal. Config: {'top1': 255, 'shrink1': 215, 'feature_weighting_index': 0} - MAP results: 0.0186836530175276 - time: 2018-12-14 22:21:30.194182
+BayesianSearch: Config is suboptimal. Config: {'top1': 585, 'shrink1': 140, 'feature_weighting_index': 2} - MAP results: 0.018186220732057713 - time: 2018-12-14 22:22:15.458881
+BayesianSearch: Config is suboptimal. Config: {'top1': 495, 'shrink1': 0, 'feature_weighting_index': 1} - MAP results: 0.018190444772563243 - time: 2018-12-14 22:23:04.789598
+BayesianSearch: Config is suboptimal. Config: {'top1': 345, 'shrink1': 240, 'feature_weighting_index': 1} - MAP results: 0.01868543445951655 - time: 2018-12-14 22:23:59.272019
+BayesianSearch: Config is suboptimal. Config: {'top1': 485, 'shrink1': 125, 'feature_weighting_index': 0} - MAP results: 0.018654714094270056 - time: 2018-12-14 22:24:59.786675
+BayesianSearch: Config is suboptimal. Config: {'top1': 325, 'shrink1': 210, 'feature_weighting_index': 1} - MAP results: 0.01866199462310428 - time: 2018-12-14 22:25:45.508074
+BayesianSearch: New best config found. Config: {'top1': 15, 'shrink1': 210, 'feature_weighting_index': 0} - MAP results: 0.018853359964116315 - time: 2018-12-14 22:26:29.132841
+BayesianSearch: Config is suboptimal. Config: {'top1': 355, 'shrink1': 180, 'feature_weighting_index': 1} - MAP results: 0.018641465338802482 - time: 2018-12-14 22:27:14.891943
+BayesianSearch: Config is suboptimal. Config: {'top1': 45, 'shrink1': 190, 'feature_weighting_index': 1} - MAP results: 0.01868758606587767 - time: 2018-12-14 22:27:58.031410
+BayesianSearch: Config is suboptimal. Config: {'top1': 365, 'shrink1': 150, 'feature_weighting_index': 1} - MAP results: 0.018629054592046265 - time: 2018-12-14 22:28:42.903645
+BayesianSearch: Config is suboptimal. Config: {'top1': 475, 'shrink1': 115, 'feature_weighting_index': 0} - MAP results: 0.018627994168809395 - time: 2018-12-14 22:29:26.775439
+BayesianSearch: Config is suboptimal. Config: {'top1': 35, 'shrink1': 30, 'feature_weighting_index': 1} - MAP results: 0.01857895532919678 - time: 2018-12-14 22:30:10.482616
+BayesianSearch: Config is suboptimal. Config: {'top1': 415, 'shrink1': 230, 'feature_weighting_index': 0} - MAP results: 0.018687919913979303 - time: 2018-12-14 22:30:51.915020
+BayesianSearch: Config is suboptimal. Config: {'top1': 525, 'shrink1': 150, 'feature_weighting_index': 1} - MAP results: 0.018629054592046265 - time: 2018-12-14 22:31:36.022263
+BayesianSearch: Config is suboptimal. Config: {'top1': 235, 'shrink1': 80, 'feature_weighting_index': 0} - MAP results: 0.018630416898573875 - time: 2018-12-14 22:32:19.049371
+BayesianSearch: Config is suboptimal. Config: {'top1': 405, 'shrink1': 200, 'feature_weighting_index': 0} - MAP results: 0.018684534440945012 - time: 2018-12-14 22:33:03.067098
+BayesianSearch: Config is suboptimal. Config: {'top1': 375, 'shrink1': 45, 'feature_weighting_index': 0} - MAP results: 0.018539470596754176 - time: 2018-12-14 22:33:49.464515
+BayesianSearch: Config is suboptimal. Config: {'top1': 445, 'shrink1': 105, 'feature_weighting_index': 2} - MAP results: 0.018187120878613367 - time: 2018-12-14 22:34:32.969518
+BayesianSearch: Config is suboptimal. Config: {'top1': 295, 'shrink1': 215, 'feature_weighting_index': 1} - MAP results: 0.018674806072488996 - time: 2018-12-14 22:35:19.691396
+BayesianSearch: Config is suboptimal. Config: {'top1': 55, 'shrink1': 220, 'feature_weighting_index': 1} - MAP results: 0.0186672014473177 - time: 2018-12-14 22:36:03.328773
+BayesianSearch: Config is suboptimal. Config: {'top1': 525, 'shrink1': 170, 'feature_weighting_index': 1} - MAP results: 0.01866877938833477 - time: 2018-12-14 22:36:48.526662
+BayesianSearch: Config is suboptimal. Config: {'top1': 345, 'shrink1': 135, 'feature_weighting_index': 2} - MAP results: 0.01817845290842172 - time: 2018-12-14 22:37:35.080884
+BayesianSearch: Config is suboptimal. Config: {'top1': 5, 'shrink1': 0, 'feature_weighting_index': 2} - MAP results: 0.01855832177530724 - time: 2018-12-14 22:38:18.546113
+BayesianSearch: Best config is: Config {'top1': 15, 'shrink1': 210, 'feature_weighting_index': 0}, MAP value is 0.0189

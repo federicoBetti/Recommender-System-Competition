@@ -41,13 +41,13 @@ class UserKNNCBRecommender(SimilarityMatrixRecommender, Recommender):
             found = True
             try:
                 with open(os.path.join("IntermediateComputations", "UCMCBFSimMatrix.pkl"), 'rb') as handle:
-                    (topK_new, shrink_new, W_sparse_new) = pickle.load(handle)
+                    W_sparse_new = pickle.load(handle)
             except FileNotFoundError:
                 found = False
 
-            if found and self.topK == topK_new and self.shrink == shrink_new:
+            if found:
                 self.W_sparse = W_sparse_new
-                print("Saved User CF Similarity Matrix Used!")
+                print("Saved User Content Base Similarity Matrix Used!")
                 return
 
         similarity = Compute_Similarity(self.UCM_train.T, shrink=shrink, topK=topK, normalize=normalize,
@@ -56,7 +56,7 @@ class UserKNNCBRecommender(SimilarityMatrixRecommender, Recommender):
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
             with open(os.path.join("IntermediateComputations", "UCMCBFSimMatrix.pkl"), 'wb') as handle:
-                pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(self.W_sparse, handle, protocol=pickle.HIGHEST_PROTOCOL)
         else:
             self.W = similarity.compute_similarity()
             self.W = self.W.toarray()

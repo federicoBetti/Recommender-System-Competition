@@ -14,3 +14,16 @@ Strange recommender parameters:
     'alphaP3': 1.160296393373262,
     'alphaRP3': 0.4156476217553893,
     'betaRP': 0.20430089442930188,
+
+# topk = [60, 100, 150, 56, 146, 50, -1, -1]
+# shrinks = [5, 10, 50, 10, -1, -1, -1, -1]
+
+Recommenders used:
+ ItemKNNCBFRecommender,
+ UserKNNCBRecommender,
+ ItemKNNCFRecommender,
+ UserKNNCFRecommender,
+ P3alphaRecommender,
+ RP3betaRecommender,
+ SLIM_BPR_Cython,
+ PureSVDRecommender

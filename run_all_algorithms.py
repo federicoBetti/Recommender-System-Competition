@@ -202,7 +202,7 @@ if __name__ == '__main__':
         # to indicate if plotting for lenght or for pop
 
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
-                                                                                                plot_stats=False,
+                                                                                                plot_stats=True,
                                                                                                 onPop=onPop)
 
         print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],

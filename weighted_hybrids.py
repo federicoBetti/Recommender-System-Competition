@@ -35,13 +35,14 @@ from scipy import sparse as sps
 def get_user_relevant_items(user_id, URM_test):
     return URM_test.indices[URM_test.indptr[user_id]:URM_test.indptr[user_id + 1]]
 
-def map(is_relevant, pos_items):
 
+def map(is_relevant, pos_items):
     p_at_k = is_relevant * np.cumsum(is_relevant, dtype=np.float32) / (1 + np.arange(is_relevant.shape[0]))
     map_score = np.sum(p_at_k) / np.min([pos_items.shape[0], is_relevant.shape[0]])
 
     assert 0 <= map_score <= 1, map_score
     return map_score
+
 
 if __name__ == '__main__':
     # delete_previous_intermediate_computations()
@@ -62,14 +63,13 @@ if __name__ == '__main__':
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
         # P3alphaRecommender,
-        RP3betaRecommender,
+        # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
-        SLIMElasticNetRecommender
+        # SLIM_BPR_Cython,
+        # SLIMElasticNetRecommender
         # PureSVDRecommender
     ]
-
 
     from Base.Evaluation.Evaluator import SequentialEvaluator
 
@@ -111,10 +111,6 @@ if __name__ == '__main__':
         print("Algorithm: {}".format(recommender_class))
 
         onPop = True
-        # On pop it used to choose if have dynamic weights for
-        recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
-                                        # d_weights=d_weights,
-                                        URM_validation=URM_validation, onPop=onPop)
 
         lambda_i = 0.1
         lambda_j = 0.05
@@ -123,17 +119,17 @@ if __name__ == '__main__':
         l1_ratio = 1e-06
         # alpha = [1.9959734038074426, 0.10609858937191907, 0.4608371142966865, 1.905978868103585, 1.6329874929834254, 1.7878599729785276]
         # alpha = [1 / len(recommender_list)]*len(recommender_list)
-        alpha = [1.9776363304711735, 1.9608680480088492, 1.0335048246847351, 1.6497748563754502, 0.23766992546744725, 1.9529888767778305]
+        alpha = [1 / 3, 1 / 3, 1 / 3]
         i = 0
         while i < 80:
             recommender_class = HybridRecommender
-            recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
+            recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=False,
                                             # d_weights=d_weights,
                                             URM_validation=URM_validation, onPop=onPop)
             MAP = 0
             print("alpha: {}".format(alpha))
-            recommender.fit(**{"topK": [60, 100, 150, 146, 50, 100],
-                               "shrink": [5, 50, 10, -1, -1, -1],
+            recommender.fit(**{"topK": [10, 140, 160],
+                               "shrink": [180, 1, 2],
                                "pop": [130, 346],
                                "weights": alpha,
                                "force_compute_sim": False,
@@ -185,9 +181,7 @@ if __name__ == '__main__':
                     key_pop = int(ged.playlist_popularity(user_profile, pop_dict=dict_song_pop))
                     key_len = int(ged.lenght_playlist(user_profile))
 
-
                     for cutoff in [10]:
-
                         is_relevant_current_cutoff = is_relevant[0:cutoff]
                         recommended_items_current_cutoff = recommended_items[0:cutoff]
 
@@ -212,11 +206,12 @@ if __name__ == '__main__':
             # learning rate
             lr = 0.1
             # gradient descent
-            alpha = [a + lr * g for a, g in zip(alpha, grad)]
+            alpha = [a - lr * g for a, g in zip(alpha, grad)]
             # normalization
             alpha = [float(index) / sum(alpha) for index in alpha]
 
-            logFile.write("Iteration: {}, MAE: {}, MAP: {},  gradients: {}\n".format(i, MAE, MAP / n_users_evaluated, grad))
+            logFile.write(
+                "Iteration: {}, MAE: {}, MAP: {},  gradients: {}\n".format(i, MAE, MAP / n_users_evaluated, grad))
             logFile.flush()
             i += 1
 

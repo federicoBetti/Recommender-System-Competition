@@ -41,8 +41,8 @@ def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, UR
     # pay attention that it doesn't finish (it should after n_cases, but now it doens't work)
     # it saves best results in the txt file
     hyperparamethers_range_dictionary = {}
-    hyperparamethers_range_dictionary["topK"] = list(range(10, 800, 10))
-    hyperparamethers_range_dictionary["shrink"] = list(range(2, 100, 2)) + list(range(100, 300, 20))
+    hyperparamethers_range_dictionary["topK"] = list(range(40, 250, 10))
+    hyperparamethers_range_dictionary["shrink"] = list(range(0, 20))
     hyperparamethers_range_dictionary["similarity"] = [similarity_type]
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
@@ -476,8 +476,8 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
         if recommender_class is RP3betaRecommender:
             hyperparamethers_range_dictionary = {}
             hyperparamethers_range_dictionary["topK"] = list(range(1, 800, 5))
-            hyperparamethers_range_dictionary["alpha"] = range(0, 2)
-            hyperparamethers_range_dictionary["beta"] = range(0, 2)
+            hyperparamethers_range_dictionary["alpha"] = list(np.linspace(0.001, 2.0, 500))# range(0, 2)
+            hyperparamethers_range_dictionary["beta"] = list(np.linspace(0.001, 2.0, 500)) #range(0, 2) np.linespace()
             hyperparamethers_range_dictionary["normalize_similarity"] = [True, False]
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
@@ -682,10 +682,10 @@ def read_data_split_and_search():
     collaborative_algorithm_list = [
         # Random,
         # TopPop,
-        ItemKNNCBFRecommender,
+        # ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
         # P3alphaRecommender,
-        # RP3betaRecommender,
+        RP3betaRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,

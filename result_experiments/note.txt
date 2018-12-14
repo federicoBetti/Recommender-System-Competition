@@ -1,14 +1,16 @@
 In questo file prendo un po di note che uso mentre si testano gli algoritmi.
 L'item Collaborative con knn=100 and shrink=50 gave results of 9.7%. Now i'm doing parameter tuning on it, testing normalization=True/False but also if to use or not the tfidf of the URM train and i'm also going to test more similarity functions
-Results: per ora ancora niente di meglio
-
+{'topK': 140, 'shrink': 1, 'similarity': 'cosine', 'normalize': True, 'tfidf': True}, MAP value is 0.1017
 
 
 Sto anche testando lo user CF, con i parametri che usiamo di solito (150, 10) ottengo 9.63%
-Results: per ora ancora niente di meglio
+{'topK': 160, 'shrink': 2, 'similarity': 'cosine', 'normalize': True, 'tfidf': True}, MAP value is 0.0998
 
-
-
+Conclusion: tfidf gives good results in item and user collaborative and improves their performances!!
 
 Sto anche testando il content base filter, con aggiunta di tfidf o bm25. Il risultato in locale con (60, 5, no tfidf) è: 4.951%
 {'topK': 20, 'shrink': 52, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 1} - MAP results: 0.05272826678294754
+{'topK': 10, 'shrink': 180, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 0}, MAP value is 0.0529
+
+
+Qua c'è il test del RP3B. Per ora i risultati migliori sono 'topK': 146, 'alpha': 0.4156476217553893, 'beta': 0.20430089442930188, MAP value is 0.0951

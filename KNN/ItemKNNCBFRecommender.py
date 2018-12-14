@@ -36,7 +36,7 @@ class ItemKNNCBFRecommender(SimilarityMatrixRecommender, Recommender):
         self.W_sparse = None
 
     def fit(self, topK=50, shrink=100, similarity='cosine', normalize=True, force_compute_sim=True,
-            feature_weighting="none", feature_weighting_index=2, **similarity_args):
+            feature_weighting="none", feature_weighting_index=0, **similarity_args):
 
         feature_weighting = self.FEATURE_WEIGHTING_VALUES[feature_weighting_index]
         self.topK = topK

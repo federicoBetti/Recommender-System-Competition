@@ -32,3 +32,4 @@ On recommender <class 'KNN.ItemKNNCFRecommender.ItemKNNCFRecommender'> Exception
 On recommender <class 'KNN.ItemKNNCFRecommender.ItemKNNCFRecommender'> Exception group argument must be None for now
 On recommender <class 'KNN.ItemKNNCFRecommender.ItemKNNCFRecommender'> Exception group argument must be None for now
 On recommender <class 'KNN.UserKNNCFRecommender.UserKNNCFRecommender'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'GraphBased.RP3betaRecommender.RP3betaRecommender'> Exception module 'numpy' has no attribute 'linespace'

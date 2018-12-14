@@ -419,8 +419,21 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                     self.MAE += sum(1 - final_score_line[test_songs])
                     final_score[user_index] = final_score_line
             else:
-                for score, weight in zip(scores, weights):
-                    final_score += (score * weight)
+                for user_index in range(len(user_id_array)):
+                    user_id = user_id_array[user_index]
+                    user_profile = self.URM_train.indices[
+                                   self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
+                    # user profile sono gli 1 nella URM train
+                    test_songs = self.URM_validation.indices[
+                                   self.URM_validation.indptr[user_id]:self.URM_validation.indptr[user_id + 1]]
+
+                    final_score_line = np.zeros(scores[0].shape[1])
+                    for score, weight in zip(scores, weights):
+                        final_score_line += score[user_index] * weight
+                    for ind, score in enumerate(scores):
+                        self.gradients[ind] += sum(np.sign(1 - final_score_line[test_songs])*score[user_index, test_songs])
+                    self.MAE += sum(1 - final_score_line[test_songs])
+                    final_score[user_index] = final_score_line
 
         else:
             raise NotImplementedError

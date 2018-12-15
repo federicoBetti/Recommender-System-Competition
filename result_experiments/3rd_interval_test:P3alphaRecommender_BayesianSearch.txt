@@ -1,0 +1,32 @@
+BayesianSearch: Testing config: {'shrink1': 10, 'top1': 561, 'alpha': 1.5427356296399635, 'normalize_similarity': False} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'shrink1': 185, 'top1': 731, 'alpha': 1.3503086151719286, 'normalize_similarity': False} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'shrink1': 50, 'top1': 291, 'alpha': 1.7800553957031084, 'normalize_similarity': True} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'shrink1': 15, 'top1': 496, 'alpha': 0.07351708684152403, 'normalize_similarity': True} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'shrink1': 50, 'top1': 46, 'alpha': 0.5645768333771946, 'normalize_similarity': True} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'shrink1': 165, 'top1': 666, 'alpha': 1.8709200324873958, 'normalize_similarity': False} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'shrink1': 195, 'top1': 161, 'alpha': 1.7944053457480937, 'normalize_similarity': True} - Exception 'alphaP3'
+BayesianSearch: Testing config: {'shrink1': 245, 'top1': 166, 'alpha': 0.22418585212810815, 'normalize_similarity': False} - Exception 'alphaP3'
+BayesianSearch: New best config found. Config: {'shrink1': 190, 'top1': 501, 'alphaP3': 1.7817302624898141, 'normalize_similarity': True} - MAP results: 0.025716744878939993 - time: 2018-12-15 15:15:39.895535
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 35, 'top1': 376, 'alphaP3': 0.32759309512719414, 'normalize_similarity': False} - MAP results: 0.025711795181039006 - time: 2018-12-15 15:16:33.692479
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 45, 'top1': 601, 'alphaP3': 1.2091346243902699, 'normalize_similarity': False} - MAP results: 0.025704594192765925 - time: 2018-12-15 15:17:34.183640
+BayesianSearch: New best config found. Config: {'shrink1': 5, 'top1': 56, 'alphaP3': 1.0154490597219454, 'normalize_similarity': True} - MAP results: 0.026405531533126123 - time: 2018-12-15 15:18:32.738085
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 25, 'top1': 316, 'alphaP3': 1.763183209619216, 'normalize_similarity': False} - MAP results: 0.026224148743247872 - time: 2018-12-15 15:19:33.692926
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 5, 'top1': 581, 'alphaP3': 0.7615061963351621, 'normalize_similarity': False} - MAP results: 0.02563751075228804 - time: 2018-12-15 15:20:36.587408
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 225, 'top1': 296, 'alphaP3': 0.17703270198154697, 'normalize_similarity': True} - MAP results: 0.025612727463592083 - time: 2018-12-15 15:21:34.033649
+BayesianSearch: New best config found. Config: {'shrink1': 80, 'top1': 151, 'alphaP3': 1.2827139967773968, 'normalize_similarity': False} - MAP results: 0.02689660879589969 - time: 2018-12-15 15:22:28.204036
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 235, 'top1': 1, 'alphaP3': 1.6603314913743437, 'normalize_similarity': True} - MAP results: 0.004635773394268441 - time: 2018-12-15 15:24:15.316757
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 240, 'top1': 796, 'alphaP3': 0.023143325147992444, 'normalize_similarity': True} - MAP results: 0.02404077673948569 - time: 2018-12-15 15:25:35.533997
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 0, 'top1': 796, 'alphaP3': 0.6228477774150654, 'normalize_similarity': True} - MAP results: 0.024862338737778558 - time: 2018-12-15 15:27:43.155573
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 5, 'top1': 191, 'alphaP3': 0.04114828150558392, 'normalize_similarity': False} - MAP results: 0.025886280654590695 - time: 2018-12-15 15:28:45.788350
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 95, 'top1': 236, 'alphaP3': 1.733800650210147, 'normalize_similarity': True} - MAP results: 0.026413761335683232 - time: 2018-12-15 15:29:48.193914
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 165, 'top1': 351, 'alphaP3': 1.9744149381060956, 'normalize_similarity': False} - MAP results: 0.025718380497087124 - time: 2018-12-15 15:30:49.515738
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 245, 'top1': 631, 'alphaP3': 0.3182709881570134, 'normalize_similarity': False} - MAP results: 0.024808878755893923 - time: 2018-12-15 15:31:58.158096
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 0, 'top1': 116, 'alphaP3': 1.974572460367295, 'normalize_similarity': True} - MAP results: 0.025473227425623943 - time: 2018-12-15 15:32:55.387429
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 120, 'top1': 796, 'alphaP3': 1.9937732343824683, 'normalize_similarity': False} - MAP results: 0.02459489852343743 - time: 2018-12-15 15:34:08.018538
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 5, 'top1': 6, 'alphaP3': 1.6231552686235629, 'normalize_similarity': False} - MAP results: 0.016188338715433348 - time: 2018-12-15 15:35:03.525373
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 85, 'top1': 66, 'alphaP3': 0.07074045479777458, 'normalize_similarity': True} - MAP results: 0.025967158303188777 - time: 2018-12-15 15:36:03.892354
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 245, 'top1': 171, 'alphaP3': 0.045551165583938014, 'normalize_similarity': False} - MAP results: 0.025849646780598548 - time: 2018-12-15 15:36:58.667816
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 0, 'top1': 716, 'alphaP3': 1.973774863213386, 'normalize_similarity': True} - MAP results: 0.0247787277981786 - time: 2018-12-15 15:39:00.092504
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 245, 'top1': 796, 'alphaP3': 1.8063236048150417, 'normalize_similarity': False} - MAP results: 0.024988368726395024 - time: 2018-12-15 15:40:14.784490
+BayesianSearch: Config is suboptimal. Config: {'shrink1': 245, 'top1': 431, 'alphaP3': 1.9634066809358879, 'normalize_similarity': False} - MAP results: 0.025544776671705315 - time: 2018-12-15 15:41:23.471673
+BayesianSearch: Best config is: Config {'shrink1': 80, 'top1': 151, 'alphaP3': 1.2827139967773968, 'normalize_similarity': False}, MAP value is 0.0269

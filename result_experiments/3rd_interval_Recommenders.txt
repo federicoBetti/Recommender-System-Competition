@@ -1,6 +1,7 @@
 Item Collaborative: Best config is: Config {'top1': 180, 'shrink1': 2}, MAP value is 0.0269
 User Collaborative: Best config is: Config {'top1': 240, 'shrink1': 19}, MAP value is 0.0275
 PureSVD: Best config is: Config: {'num_factors': 95} - MAP results: 0.022372231353544728
+P3Beta: Best config is: Config {'shrink1': 80, 'top1': 151, 'alphaP3': 1.2827139967773968, 'normalize_similarity': False}, MAP value is 0.0269
 RP3Beta: Best config is: Config {'top1': 91, 'shrink1': -1, 'alphaRP3': 0.49774549098196397, 'betaRP': 0.2333486973947896}, MAP value is 0.0275
 SLIM_BPR: Best config is: Config {'top1': 311, 'lambda_i': 0.10467537896611145, 'lambda_j': 0.004454204678491891, 'shrink1': -1}, MAP value is 0.0259
 Item Content: Schifo

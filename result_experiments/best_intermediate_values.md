@@ -49,11 +49,7 @@ ITEM CB: {'top1': 21, 'shrink1': 75, 'feature_weighting_index': 1} - MAP results
 SLIM: Config {'top1': 290, 'sgd_mode': 'adagrad', 'lambda_i': 0.21830913494129978, 'lambda_j': 0.6874107058863184}, MAP value is 0.0488
 R3:{'top1': 70, 'normalize_similarity': True, 'alphaRP3': 0.9223827655310622, 'betaRP': 0.2213306613226453}, MAP value is 0.0540
 
-##3rd sector: ItemCF, UserCF, RP3b
-{'weights1': 0.023574800557095155, 'weights2': 0.3954614055660033, 'weights3': 0.4605427159971659}
+##3rd sector: UserCBF, ItemCF, UserCF, P3alpha, RP3b, SLIM, PurSVD
+{'weights1': 0.2959761085665614, 'weights2': 0.08296490886624563, 'weights3': 0.72672714096492, 'weights4': 0.04856215067017522, 'weights5': 0.7144382800343254, 'weights6': 0.20367609381116258, 'weights7': 0.1080480529784491} -
+MAP results: 0.028784278413922313
 
-'alphaRP3': 0.49774549098196397,
-'betaRP': 0.2333486973947896,
-"topK": [130, 240, 91],
-"shrink": [2, 19, -1],
-MAP results: 0.028627281415957516

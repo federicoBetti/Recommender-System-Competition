@@ -30,6 +30,10 @@ Recommenders used:
 
 # NEW!!!
 ##1st secotor: ItemCBF, ItemCF, UserCf, RP3Beta
+##BEST: ITEMB CB, ITEM CF, USER CF, P3ALPHA, RP3BETA, PURE SVD
+{'weights1': 0.6708034395599534, 'weights2': 0.4180455311930482, 'weights3': 0.013121631586130333, 'weights4': 0.9606783176615321, 
+'weights5': 0.9192576193987754, 'weights6': 0.517220112773677}, MAP value is 0.0280
+
 {'weights1': 0.6936763453666485, 'weights2': 0.8818900949901204, 'weights3': 0.028286087945956884, 'weights4': 0.9108661028648041
 MAP: 0.027608903149289973
 Item Collaborative: Best config is: Config {'top1': 595, 'shrink1': 1, 'normalize': False}, MAP value is 0.0237

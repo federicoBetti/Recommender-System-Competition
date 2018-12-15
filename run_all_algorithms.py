@@ -28,7 +28,7 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     delete_old_computations = False
     slim_after_hybrid = False
 
@@ -58,13 +58,13 @@ if __name__ == '__main__':
         # UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        # P3alphaRecommender,
+        P3alphaRecommender,
         RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
-        # PureSVDRecommender
+        PureSVDRecommender
     ]
     recommender_list2 = [
         # Random,
@@ -81,6 +81,8 @@ if __name__ == '__main__':
         # SLIMElasticNetRecommender
         PureSVDRecommender
     ]
+
+    # UserCBF, ItemCF, UserCF, P3alpha, RP3b, SLIM, PurSVD
     recommender_list3 = [
         # Random,
         # TopPop,
@@ -88,24 +90,26 @@ if __name__ == '__main__':
         UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        # P3alphaRecommender,
+        P3alphaRecommender,
         RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        # SLIM_BPR_Cython,
+        SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
-        # PureSVDRecommender
+        PureSVDRecommender
     ]
 
     # For hybrid with weighted estimated rating
     d_weights = [
-        [0.6936763453666485, 0.8818900949901204, 0.028286087945956884, 0.9108661028648041] + [0] * len(
+        [0.6708034395599534, 0.4180455311930482, 0.013121631586130333, 0.9606783176615321, 0.9192576193987754,
+         0.517220112773677] + [0] * len(
             recommender_list2) + [0] * len(recommender_list3),
-        [0] * len(recommender_list1) + [0.06522977240989092, 0.18473200718460092, 0.48619405150100203,
-                                        0.404944119100937, 0.00024154894436601015]
+        [0] * len(recommender_list1) + [0.03206429006541767, 0.022068399812202766, 0.5048937312439359,
+                                        0.5777889378285606, 0.002469536740713263]
         + [0] * len(recommender_list3),
-        [0] * len(recommender_list1) + [0] * len(recommender_list2) + [0.17677355931733973, 0.13254209913282877,
-                                                                       0.3928509095470075, 0.9269613019463449]
+        [0] * len(recommender_list1) + [0] * len(recommender_list2) + [0.2959761085665614, 0.08296490886624563,
+                                                                       0.72672714096492, 0.04856215067017522,
+                                                                       0.7144382800343254, 0.20367609381116258, 0.1080480529784491]
     ]
     #
     # d_best = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
@@ -200,7 +204,7 @@ if __name__ == '__main__':
         lambda_i = 0.1
         lambda_j = 0.05
         old_similrity_matrix = None
-        num_factors = 165
+        num_factors = 395
         l1_ratio = 1e-06
 
         # Variabili secondo intervallo
@@ -208,20 +212,59 @@ if __name__ == '__main__':
         betaRP3_2 = 0.2213306613226453
         num_factors_2 = 391
 
+        # UserCBF, ItemCF, UserCF, P3alpha, RP3b, SLIM, PurSVD
+        #
+        # Item
+        # Collaborative: Best
+        # config is: Config
+        # {'top1': 180, 'shrink1': 2}, MAP
+
+        # User
+        # Collaborative: Best
+        # config is: Config
+        # {'top1': 240, 'shrink1': 19}, MAP
+
+        # PureSVD: Best
+        # config is: Config: {'num_factors': 95} - MAP
+
+        # P3Beta: Best
+        # config is: Config
+        # {'shrink1': 80, 'top1': 151, 'alphaP3': 1.2827139967773968, 'normalize_similarity': False}, MAP
+
+        # RP3Beta: Best
+        # config is: Config
+        # {'top1': 91, 'shrink1': -1, 'alphaRP3': 0.49774549098196397, 'betaRP': 0.2333486973947896}, MAP
+
+        # SLIM_BPR: Best
+        # config is: Config
+        # {'top1': 311, 'lambda_i': 0.10467537896611145, 'lambda_j': 0.004454204678491891, 'shrink1': -1}, MAP
+
+        # Item
+        # Content: Schifo
+
+        # User
+        # Content: {'top1': 250, 'shrink1': 55, 'normalize': False} - MAP
+
+        # ElasticNet: New
+        # best
+        # config
+        # found.Config: {'top1': 50, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP
+
+
         recommender.fit(**{
-            "topK": [15, 595, 105, 20] + [21, 220, 160, 70, -1] + [250, 180, 240, 91],
-            "shrink": [210, 1, 30, -1] + [75, 1, 150, -1, -1] + [55, 2, 19, -1],
+            "topK": [15, 595, 105, 15, 20, -1] + [21, 220, 160, 70, -1] + [250, 180, 240, 151, 91, 311, -1],
+            "shrink": [210, 1, 30, -1, -1, -1] + [75, 1, 150, -1, -1] + [55, 2, 19, -1, -1, -1, -1],
             "pop": [130, 346],
             "weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             "force_compute_sim": True,
             "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
-            "epochs": 50, "lambda_i": lambda_i,
-            "lambda_j": lambda_j,
-            "num_factors": num_factors,
-            'alphaP3': 1.160296393373262,
-            'alphaRP3': [0.457685370741483, alphaRP3_2, 0.49774549098196397],
-            'betaRP': [0.289432865731463, betaRP3_2, 0.2333486973947896],
+            "epochs": 50, "lambda_i": 0.10467537896611145,
+            "lambda_j": 0.004454204678491891, # SOLO ULTIMO HA SLIM
+            "num_factors": num_factors, #395, 391, 95
+            'alphaP3': 1,# 0.7100641282565131, 0 ,1.2827139967773968,
+            'alphaRP3': [0.457685370741483, 0.9223827655310622, 0.49774549098196397],
+            'betaRP': [0.289432865731463, 0.2213306613226453, 0.2333486973947896],
             'l1_ratio': l1_ratio,
             "weights_to_dweights": -1})
 

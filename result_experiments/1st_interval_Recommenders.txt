@@ -11,3 +11,5 @@ User Content: New best config found. Config: {'top1': 255, 'shrink1': 215} - MAP
 ElasticNet:  Config: {'top1': 100, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP results: 0.01779221578965368
 
 I valori migliori dell'ibridazione sono in best intermediate values
+
+ ITEMB CB, ITEM CF, USER CF, P3ALPHA, RP3BETA, PURE SVD

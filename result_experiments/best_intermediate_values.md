@@ -37,6 +37,17 @@ User Collaborative:  Best config is: Config {'top1': 105, 'shrink1': 30, 'normal
 RP3Beta: Config: {'top1': 20, 'alphaRP3': 0.457685370741483, 'betaRP': 0.289432865731463} - MAP results: 0.0242190133616356
 Item Content: Best config is: Config {'top1': 15, 'shrink1': 210, 'feature_weighting_index': 0}, MAP value is 0.0189
 
+##2nd sector: ITEM CB, ITEM CF, USER CF, RP3BETA, PURE SVD
+{'weights1': 0.03206429006541767, 'weights2': 0.022068399812202766, 'weights3': 0.5048937312439359, 
+'weights4': 0.5777889378285606, 'weights5': 0.002469536740713263} - MAP results: 0.05725
+
+ITEM CF: {'top1': 220, 'shrink1': 1}, MAP value is 0.0525
+USER CF:  {'top1': 160, 'shrink1': 150} - MAP results: 0.05131
+P3: {'top1': 50, 'shrink1': -1, 'alphaP3': 1.2989478957915832}, MAP value is 0.0524
+PURE SVD: {'num_factors': 391},  MAP value is 0.0411
+ITEM CB: {'top1': 21, 'shrink1': 75, 'feature_weighting_index': 1} - MAP results: 0.02643
+SLIM: Config {'top1': 290, 'sgd_mode': 'adagrad', 'lambda_i': 0.21830913494129978, 'lambda_j': 0.6874107058863184}, MAP value is 0.0488
+R3:{'top1': 70, 'normalize_similarity': True, 'alphaRP3': 0.9223827655310622, 'betaRP': 0.2213306613226453}, MAP value is 0.0540
 
 ##3rd sector: ItemCF, UserCF, RP3b
 {'weights1': 0.023574800557095155, 'weights2': 0.3954614055660033, 'weights3': 0.4605427159971659}

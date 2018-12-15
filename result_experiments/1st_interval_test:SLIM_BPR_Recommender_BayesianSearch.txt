@@ -1,0 +1,10 @@
+BayesianSearch: New best config found. Config: {'top1': 721, 'lambda_i': 0.4151566351461877, 'lambda_j': 0.7876427945130493} - MAP results: 0.02199722526774445 - time: 2018-12-14 23:30:03.548856
+BayesianSearch: Config is suboptimal. Config: {'top1': 511, 'lambda_i': 0.1254514030999787, 'lambda_j': 0.5940933802162401} - MAP results: 0.021522645836752657 - time: 2018-12-14 23:37:13.596866
+BayesianSearch: New best config found. Config: {'top1': 651, 'lambda_i': 0.469736472769021, 'lambda_j': 0.6011090571979808} - MAP results: 0.022098667374422454 - time: 2018-12-14 23:47:13.351103
+BayesianSearch: New best config found. Config: {'top1': 281, 'lambda_i': 0.6159894030587588, 'lambda_j': 0.7093680635654898} - MAP results: 0.02238154232837191 - time: 2018-12-14 23:56:00.823270
+BayesianSearch: New best config found. Config: {'top1': 131, 'lambda_i': 0.6892356201296567, 'lambda_j': 0.35586838378889707} - MAP results: 0.02262832221205144 - time: 2018-12-15 00:03:41.381925
+BayesianSearch: Config is suboptimal. Config: {'top1': 21, 'lambda_i': 0.49271255352616306, 'lambda_j': 0.5939742742929915} - MAP results: 0.022353241624392946 - time: 2018-12-15 00:11:44.390296
+BayesianSearch: Config is suboptimal. Config: {'top1': 11, 'lambda_i': 0.3531897756715504, 'lambda_j': 0.2945881169203829} - MAP results: 0.021716929733564164 - time: 2018-12-15 00:21:02.880400
+BayesianSearch: Config is suboptimal. Config: {'top1': 211, 'lambda_i': 0.7092471585420875, 'lambda_j': 0.12432689200081537} - MAP results: 0.02242932311855846 - time: 2018-12-15 00:27:48.025681
+BayesianSearch: Config is suboptimal. Config: {'top1': 501, 'lambda_i': 0.9945263064873435, 'lambda_j': 0.954095270625531} - MAP results: 0.022061986998497967 - time: 2018-12-15 00:33:32.508355
+BayesianSearch: Config is suboptimal. Config: {'top1': 791, 'lambda_i': 0.9118705185984495, 'lambda_j': 4.566440957054496e-05} - MAP results: 0.022236110611036586 - time: 2018-12-15 00:40:16.223384

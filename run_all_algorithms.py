@@ -28,17 +28,17 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = True
+    evaluate_algorithm = False
     delete_old_computations = False
     slim_after_hybrid = False
 
     # delete_previous_intermediate_computations()
-    if not evaluate_algorithm:
-        delete_previous_intermediate_computations()
-    else:
-        print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
+    # if not evaluate_algorithm:
+    #     delete_previous_intermediate_computations()
+    # else:
+    #     print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
 
-    filename = "hybrid_new_clusterization.csv"
+    filename = "hybrid_different_rec_for_diff_intervals.csv"
 
     dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
 
@@ -97,10 +97,10 @@ if __name__ == '__main__':
         # PureSVDRecommender
     ]
 
-
     # For hybrid with weighted estimated rating
     d_weights = [
-        [0.6936763453666485, 0.8818900949901204, 0.028286087945956884, 0.9108661028648041] + [0] * len(recommender_list2) + [0] * len(recommender_list3),
+        [0.6936763453666485, 0.8818900949901204, 0.028286087945956884, 0.9108661028648041] + [0] * len(
+            recommender_list2) + [0] * len(recommender_list3),
         [0] * len(recommender_list1) + [0.06522977240989092, 0.18473200718460092, 0.48619405150100203,
                                         0.404944119100937, 0.00024154894436601015]
         + [0] * len(recommender_list3),
@@ -190,6 +190,7 @@ if __name__ == '__main__':
         '''
         Our optimal run
         '''
+        recommender_list = recommender_list1 + recommender_list2 + recommender_list3
         onPop = True
         # On pop it used to choose if have dynamic weights for
         recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=True,
@@ -204,15 +205,14 @@ if __name__ == '__main__':
 
         # Variabili secondo intervallo
         alphaRP3_2 = 0.9223827655310622
-        betaRP3_2 =  0.2213306613226453
-        num_factors_2 =  391
-
+        betaRP3_2 = 0.2213306613226453
+        num_factors_2 = 391
 
         recommender.fit(**{
             "topK": [15, 595, 105, 20] + [21, 220, 160, 70, -1] + [250, 180, 240, 91],
             "shrink": [210, 1, 30, -1] + [75, 1, 150, -1, -1] + [55, 2, 19, -1],
             "pop": [130, 346],
-            "weights": [1, 1, 1, 1, 1, 1, 1, 1],
+            "weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             "force_compute_sim": True,
             "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
@@ -220,8 +220,8 @@ if __name__ == '__main__':
             "lambda_j": lambda_j,
             "num_factors": num_factors,
             'alphaP3': 1.160296393373262,
-            'alphaRP3': [0.457685370741483, alphaRP3_2,   0.49774549098196397],
-            'betaRP': [0.289432865731463, betaRP3_2,   0.2333486973947896],
+            'alphaRP3': [0.457685370741483, alphaRP3_2, 0.49774549098196397],
+            'betaRP': [0.289432865731463, betaRP3_2, 0.2333486973947896],
             'l1_ratio': l1_ratio,
             "weights_to_dweights": -1})
 

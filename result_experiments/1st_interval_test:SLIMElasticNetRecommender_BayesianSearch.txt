@@ -1,0 +1,19 @@
+BayesianSearch: Testing config: {'top1': 300, 'l1_ratio': 0.0001, 'shrink1': -1} - Exception fit() got multiple values for keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'top1': 400, 'l1_ratio': 0.1, 'shrink1': -1} - Exception fit() got multiple values for keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'top1': 700, 'l1_ratio': 0.01, 'shrink1': -1} - Exception fit() got multiple values for keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'top1': 400, 'l1_ratio': 0.01, 'shrink1': -1} - Exception fit() got multiple values for keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'top1': 300, 'l1_ratio': 1.0, 'shrink1': -1} - Exception fit() got multiple values for keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'top1': 400, 'l1_ratio': 1.0, 'shrink1': -1} - Exception fit() got multiple values for keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'top1': 700, 'l1_ratio': 0.1, 'shrink1': -1} - Exception fit() got multiple values for keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'top1': 700, 'l1_ratio': 0.1, 'shrink1': -1} - Exception fit() got multiple values for keyword argument 'l1_ratio'
+BayesianSearch: New best config found. Config: {'top1': 100, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP results: 0.01779221578965368 - time: 2018-12-15 11:32:43.823675
+BayesianSearch: Config is suboptimal. Config: {'top1': 200, 'l1_ratio': 0.0001, 'shrink1': -1} - MAP results: 0.013812538781057095 - time: 2018-12-15 11:48:52.876947
+BayesianSearch: Config is suboptimal. Config: {'top1': 700, 'l1_ratio': 0.1, 'shrink1': -1} - MAP results: 0.0001189539721406894 - time: 2018-12-15 12:02:37.249778
+BayesianSearch: Config is suboptimal. Config: {'top1': 200, 'l1_ratio': 0.0001, 'shrink1': -1} - MAP results: 0.013817448950598747 - time: 2018-12-15 12:21:12.501786
+BayesianSearch: Config is suboptimal. Config: {'top1': 300, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP results: 0.016807309324883488 - time: 2018-12-15 12:50:50.164409
+BayesianSearch: Config is suboptimal. Config: {'top1': 600, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP results: 0.016184753721420683 - time: 2018-12-15 13:20:44.741915
+BayesianSearch: Config is suboptimal. Config: {'top1': 400, 'l1_ratio': 1.0, 'shrink1': -1} - MAP results: 0.0001189539721406894 - time: 2018-12-15 13:34:21.794314
+BayesianSearch: Config is suboptimal. Config: {'top1': 500, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP results: 0.016332095910574898 - time: 2018-12-15 13:59:38.162706
+BayesianSearch: Config is suboptimal. Config: {'top1': 50, 'l1_ratio': 1.0, 'shrink1': -1} - MAP results: 0.0001189539721406894 - time: 2018-12-15 14:09:05.848180
+BayesianSearch: Config is suboptimal. Config: {'top1': 800, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP results: 0.015990249389154915 - time: 2018-12-15 14:30:06.239945
+BayesianSearch: Config is suboptimal. Config: {'top1': 150, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP results: 0.017398771848410224 - time: 2018-12-15 14:50:42.970116

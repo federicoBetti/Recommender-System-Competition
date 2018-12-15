@@ -1,0 +1,12 @@
+BayesianSearch: New best config found. Config: {'top1': 700, 'l1_ratio': 1.0, 'shrink1': -1} - MAP results: 0.00013338402402946658 - time: 2018-12-15 11:19:51.128617
+BayesianSearch: Config is suboptimal. Config: {'top1': 700, 'l1_ratio': 0.1, 'shrink1': -1} - MAP results: 0.00013338402402946658 - time: 2018-12-15 11:31:56.918499
+BayesianSearch: Config is suboptimal. Config: {'top1': 200, 'l1_ratio': 1.0, 'shrink1': -1} - MAP results: 0.00013338402402946658 - time: 2018-12-15 11:43:37.336314
+BayesianSearch: Config is suboptimal. Config: {'top1': 200, 'l1_ratio': 0.01, 'shrink1': -1} - MAP results: 0.00013338402402946658 - time: 2018-12-15 11:56:00.256280
+BayesianSearch: New best config found. Config: {'top1': 150, 'l1_ratio': 0.0001, 'shrink1': -1} - MAP results: 0.020590936149870592 - time: 2018-12-15 12:14:01.637812
+BayesianSearch: New best config found. Config: {'top1': 200, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP results: 0.020752854926472056 - time: 2018-12-15 12:42:31.816967
+BayesianSearch: Config is suboptimal. Config: {'top1': 800, 'l1_ratio': 0.0001, 'shrink1': -1} - MAP results: 0.01967603386647238 - time: 2018-12-15 13:00:46.182842
+BayesianSearch: Config is suboptimal. Config: {'top1': 400, 'l1_ratio': 0.01, 'shrink1': -1} - MAP results: 0.00013338402402946658 - time: 2018-12-15 13:13:57.000057
+BayesianSearch: New best config found. Config: {'top1': 50, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP results: 0.02162080017845746 - time: 2018-12-15 13:42:29.841629
+BayesianSearch: Config is suboptimal. Config: {'top1': 800, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP results: 0.020006442326585896 - time: 2018-12-15 14:04:18.880465
+BayesianSearch: Config is suboptimal. Config: {'top1': 50, 'l1_ratio': 1.0, 'shrink1': -1} - MAP results: 0.00013338402402946658 - time: 2018-12-15 14:13:36.796030
+BayesianSearch: Config is suboptimal. Config: {'top1': 150, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP results: 0.021050979820345078 - time: 2018-12-15 14:33:55.445876

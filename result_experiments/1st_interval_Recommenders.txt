@@ -3,6 +3,7 @@ User Collaborative:  Best config is: Config {'top1': 105, 'shrink1': 30, 'normal
 PureSVD: Config: {'num_factors': 395} - MAP results: 0.008819755542590804
 PrAlpha:  Best config is: Config {'top1': 15, 'alphaP3': 0.7100641282565131}, MAP value is 0.0231
 RP3Beta: Config: {'top1': 20, 'alphaRP3': 0.457685370741483, 'betaRP': 0.289432865731463} - MAP results: 0.0242190133616356
+// MIO RP3: {'top1': 30, 'normalize_similarity': False, 'alphaRP3': 0.48172144288577157, 'betaRP': 0.2774148296593187}, MAP value is 0.0243
 SLIM_BPR:
 Item Content: Best config is: Config {'top1': 15, 'shrink1': 210, 'feature_weighting_index': 0}, MAP value is 0.0189
 User Content: New best config found. Config: {'top1': 255, 'shrink1': 215} - MAP results: 0.021083330144343937

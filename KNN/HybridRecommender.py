@@ -131,6 +131,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         p3counter = 0
         rp3bcounter = 0
         slim_counter = 0
+        factorCounter = 0
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
             if recommender.__class__ is SLIM_BPR_Cython:
@@ -155,7 +156,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 recommender.fit(topK=knn, l1_ratio=similarity_args["l1_ratio"], force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [PureSVDRecommender]:
-                recommender.fit(num_factors=similarity_args["num_factors"], force_compute_sim=force_compute_sim)
+                recommender.fit(num_factors=similarity_args["num_factors"][factorCounter], force_compute_sim=force_compute_sim)
+                factorCounter += 1
 
             elif recommender.__class__ in [P3alphaRecommender]:
                 if type(similarity_args["alphaP3"]) is not list:

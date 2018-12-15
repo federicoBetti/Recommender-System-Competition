@@ -50,7 +50,12 @@ if __name__ == '__main__':
     # _ = dataReader.get_tfidf_album()
 
     # URM_train = dataReader.get_page_rank_URM()
-
+    #
+    # ITEMB
+    # CB, ITEM
+    # CF, USER
+    # CF, P3ALPHA, RP3BETA, PURE
+    # SVD
     recommender_list1 = [
         # Random,
         # TopPop,
@@ -66,6 +71,8 @@ if __name__ == '__main__':
         # SLIMElasticNetRecommender
         PureSVDRecommender
     ]
+
+    # ITEM CB, ITEM CF, USER CF, RP3BETA, PURE SVD
     recommender_list2 = [
         # Random,
         # TopPop,
@@ -255,14 +262,14 @@ if __name__ == '__main__':
             "topK": [15, 595, 105, 15, 20, -1] + [21, 220, 160, 70, -1] + [250, 180, 240, 151, 91, 311, -1],
             "shrink": [210, 1, 30, -1, -1, -1] + [75, 1, 150, -1, -1] + [55, 2, 19, -1, -1, -1, -1],
             "pop": [130, 346],
-            "weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            "weights": [1]*18,
             "force_compute_sim": True,
             "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
-            "epochs": 50, "lambda_i": 0.10467537896611145,
-            "lambda_j": 0.004454204678491891, # SOLO ULTIMO HA SLIM
-            "num_factors": num_factors, #395, 391, 95
-            'alphaP3': 1,# 0.7100641282565131, 0 ,1.2827139967773968,
+            "epochs": 50, "lambda_i": [0, 0, 0.10467537896611145],
+            "lambda_j": [0, 0, 0.004454204678491891], # SOLO ULTIMO HA SLIM
+            "num_factors": [395, 391, 95],
+            'alphaP3': [0.7100641282565131, 0 ,1.2827139967773968],
             'alphaRP3': [0.457685370741483, 0.9223827655310622, 0.49774549098196397],
             'betaRP': [0.289432865731463, 0.2213306613226453, 0.2333486973947896],
             'l1_ratio': l1_ratio,

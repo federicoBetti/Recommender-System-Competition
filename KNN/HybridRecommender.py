@@ -135,8 +135,12 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
             if recommender.__class__ is SLIM_BPR_Cython:
                 if "lambda_i" in list(similarity_args.keys()):  # lambda i and j provided in args
+                    if type(similarity_args["lambda_i"]) is not list:
+                        similarity_args["lambda_i"] = [similarity_args["lambda_i"]]
+                        similarity_args["lambda_j"] = [similarity_args["lambda_j"]]
                     recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
-                                    force_compute_sim=force_compute_sim, topK=knn, lambda_i=similarity_args["lambda_i"][slim_counter],
+                                    force_compute_sim=force_compute_sim, topK=knn,
+                                    lambda_i=similarity_args["lambda_i"][slim_counter],
                                     lambda_j=similarity_args["lambda_j"][slim_counter])
                 else:
                     recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
@@ -154,6 +158,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 recommender.fit(num_factors=similarity_args["num_factors"], force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [P3alphaRecommender]:
+                if type(similarity_args["alphaP3"]) is not list:
+                    similarity_args["alphaP3"] = [similarity_args["alphaP3"]]
                 recommender.fit(topK=knn, alpha=similarity_args["alphaP3"][p3counter], min_rating=0, implicit=True,
                                 normalize_similarity=True, force_compute_sim=force_compute_sim)
                 p3counter += 1

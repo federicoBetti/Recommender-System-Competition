@@ -303,7 +303,7 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
         # PureSVDRecommender
     ]
 
-    this_output_root_path = output_root_path + "1st_interval_test:" + "{}".format(
+    this_output_root_path = output_root_path + "2nd_interval_test:" + "{}".format(
         "_".join([x.RECOMMENDER_NAME for x in recommender_list]))
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
@@ -336,7 +336,11 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
     # hyperparamethers_range_dictionary["lambda_i"] = range(0, 1)
     # hyperparamethers_range_dictionary["lambda_j"] = range(0, 1)
 
-    # hyperparamethers_range_dictionary["top1"] = [-1]
+
+    # hyperparamethers_range_dictionary["top1"] = [50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
+    # hyperparamethers_range_dictionary["l1_ratio"] = [1.0, 0.1, 1e-2, 1e-4, 1e-6]
+    #
+    # # hyperparamethers_range_dictionary["top1"] = [-1]
     # hyperparamethers_range_dictionary["shrink1"] = [-1]
     # hyperparamethers_range_dictionary["num_factors"] = list(range(0, 400, 5))
 
@@ -363,21 +367,21 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
                                  "weights": [1],
                                  "force_compute_sim": True,
                                  "old_similarity_matrix": old_similrity_matrix,
-                                 "epochs": 25,
+                                 "epochs": 30,
                                  # "lambda_i": lambda_i,
                                  # "lambda_j": lambda_j,
                                  # "num_factors": num_factors,
                                  'alphaP3': 1.160296393373262,
                                  # 'alphaRP3': 0.4156476217553893,
                                  # 'betaRP': 0.20430089442930188,
-                                 'l1_ratio': l1_ratio,
-                                 "weights_to_dweights": 0},
+                                 # 'l1_ratio': l1_ratio,
+                                 "weights_to_dweights": 1},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
 
     best_parameters = parameterSearch.search(recommenderDictionary,
-                                             n_cases=40,
+                                             n_cases=15,
                                              output_root_path=output_root_path_similarity,
                                              metric=metric_to_optimize
                                              )
@@ -875,7 +879,7 @@ def read_data_split_and_search():
                         transfer_matrix = None
 
                     # runna single algorithm
-                    single = False
+                    single = True
                     if single is False:
                         # old similarity matrix is the starting matrix for the SLIM recommender
                         runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recommender_list,

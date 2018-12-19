@@ -28,7 +28,7 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = True
+    evaluate_algorithm = False
     delete_old_computations = False
     slim_after_hybrid = False
 
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     # else:
     #     print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
 
-    filename = "hybrid_different_rec_for_diff_intervals.csv"
+    filename = "hybrid_different_rec_for_diff_intervals_150.csv"
 
     dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
 
@@ -116,7 +116,8 @@ if __name__ == '__main__':
         + [0] * len(recommender_list3),
         [0] * len(recommender_list1) + [0] * len(recommender_list2) + [0.2959761085665614, 0.08296490886624563,
                                                                        0.72672714096492, 0.04856215067017522,
-                                                                       0.7144382800343254, 0.20367609381116258, 0.1080480529784491]
+                                                                       0.7144382800343254, 0.20367609381116258,
+                                                                       0.1080480529784491]
     ]
     #
     # d_best = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
@@ -262,14 +263,14 @@ if __name__ == '__main__':
             "topK": [15, 595, 105, 15, 20, -1] + [21, 220, 160, 70, -1] + [250, 180, 240, 151, 91, 311, -1],
             "shrink": [210, 1, 30, -1, -1, -1] + [75, 1, 150, -1, -1] + [55, 2, 19, -1, -1, -1, -1],
             "pop": [130, 346],
-            "weights": [1]*18,
+            "weights": [1] * 18,
             "force_compute_sim": True,
             "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
-            "epochs": 50, "lambda_i": [0, 0, 0.10467537896611145],
-            "lambda_j": [0, 0, 0.004454204678491891], # SOLO ULTIMO HA SLIM
+            "epochs": 150, "lambda_i": [0.10467537896611145],
+            "lambda_j": [0.004454204678491891],  # SOLO ULTIMO HA SLIM
             "num_factors": [395, 391, 95],
-            'alphaP3': [0.7100641282565131, 0 ,1.2827139967773968],
+            'alphaP3': [0.7100641282565131, 0, 1.2827139967773968],
             'alphaRP3': [0.457685370741483, 0.9223827655310622, 0.49774549098196397],
             'betaRP': [0.289432865731463, 0.2213306613226453, 0.2333486973947896],
             'l1_ratio': l1_ratio,

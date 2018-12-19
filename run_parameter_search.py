@@ -194,8 +194,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     recommender_list = [
         # Random,
         # TopPop,
-        ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
+        # ItemKNNCBFRecommender,
+        UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
         P3alphaRecommender,
@@ -203,11 +203,12 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender,
-        PureSVDRecommender
+        PureSVDRecommender,
+
+        SLIMElasticNetRecommender
     ]
 
-    this_output_root_path = output_root_path + "1th_interval_test_hybrid:" + "{}".format(
+    this_output_root_path = output_root_path + "3rd_interval_total_test:" + "{}".format(
         "_".join([x.RECOMMENDER_NAME for x in recommender_list]))
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
@@ -221,10 +222,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     hyperparamethers_range_dictionary["weights5"] = range(0, 1)
     hyperparamethers_range_dictionary["weights6"] = range(0, 1)
     hyperparamethers_range_dictionary["weights7"] = range(0, 1)
-    # hyperparamethers_range_dictionary["weights8"] = range(0, 1)
-
-    # hyperparamethers_range_dictionary["sgd_mode"] = ["adagrad"]
-
+    hyperparamethers_range_dictionary["weights8"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights7"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["weights8"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["pop1"] = list(range(80, 200))  # list(np.linspace(0, 1, 11))
@@ -234,13 +232,19 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     lambda_i = 0.03868852215907281
     lambda_j = 0.020779886132281544
     old_similrity_matrix = None
-    num_factors = 395
+    num_factors = 95
     l1_ratio = 1e-06
 
-    alphaRP3_2 = 0.48172144288577157
-    betaRP_2 = 0.2774148296593187
-    lambda_i_2 = 0.19561274503517823
-    lambda_j_2 =  0.006441635847561855
+    alphaRP3_1 = 0.457685370741483
+    betaRP_1 = 0.289432865731463
+    lambda_i_1 = 0.6892356201296567
+    lambda_j_1 = 0.35586838378889707
+
+    alphaRP3_3 = 0.49774549098196397
+    betaRP_3 = 0.2333486973947896
+    lambda_i_3 = 0.10467537896611145
+    lambda_j_3 = 0.004454204678491891
+    num_factors_3 = 95
 
     dynamic_best = [
         [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731, 0.4112843940329439],
@@ -253,28 +257,28 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                                                                        "UCM_train": UCM_train},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {
-                                 "topK": [15, 595, 255, 15, 20, 41, -1],
-                                 "shrink": [210, 1, 215, -1, -1, -1, -1],
+                                 "topK": [250, 180, 240, 151, 91, 311, -1, 50],
+                                 "shrink": [55, 2, 19, -1, -1, -1, -1, -1],
                                  "pop": [130, 346],
-                                 "weights": [1, 1, 1, 1, 1, 1, 1],
-                                 "force_compute_sim": True,
+                                 "weights": [1, 1, 1, 1],
+                                 "force_compute_sim": False,
                                  "feature_weighting_index": 0,
                                  "old_similarity_matrix": old_similrity_matrix,
-                                 "epochs": 30,
-                                 "lambda_i": [lambda_i_2],
-                                 "lambda_j": [lambda_j_2],
-                                 "num_factors": num_factors,
-                                 'alphaP3': [0.7100641282565131],
-                                 'alphaRP3': [alphaRP3_2],
-                                 'betaRP': [betaRP_2],
+                                 "epochs": 50,
+                                 "lambda_i": [lambda_i_3],
+                                 "lambda_j": [lambda_j_3],
+                                 "num_factors": num_factors_3,
+                                 'alphaP3': [1.2827139967773968],
+                                 'alphaRP3': [alphaRP3_3],
+                                 'betaRP': [betaRP_3],
                                  'l1_ratio': l1_ratio,
-                                 "weights_to_dweights": 0},
+                                 "weights_to_dweights": 2},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
 
     best_parameters = parameterSearch.search(recommenderDictionary,
-                                             n_cases=40,
+                                             n_cases=50,
                                              output_root_path=output_root_path_similarity,
                                              metric=metric_to_optimize
                                              )
@@ -296,10 +300,10 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
         # Random,
         # TopPop,
         # ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
+        # UserKNNCBRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
-        # P3alphaRecommender,
+        P3alphaRecommender,
         # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
@@ -308,7 +312,7 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
         # PureSVDRecommender
     ]
 
-    this_output_root_path = output_root_path + "1th_interval_test:" + "{}".format(
+    this_output_root_path = output_root_path + "3rd_interval_test:" + "{}".format(
         "_".join([x.RECOMMENDER_NAME for x in recommender_list]))
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
@@ -320,12 +324,12 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
     # hyperparamethers_range_dictionary["weights3"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights4"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights5"] = range(0, 1)
-    # hyperparamethers_range_dictionary["weights6"] = range(0, 1)
-    hyperparamethers_range_dictionary["top1"] = list(range(0, 600, 10))
-    hyperparamethers_range_dictionary["shrink1"] = list(range(0, 200, 5))
+    # # hyperparamethers_range_dictionary["weights6"] = range(0, 1)
+    # hyperparamethers_range_dictionary["top1"] = list(range(5, 600, 10))
+    hyperparamethers_range_dictionary["shrink1"] = list(range(0, 250, 5))
+    # # hyperparamethers_range_dictionary["normalize"] = [True, False]
     # hyperparamethers_range_dictionary["feature_weighting_index"] = [0, 1, 2]
-    # hyperparamethers_range_dictionary["feature_weighting_index"] = [0, 1, 2]
-
+    #
     # hyperparamethers_range_dictionary["alphaP3"] = list(np.linspace(0.001, 2.0, 500))
     # hyperparamethers_range_dictionary["top1"] = list(range(1, 800, 5))
     # hyperparamethers_range_dictionary["alphaRP3"] = list(np.linspace(0.001, 2.0, 500))  # range(0, 2)
@@ -334,6 +338,25 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
     # hyperparamethers_range_dictionary["weights8"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["pop1"] = list(range(80, 200))  # list(np.linspace(0, 1, 11))
     # hyperparamethers_range_dictionary["pop2"] = list(range(250, 450))  # list(np.linspace(0, 1, 11))
+
+    # hyperparamethers_range_dictionary["top1"] = list(range(1, 800, 10))
+    # # hyperparamethers_range_dictionary["epochs"] = [1, 5, 10, 20, 30, 50, 70, 90, 110]
+    # # hyperparamethers_range_dictionary["sgd_mode"] = ["adagrad", "adam"]
+    # hyperparamethers_range_dictionary["lambda_i"] = range(0, 1)
+    # hyperparamethers_range_dictionary["lambda_j"] = range(0, 1)
+
+
+    # hyperparamethers_range_dictionary["top1"] = [50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
+    # hyperparamethers_range_dictionary["l1_ratio"] = [1.0, 0.1, 1e-2, 1e-4, 1e-6]
+    #
+    # # hyperparamethers_range_dictionary["top1"] = [-1]
+    # hyperparamethers_range_dictionary["shrink1"] = [-1]
+    # hyperparamethers_range_dictionary["num_factors"] = list(range(0, 400, 5))
+
+
+    hyperparamethers_range_dictionary["top1"] = list(range(1, 800, 5))
+    hyperparamethers_range_dictionary["alphaP3"] = range(0, 2)
+    hyperparamethers_range_dictionary["normalize_similarity"] = [True, False]
 
 
     lambda_i = 0.1
@@ -356,25 +379,23 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
                                  # "shrink": [5, 50, 10, -1, -1, -1],
                                  "pop": [130, 346],
                                  "weights": [1],
-                                 # "top1":[-1],
-                                 "shrink": [-1],
                                  "force_compute_sim": True,
                                  "old_similarity_matrix": old_similrity_matrix,
                                  "epochs": 30,
                                  # "lambda_i": lambda_i,
                                  # "lambda_j": lambda_j,
                                  # "num_factors": num_factors,
-                                 #'alphaP3': 1.160296393373262,
+                                 # 'alphaP3': 1.160296393373262,
                                  # 'alphaRP3': 0.4156476217553893,
                                  # 'betaRP': 0.20430089442930188,
                                  # 'l1_ratio': l1_ratio,
-                                 "weights_to_dweights": 1},
+                                 "weights_to_dweights": 2},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
 
     best_parameters = parameterSearch.search(recommenderDictionary,
-                                             n_cases=40,
+                                             n_cases=15,
                                              output_root_path=output_root_path_similarity,
                                              metric=metric_to_optimize
                                              )

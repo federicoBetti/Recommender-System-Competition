@@ -732,6 +732,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                      DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                                      DictionaryKeys.FIT_KEYWORD_ARGS: dict(),
                                      DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
+            n_cases = 10
 
         # if recommender_class is MultiThreadSLIM_ElasticNet:
         #     hyperparamethers_range_dictionary = {}
@@ -749,10 +750,10 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         ## Final step, after the hyperparameter range has been defined for each type of algorithm
         best_parameters = parameterSearch.search(recommenderDictionary,
-                                                 n_cases=30,
+                                                 n_cases=n_cases,
                                                  output_root_path=output_root_path_rec_name,
                                                  metric=metric_to_optimize,
-                                                 # init_points=15
+                                                 init_points=20
                                                  )
 
 
@@ -824,9 +825,9 @@ def read_data_split_and_search():
         # MatrixFactorization_AsySVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender,
+        SLIMElasticNetRecommender,
         # MultiThreadSLIM_ElasticNet,
-        HybridRecommender
+        # HybridRecommender
     ]
 
     # if UserKNNCBRecommender in collaborative_algorithm_list:

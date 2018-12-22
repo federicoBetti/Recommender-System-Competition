@@ -16,3 +16,36 @@ BayesianSearch: Config is suboptimal. Config: {'topK': 400, 'l1_ratio': 0.1} - M
 BayesianSearch: Config is suboptimal. Config: {'topK': 700, 'l1_ratio': 1.0} - MAP results: 0.00010558906017132912 - time: 2018-12-03 23:12:30.650371
 BayesianSearch: Config is suboptimal. Config: {'topK': 50, 'l1_ratio': 0.01} - MAP results: 0.00010558906017132912 - time: 2018-12-03 23:19:24.699036
 BayesianSearch: New best config found. Config: {'topK': 100, 'l1_ratio': 1e-06} - MAP results: 0.07525624267887465 - time: 2018-12-03 23:33:44.692891
+BayesianSearch: New best config found. Config: {'topK': 150, 'l1_ratio': 0.0001} - MAP results: 0.06803150210715282 - time: 2018-12-19 15:39:44.483402
+BayesianSearch: New best config found. Config: {'topK': 500, 'l1_ratio': 1e-06} - MAP results: 0.06991808159713986 - time: 2018-12-19 15:53:42.751706
+BayesianSearch: New best config found. Config: {'topK': 290, 'l1_ratio': 0.9276844891403508} - MAP results: 0.00010558906017132912 - time: 2018-12-19 19:21:56.439065
+BayesianSearch: Config is suboptimal. Config: {'topK': 250, 'l1_ratio': 0.7504892102553833} - MAP results: 0.00010558906017132912 - time: 2018-12-19 19:29:11.525900
+BayesianSearch: Config is suboptimal. Config: {'topK': 170, 'l1_ratio': 0.20791243076705146} - MAP results: 0.00010558906017132912 - time: 2018-12-19 19:36:28.747324
+BayesianSearch: Config is suboptimal. Config: {'topK': 460, 'l1_ratio': 0.6054237539006757} - MAP results: 0.00010558906017132912 - time: 2018-12-19 19:43:49.214332
+BayesianSearch: Config is suboptimal. Config: {'topK': 420, 'l1_ratio': 0.3692254982375115} - MAP results: 0.00010558906017132912 - time: 2018-12-19 19:50:59.097842
+BayesianSearch: Config is suboptimal. Config: {'topK': 190, 'l1_ratio': 0.5735638077130456} - MAP results: 0.00010558906017132912 - time: 2018-12-19 19:58:14.306490
+BayesianSearch: Config is suboptimal. Config: {'topK': 100, 'l1_ratio': 0.907369035458591} - MAP results: 0.00010558906017132912 - time: 2018-12-19 20:05:25.860086
+BayesianSearch: Config is suboptimal. Config: {'topK': 390, 'l1_ratio': 0.8656485553474838} - MAP results: 0.00010558906017132912 - time: 2018-12-19 20:12:43.044048
+BayesianSearch: Config is suboptimal. Config: {'topK': 470, 'l1_ratio': 0.8742978932520753} - MAP results: 0.00010558906017132912 - time: 2018-12-19 20:19:51.958732
+BayesianSearch: Config is suboptimal. Config: {'topK': 470, 'l1_ratio': 0.5029258084712015} - MAP results: 0.00010558906017132912 - time: 2018-12-19 20:27:07.376771
+BayesianSearch: Config is suboptimal. Config: {'topK': 350, 'l1_ratio': 0.08355878369196179} - MAP results: 0.00010558906017132912 - time: 2018-12-19 20:34:13.447006
+BayesianSearch: Config is suboptimal. Config: {'topK': 130, 'l1_ratio': 0.5866120996461079} - MAP results: 0.00010558906017132912 - time: 2018-12-19 20:41:21.589461
+BayesianSearch: Config is suboptimal. Config: {'topK': 70, 'l1_ratio': 0.44206347437375393} - MAP results: 0.00010558906017132912 - time: 2018-12-19 20:48:30.742734
+BayesianSearch: Config is suboptimal. Config: {'topK': 390, 'l1_ratio': 0.860555896471872} - MAP results: 0.00010558906017132912 - time: 2018-12-19 20:55:37.708440
+BayesianSearch: Config is suboptimal. Config: {'topK': 430, 'l1_ratio': 0.47385917362995666} - MAP results: 0.00010558906017132912 - time: 2018-12-19 21:02:49.293999
+BayesianSearch: Config is suboptimal. Config: {'topK': 60, 'l1_ratio': 0.06182530951582921} - MAP results: 0.00010558906017132912 - time: 2018-12-19 21:09:59.390869
+BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'l1_ratio': 0.28489555086723517} - MAP results: 0.00010558906017132912 - time: 2018-12-19 21:17:10.305919
+BayesianSearch: Config is suboptimal. Config: {'topK': 450, 'l1_ratio': 0.184559878560293} - MAP results: 0.00010558906017132912 - time: 2018-12-19 21:24:27.397904
+BayesianSearch: Config is suboptimal. Config: {'topK': 410, 'l1_ratio': 0.5256649941086126} - MAP results: 0.00010558906017132912 - time: 2018-12-19 21:31:42.796134
+BayesianSearch: Config is suboptimal. Config: {'topK': 430, 'l1_ratio': 0.38100215068046195} - MAP results: 0.00010558906017132912 - time: 2018-12-19 21:38:51.143428
+BayesianSearch: Config is suboptimal. Config: {'topK': 430, 'l1_ratio': 0.6905528695849593} - MAP results: 0.00010558906017132912 - time: 2018-12-19 21:46:05.669038
+BayesianSearch: Config is suboptimal. Config: {'topK': 280, 'l1_ratio': 0.8914421586905747} - MAP results: 0.00010558906017132912 - time: 2018-12-19 21:53:18.537776
+BayesianSearch: Config is suboptimal. Config: {'topK': 240, 'l1_ratio': 0.9529677646520137} - MAP results: 0.00010558906017132912 - time: 2018-12-19 22:00:34.575805
+BayesianSearch: Config is suboptimal. Config: {'topK': 150, 'l1_ratio': 0.10804430131447273} - MAP results: 0.00010558906017132912 - time: 2018-12-19 22:07:48.224658
+BayesianSearch: Config is suboptimal. Config: {'topK': 70, 'l1_ratio': 0.7236709201442343} - MAP results: 0.00010558906017132912 - time: 2018-12-19 22:15:03.269213
+BayesianSearch: Config is suboptimal. Config: {'topK': 210, 'l1_ratio': 0.9674240833166072} - MAP results: 0.00010558906017132912 - time: 2018-12-19 22:22:17.845430
+BayesianSearch: Config is suboptimal. Config: {'topK': 340, 'l1_ratio': 0.016136119626524503} - MAP results: 0.00010558906017132912 - time: 2018-12-19 22:28:24.867382
+BayesianSearch: Config is suboptimal. Config: {'topK': 70, 'l1_ratio': 0.1823666197971111} - MAP results: 0.00010558906017132912 - time: 2018-12-19 22:34:26.937617
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'l1_ratio': 0.34081070126250224} - MAP results: 0.00010558906017132912 - time: 2018-12-19 22:40:27.137151
+BayesianSearch: Config is suboptimal. Config: {'topK': 470, 'l1_ratio': 0.8301896235026469} - MAP results: 0.00010558906017132912 - time: 2018-12-19 22:46:28.646138
+BayesianSearch: Best config is: Config {'topK': 290, 'l1_ratio': 0.9276844891403508}, MAP value is 0.0001

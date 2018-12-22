@@ -642,13 +642,13 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         if recommender_class is MatrixFactorization_BPR_Cython:
             hyperparamethers_range_dictionary = {}
-            hyperparamethers_range_dictionary["sgd_mode"] = ["adagrad", "adam"]
+            hyperparamethers_range_dictionary["sgd_mode"] = ["adagrad"]
             # hyperparamethers_range_dictionary["epochs"] = [1, 5, 10, 20, 30, 50, 70, 90, 110]
             hyperparamethers_range_dictionary["num_factors"] = [10, 20, 30, 50, 70, 90, 110]
-            hyperparamethers_range_dictionary["batch_size"] = [1]
+            hyperparamethers_range_dictionary["batch_size"] = [1000]
             hyperparamethers_range_dictionary["positive_reg"] = [0.0, 1e-3, 1e-6, 1e-9]
             hyperparamethers_range_dictionary["negative_reg"] = [0.0, 1e-3, 1e-6, 1e-9]
-            hyperparamethers_range_dictionary["learning_rate"] = [1e-2, 1e-3, 1e-4, 1e-5]
+            hyperparamethers_range_dictionary["learning_rate"] = range(0, 1)
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {'positive_threshold': 1},
@@ -724,8 +724,8 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
         if recommender_class is SLIMElasticNetRecommender:
             parameterSearch = BayesianSearch(recommender_class, evaluator_validation)
             hyperparamethers_range_dictionary = {}
-            hyperparamethers_range_dictionary["topK"] = [50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
-            hyperparamethers_range_dictionary["l1_ratio"] = [1.0, 0.1, 1e-2, 1e-4, 1e-6]
+            hyperparamethers_range_dictionary["topK"] = list(range(10, 500, 10))
+            hyperparamethers_range_dictionary["l1_ratio"] = range(0, 1)
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
@@ -822,10 +822,10 @@ def read_data_split_and_search():
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        # MatrixFactorization_AsySVD_Cython,
+        MatrixFactorization_AsySVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
-        SLIMElasticNetRecommender,
+        # SLIMElasticNetRecommender,
         # MultiThreadSLIM_ElasticNet,
         # HybridRecommender
     ]

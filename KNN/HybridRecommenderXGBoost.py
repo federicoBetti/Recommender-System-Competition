@@ -422,10 +422,8 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
             self.first_time = False
             self.trainXGBoost = sparse.lil_matrix(newTrainXGBoost, dtype=int)
 
-        else:
+        elif not self.first_time:
             self.trainXGBoost = sparse.vstack([self.trainXGBoost, newTrainXGBoost])
-            x = self.trainXGBoost
-
 
 
         # Return single list for one user, instead of list of lists

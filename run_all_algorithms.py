@@ -11,6 +11,8 @@ from MatrixFactorization.PureSVD import PureSVDRecommender
 
 from Base.NonPersonalizedRecommender import TopPop, Random
 
+import numpy as np
+
 from KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from KNN.HybridRecommenderTopNapproach import HybridRecommenderTopNapproach
 from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
@@ -290,6 +292,8 @@ if __name__ == '__main__':
                                                     results_run_string))
         logFile.write("Algorithm: {}, results: \n{}\n".format(recommender.__class__, results_run_string))
         logFile.flush()
+
+        np.save("../Dataset/XGBoostTraining.npy", recommender.trainXGBoost)
 
         if not evaluate_algorithm:
             target_playlist = dataReader.get_target_playlist()

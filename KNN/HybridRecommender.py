@@ -18,6 +18,7 @@ from Base.Similarity.Compute_Similarity import Compute_Similarity
 from GraphBased.P3alphaRecommender import P3alphaRecommender
 from GraphBased.RP3betaRecommender import RP3betaRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
+from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython, \
     MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
 from MatrixFactorization.PureSVD import PureSVDRecommender
@@ -132,6 +133,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         rp3bcounter = 0
         slim_counter = 0
         factorCounter = 0
+        tfidf_counter = 0
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
             if recommender.__class__ is SLIM_BPR_Cython:
@@ -175,6 +177,11 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             elif recommender.__class__ in [ItemKNNCBFRecommender]:
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
                                 feature_weighting_index=similarity_args["feature_weighting_index"])
+
+            elif recommender.__class__ in [ItemKNNCFRecommender]:
+                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
+                                tfidf=similarity_args["tfidf"][tfidf_counter])
+                tfidf_counter += 1
 
             else:  # ItemCF, UserCF, ItemCBF, UserCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)

@@ -34,6 +34,8 @@ class UserKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
 
         self.compute_item_score = self.compute_score_user_based
 
+        self.W_sparse = None
+
     def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True, tfidf=True, **similarity_args):
 
         self.topK = topK

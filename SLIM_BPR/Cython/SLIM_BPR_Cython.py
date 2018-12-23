@@ -163,7 +163,7 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
                                         algorithm_name=self.RECOMMENDER_NAME)
 
         self.get_S_incremental_and_set_W()
-
+        self.normalized_SLIM()
         with open(os.path.join("IntermediateComputations", "SLIM_BPR_Matrix.pkl"), 'wb') as handle:
             pickle.dump(self.W_sparse, handle,
                         protocol=pickle.HIGHEST_PROTOCOL)

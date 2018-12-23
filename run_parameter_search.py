@@ -725,7 +725,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
             parameterSearch = BayesianSearch(recommender_class, evaluator_validation)
             hyperparamethers_range_dictionary = {}
             hyperparamethers_range_dictionary["topK"] = list(range(10, 500, 10))
-            hyperparamethers_range_dictionary["l1_ratio"] = range(0, 1)
+            hyperparamethers_range_dictionary["l1_ratio"] = [1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
@@ -817,7 +817,7 @@ def read_data_split_and_search():
         # ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
         # P3alphaRecommender,
-        RP3betaRecommender,
+        # RP3betaRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
@@ -825,7 +825,7 @@ def read_data_split_and_search():
         # MatrixFactorization_AsySVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender,
+        SLIMElasticNetRecommender,
         # MultiThreadSLIM_ElasticNet,
         # HybridRecommender
     ]
@@ -841,8 +841,8 @@ def read_data_split_and_search():
 
     evaluator_validation_earlystopping = SequentialEvaluator(URM_validation, URM_train, cutoff_list=[10])
     evaluator_test = SequentialEvaluator(URM_test, URM_train, cutoff_list=[10])
-    evaluator_validation_earlystopping = ParallelEvaluator(URM_test, cutoff_list=[10])
-    evaluator_test = ParallelEvaluator(URM_test, cutoff_list=[10])
+    # evaluator_validation_earlystopping = ParallelEvaluator(URM_test, cutoff_list=[10])
+    # evaluator_test = ParallelEvaluator(URM_test, cutoff_list=[10])
 
     evaluator_validation = EvaluatorWrapper(evaluator_validation_earlystopping)
     evaluator_test = EvaluatorWrapper(evaluator_test)

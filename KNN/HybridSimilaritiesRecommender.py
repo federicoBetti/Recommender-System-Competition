@@ -20,8 +20,8 @@ from Base.Similarity.Compute_Similarity import Compute_Similarity
 from GraphBased.P3alphaRecommender import P3alphaRecommender
 from GraphBased.RP3betaRecommender import RP3betaRecommender
 from KNN import HybridRecommender
-from KNN import ItemKNNCFRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
+from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython, \
     MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
@@ -95,7 +95,7 @@ class HybridSimilaritiesRecommender(SimilarityMatrixRecommender, Recommender):
     def fit(self, topK=None, shrink=None, weights=None, pop=None, weights1=None, weights2=None, weights3=None,
             weights4=None,
             weights5=None, weights6=None, weights7=None, weights8=None, pop1=None, pop2=None, similarity='cosine',
-            normalize=True,
+            normalize=True, final_weights=None, final_weights1=None, final_weights2=None,
             old_similarity_matrix=None, epochs=1, top1=None, shrink1=None,
             force_compute_sim=False, weights_to_dweights=-1, **similarity_args):
 
@@ -189,39 +189,46 @@ class HybridSimilaritiesRecommender(SimilarityMatrixRecommender, Recommender):
         self.W_sparse20 = csr_matrix(([], ([], [])), shape=(20635, 20635))
         self.W_sparse50 = csr_matrix(([], ([], [])), shape=(50446, 50446))
         to_delete = []
-        for recommender in self.recommender_list:
+        for index, recommender in enumerate(self.recommender_list):
             try:
-                self.W_sparse20 += recommender.W_sparse
+                self.W_sparse20 += self.weights[index] * recommender.W_sparse
                 to_delete.append(recommender)
+                print("Recommender {} is summed in W_sparse20".format(recommender))
+                continue
             except:
                 # the recommender doesn't have a W sparse matrix of that shape
-                continue
+                a = 1
 
             try:
-                self.W_sparse50 += recommender.W_sparse
+                self.W_sparse50 += self.weights[index] * recommender.W_sparse
                 to_delete.append(recommender)
+                print("Recommender {} is summed in W_sparse50".format(recommender))
+                continue
             except:
                 # the recommender doesn't have a W sparse matrix of that shape
-                continue
+                a = 1
 
         # remove recommenders that already has the similarity merged
         self.recommender_list = [x for x in self.recommender_list if x not in to_delete]
 
         print("Recommender list after: {}".format(self.recommender_list))
         new_item_recommender = ItemKNNCFRecommender(self.URM_train)
-        new_item_recommender.fit()
         new_item_recommender.W_sparse = self.W_sparse20
         self.recommender_list.append(new_item_recommender)
 
         new_user_recommender = UserKNNCFRecommender(self.URM_train)
-        new_user_recommender.fit()
-        new_user_recommender.W_sparse = self.W_sparse20
+        new_user_recommender.W_sparse = self.W_sparse50
         self.recommender_list.append(new_user_recommender)
         print("Recommender list final: {}".format(self.recommender_list))
 
+        if final_weights is None:
+            self.final_weights = [final_weights1, final_weights2]
+        else:
+            self.final_weights = final_weights
 
-
-
+        assert len(final_weights) == len(
+            self.recommender_list), "Lunghezza di final weights e dei reccomender rimasti è diversa. Sono rimasti {} recommender con i final weight di lunghezza {}".format(
+            len(self.recommender_list), len(final_weights))
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
@@ -232,7 +239,7 @@ class HybridSimilaritiesRecommender(SimilarityMatrixRecommender, Recommender):
         else:
             single_user = False
 
-        weights = self.weights
+        weights = self.final_weights
         if cutoff == None:
             # noinspection PyUnresolvedReferences
             cutoff = self.URM_train.shape[1] - 1
@@ -270,26 +277,7 @@ class HybridSimilaritiesRecommender(SimilarityMatrixRecommender, Recommender):
 
             final_score = np.zeros(scores[0].shape)
 
-            if self.dynamic:
-                for user_index in range(len(user_id_array)):
-                    user_id = user_id_array[user_index]
-                    user_profile = self.URM_train.indices[
-                                   self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                    if self.onPop:
-                        level = int(ged.playlist_popularity(user_profile, dict_pop))
-                    else:
-                        level = int(ged.lenght_playlist(user_profile))
-                    # weights = self.change_weights(user_id)
-                    weights = self.change_weights(level, self.pop)
-                    assert len(weights) == len(scores), "Scores and weights have different lengths"
-
-                    final_score_line = np.zeros(scores[0].shape[1])
-                    if sum(weights) > 0:
-                        for score, weight in zip(scores, weights):
-                            final_score_line += score[user_index] * weight
-                    final_score[user_index] = final_score_line
-            else:
-                for score, weight in zip(scores, weights):
+            for score, weight in zip(scores, weights):
                     final_score += (score * weight)
 
         else:

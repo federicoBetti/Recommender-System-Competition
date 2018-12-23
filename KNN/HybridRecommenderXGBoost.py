@@ -43,6 +43,7 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
         self.dataset = None
         self.onPop = onPop
         self.moreHybrids = moreHybrids
+        self.recommender_used = False
 
         # with open(os.path.join("Dataset", "Cluster_0_dict_Kmeans_3.pkl"), 'rb') as handle:
         #     self.cluster_0 = pickle.load(handle)
@@ -297,7 +298,6 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
         if self.sparse_weights:
             scores = []
             # noinspection PyUnresolvedReferences
-            recommender_used = True
             for recommender in self.recommender_list:
                 if recommender.__class__ in [HybridRecommenderXGBoost]:
                     scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop,
@@ -310,8 +310,8 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
 
                 for user_index in range(len(user_id_array)):
 
-                    if recommender_used:
-                        recommender_used = False
+                    if not self.recommender_used:
+
                         if user_index == 0:
                             self.user_id_XGBoost = np.array([user_index] * cutoff_Boost).reshape(-1, 1)
                         else:
@@ -396,22 +396,25 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
         tracks = dataReader.tracks
         tracks_duration_list = np.array(tracks['duration_sec']).reshape((-1, 1))[:,0].tolist()
 
-        song_pop = np.array([[dict_song_pop[user[0]] for user in relevant_line]
+        song_pop = np.array([[dict_song_pop[item] for item in relevant_line]
                              for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
+
         playlist_length = np.array([[int(ged.lenght_playlist(self.getUserProfile(user)))]*cutoff_Boost
                                     for user in user_list]).reshape((-1, 1))
         playlist_pop = np.array([[int(ged.playlist_popularity(self.getUserProfile(user), dict_song_pop))]*cutoff_Boost
                                     for user in user_list]).reshape((-1, 1))
 
-        ucm_batch = np.array([[self.UCM_train[user] for user in user_line] * cutoff_Boost
-                              for user_line in user_list]).reshape((1, -1))
+        # ucm_batch = self.UCM_train[user_list].toarray()
+        UCM_dense = self.UCM_train.toarray()
+        ucm_batch = np.array([[UCM_dense[user]]*cutoff_Boost for user in user_list]).reshape(20000, -1)
 
-        icm_batch = np.array([[self.ICM[user] for user in user_line] * cutoff_Boost
-                              for user_line in user_list]).reshape((1, -1))
+        ICM_dense = self.ICM.toarray()
+        icm_batch = np.array([[ICM_dense[user]]*cutoff_Boost for user in user_list]).reshape(20000, -1)
 
-        tracks_duration = np.array([[tracks_duration_list[user] for user in relevant_line]
-                                    for relevant_line in relevant_items_boost.tolist()])
+        tracks_duration = np.array([[tracks_duration_list[item] for item in relevant_line]
+                                    for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
 
+        x = self.user_id_XGBoost
         newTrainXGBoost = np.concatenate([self.user_id_XGBoost, song_pop, playlist_pop, playlist_length,
                                        tracks_duration, icm_batch, ucm_batch], axis=1)
 
@@ -421,12 +424,15 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
 
         else:
             self.trainXGBoost = sparse.vstack([self.trainXGBoost, newTrainXGBoost])
+            x = self.trainXGBoost
+
 
 
         # Return single list for one user, instead of list of lists
         if single_user:
             ranking_list = ranking_list[0]
 
+        self.recommender_used = True
         return ranking
 
     def recommend_gradient_descent(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True,

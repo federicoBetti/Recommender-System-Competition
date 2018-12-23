@@ -1,6 +1,7 @@
 import sys
 
 from Dataset.RS_Data_Loader import RS_Data_Loader
+from KNN.HybridRecommenderXGBoost import HybridRecommenderXGBoost
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 
@@ -152,7 +153,7 @@ if __name__ == '__main__':
         transfer_matrix = None
 
     try:
-        recommender_class = H
+        recommender_class = HybridRecommenderXGBoost
         print("Algorithm: {}".format(recommender_class))
 
         '''

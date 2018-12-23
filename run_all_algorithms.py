@@ -19,7 +19,7 @@ from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
 import Support_functions.get_evaluate_data as ged
 from GraphBased.RP3betaRecommender import RP3betaRecommender
 from GraphBased.P3alphaRecommender import P3alphaRecommender
-
+import xgboost as xgb
 from data.Movielens_10M.Movielens10MReader import Movielens10MReader
 
 import traceback, os
@@ -28,7 +28,7 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     delete_old_computations = False
     slim_after_hybrid = False
 
@@ -152,7 +152,7 @@ if __name__ == '__main__':
         transfer_matrix = None
 
     try:
-        recommender_class = HybridRecommender
+        recommender_class = H
         print("Algorithm: {}".format(recommender_class))
 
         '''
@@ -201,12 +201,15 @@ if __name__ == '__main__':
         '''
         Our optimal run
         '''
-        recommender_list = recommender_list1 + recommender_list2 + recommender_list3
+        recommender_list = recommender_list1 #+ recommender_list2 + recommender_list3
         onPop = True
         # On pop it used to choose if have dynamic weights for
-        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=True,
+        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=False,
                                         d_weights=d_weights, UCM_train=UCM_tfidf,
                                         URM_validation=URM_validation, onPop=onPop)
+
+        # dtrain = xgb.DMatrix(URM_train, label=)
+        # dtest = xgb.DMatrix(X_test, label=y_test)
 
         lambda_i = 0.1
         lambda_j = 0.05
@@ -259,14 +262,14 @@ if __name__ == '__main__':
 
 
         recommender.fit(**{
-            "topK": [15, 595, 105, 15, 20, -1] + [21, 220, 160, 70, -1] + [250, 180, 240, 151, 91, 311, -1],
-            "shrink": [210, 1, 30, -1, -1, -1] + [75, 1, 150, -1, -1] + [55, 2, 19, -1, -1, -1, -1],
+            "topK": [15, 595, 105, 15, 20], #+ [21, 220, 160, 70, -1] + [250, 180, 240, 151, 91, 311, -1],
+            "shrink": [210, 1, 30, -1, -1], #+ [75, 1, 150, -1, -1] + [55, 2, 19, -1, -1, -1, -1],
             "pop": [130, 346],
-            "weights": [1] * 18,
-            "force_compute_sim": True,
+            "weights": [1] * 5,
+            "force_compute_sim": False,
             "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
-            "epochs": 150, "lambda_i": [0.10467537896611145],
+            "epochs": 1, "lambda_i": [0.10467537896611145],
             "lambda_j": [0.004454204678491891],  # SOLO ULTIMO HA SLIM
             "num_factors": [395, 391, 95],
             'alphaP3': [0.7100641282565131, 1.2827139967773968],

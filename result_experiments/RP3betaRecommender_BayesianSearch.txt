@@ -277,3 +277,6 @@ BayesianSearch: Config is suboptimal. Config: {'topK': 101, 'alpha': 1.995993987
 BayesianSearch: Config is suboptimal. Config: {'topK': 776, 'alpha': 0.49373947895791587, 'beta': 0.001, 'normalize_similarity': False} - MAP results: 0.08016701976732685 - time: 2018-12-23 14:08:35.642661
 BayesianSearch: Config is suboptimal. Config: {'topK': 331, 'alpha': 0.001, 'beta': 0.037054108216432874, 'normalize_similarity': True} - MAP results: 0.09206599998385064 - time: 2018-12-23 14:09:39.639780
 BayesianSearch: Best config is: Config {'topK': 276, 'alpha': 0.8182264529058118, 'beta': 0.3775651302605211, 'normalize_similarity': True}, MAP value is 0.1002
+BayesianSearch: New best config found. Config: {'topK': 56, 'alpha': 0.6339498997995993, 'beta': 1.8838256513026053, 'normalize_similarity': True} - MAP results: 0.0020936417351230534 - time: 2018-12-23 16:17:26.398796
+BayesianSearch: Testing config: {'topK': 121, 'alpha': 0.9344008016032065, 'beta': 0.9704549098196393, 'normalize_similarity': False} - Exception not enough values to unpack (expected 2, got 1)
+BayesianSearch: Testing config: {'topK': 31, 'alpha': 0.8582865731462926, 'beta': 1.6474709418837676, 'normalize_similarity': False} - Exception not enough values to unpack (expected 2, got 1)

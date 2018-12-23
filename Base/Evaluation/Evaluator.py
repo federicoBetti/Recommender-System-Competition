@@ -1083,8 +1083,6 @@ class ParallelEvaluator(Evaluator):
                  ignore_items=None,
                  ignore_users=None):
 
-        assert False, "ParallelEvaluator is not a stable implementation"
-
         super(ParallelEvaluator, self).__init__(URM_test_list, cutoff_list,
                                                 diversity_object=diversity_object,
                                                 minRatingsPerUser=minRatingsPerUser, exclude_seen=exclude_seen,
@@ -1157,6 +1155,7 @@ class ParallelEvaluator(Evaluator):
                                                              self.diversity_object)
 
         for new_result_index in range(len(resultList)):
+            print("Result list: {}".format(resultList[new_result_index]))
             new_result, n_users_evaluated_batch = resultList[new_result_index]
             n_users_evaluated += n_users_evaluated_batch
 

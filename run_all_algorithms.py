@@ -69,24 +69,24 @@ if __name__ == '__main__':
         # MatrixFactorization_FunkSVD_Cython,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
-        PureSVDRecommender
+        # PureSVDRecommender
     ]
 
     # ITEM CB, ITEM CF, USER CF, RP3BETA, PURE SVD
     recommender_list2 = [
         # Random,
         # TopPop,
-        ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        # P3alphaRecommender,
-        RP3betaRecommender,
-        # MatrixFactorization_BPR_Cython,
-        # MatrixFactorization_FunkSVD_Cython,
-        # SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender
-        PureSVDRecommender
+        # ItemKNNCBFRecommender,
+        # # UserKNNCBRecommender,
+        # ItemKNNCFRecommender,
+        # UserKNNCFRecommender,
+        # # P3alphaRecommender,
+        # RP3betaRecommender,
+        # # MatrixFactorization_BPR_Cython,
+        # # MatrixFactorization_FunkSVD_Cython,
+        # # SLIM_BPR_Cython,
+        # # SLIMElasticNetRecommender
+        # PureSVDRecommender
     ]
 
     # UserCBF, ItemCF, UserCF, P3alpha, RP3b, SLIM, PurSVD
@@ -94,23 +94,22 @@ if __name__ == '__main__':
         # Random,
         # TopPop,
         # ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        P3alphaRecommender,
-        RP3betaRecommender,
-        # MatrixFactorization_BPR_Cython,
-        # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender
-        PureSVDRecommender
+        # UserKNNCBRecommender,
+        # ItemKNNCFRecommender,
+        # UserKNNCFRecommender,
+        # P3alphaRecommender,
+        # RP3betaRecommender,
+        # # MatrixFactorization_BPR_Cython,
+        # # MatrixFactorization_FunkSVD_Cython,
+        # SLIM_BPR_Cython,
+        # # SLIMElasticNetRecommender
+        # PureSVDRecommender
     ]
 
     # For hybrid with weighted estimated rating
     d_weights = [
         [0.6708034395599534, 0.4180455311930482, 0.013121631586130333, 0.9606783176615321, 0.9192576193987754,
-         0.517220112773677] + [0] * len(
-            recommender_list2) + [0] * len(recommender_list3),
+         0.517220112773677] + [0] * len(recommender_list2) + [0] * len(recommender_list3),
         [0] * len(recommender_list1) + [0.03206429006541767, 0.022068399812202766, 0.5048937312439359,
                                         0.5777889378285606, 0.002469536740713263]
         + [0] * len(recommender_list3),

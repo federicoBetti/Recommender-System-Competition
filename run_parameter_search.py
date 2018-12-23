@@ -7,7 +7,7 @@ Created on 22/11/17
 """
 import glob
 
-from Base.Evaluation.Evaluator import SequentialEvaluator
+from Base.Evaluation.Evaluator import SequentialEvaluator, ParallelEvaluator
 from Base.NonPersonalizedRecommender import TopPop, Random
 from Dataset.RS_Data_Loader import RS_Data_Loader
 from KNN.HybridRecommender import HybridRecommender
@@ -817,7 +817,7 @@ def read_data_split_and_search():
         # ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
         # P3alphaRecommender,
-        # RP3betaRecommender,
+        RP3betaRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
@@ -827,7 +827,7 @@ def read_data_split_and_search():
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
         # MultiThreadSLIM_ElasticNet,
-        HybridRecommender
+        # HybridRecommender
     ]
 
     # if UserKNNCBRecommender in collaborative_algorithm_list:
@@ -841,6 +841,8 @@ def read_data_split_and_search():
 
     evaluator_validation_earlystopping = SequentialEvaluator(URM_validation, URM_train, cutoff_list=[10])
     evaluator_test = SequentialEvaluator(URM_test, URM_train, cutoff_list=[10])
+    evaluator_validation_earlystopping = ParallelEvaluator(URM_test, cutoff_list=[10])
+    evaluator_test = ParallelEvaluator(URM_test, cutoff_list=[10])
 
     evaluator_validation = EvaluatorWrapper(evaluator_validation_earlystopping)
     evaluator_test = EvaluatorWrapper(evaluator_test)

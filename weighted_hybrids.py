@@ -207,6 +207,8 @@ if __name__ == '__main__':
             lr = 0.1
             # gradient descent
             alpha = [a + lr * g for a, g in zip(alpha, grad)]
+            # decrease learning rate
+            lr /= i
             # normalization
             alpha = [float(index) / sum(alpha) for index in alpha]
 

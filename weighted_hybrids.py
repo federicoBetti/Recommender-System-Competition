@@ -62,13 +62,14 @@ if __name__ == '__main__':
         # UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        # P3alphaRecommender,
-        # RP3betaRecommender,
+        P3alphaRecommender,
+        RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # SLIM_BPR_Cython,
+        # PureSVDRecommender,
+
         # SLIMElasticNetRecommender
-        # PureSVDRecommender
     ]
 
     from Base.Evaluation.Evaluator import SequentialEvaluator
@@ -119,7 +120,7 @@ if __name__ == '__main__':
         l1_ratio = 1e-06
         # alpha = [1.9959734038074426, 0.10609858937191907, 0.4608371142966865, 1.905978868103585, 1.6329874929834254, 1.7878599729785276]
         # alpha = [1 / len(recommender_list)]*len(recommender_list)
-        alpha = [1 / 3, 1 / 3, 1 / 3]
+        alpha = [1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5]
         i = 0
         while i < 80:
             recommender_class = HybridRecommender
@@ -128,20 +129,19 @@ if __name__ == '__main__':
                                             URM_validation=URM_validation, onPop=onPop)
             MAP = 0
             print("alpha: {}".format(alpha))
-            recommender.fit(**{"topK": [10, 140, 160],
-                               "shrink": [180, 1, 2],
+            recommender.fit(**{"topK": [10, 220, 160, 61, 276],
+                               "shrink": [180, 1, 2, -1, -1],
                                "pop": [130, 346],
                                "weights": alpha,
                                "force_compute_sim": False,
+                               "feature_weighting_index": 0,
                                "old_similarity_matrix": old_similrity_matrix,
-                               "epochs": 50, "lambda_i": lambda_i,
-                               "lambda_j": lambda_j,
-                               "num_factors": num_factors,
-                               'alphaP3': 1.160296393373262,
-                               'alphaRP3': 0.4156476217553893,
-                               'betaRP': 0.20430089442930188,
+                               "epochs": 50,
+                               'alphaP3': [0.5203791059230995],
+                               'alphaRP3': [0.8182264529058118],
+                               'betaRP': [0.3775651302605211],
                                'l1_ratio': l1_ratio,
-                               "weights_to_dweights": 1})
+                               "weights_to_dweights": -1})
 
             print("Starting Evaluations...")
             t = time.time()
@@ -206,7 +206,7 @@ if __name__ == '__main__':
             # learning rate
             lr = 0.1
             # gradient descent
-            alpha = [a - lr * g for a, g in zip(alpha, grad)]
+            alpha = [a + lr * g for a, g in zip(alpha, grad)]
             # normalization
             alpha = [float(index) / sum(alpha) for index in alpha]
 

@@ -396,10 +396,11 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
 
         # ucm_batch = self.UCM_train[user_list].toarray()
         UCM_dense = self.UCM_train.toarray()
-        ucm_batch = np.array([[UCM_dense[user-1]] * cutoff_Boost for user in user_list]).reshape(20000, -1)
+        ucm_batch = np.array([[UCM_dense[user]] * cutoff_Boost for user in user_list]).reshape(20000, -1)
 
         ICM_dense = self.ICM.toarray()
-        icm_batch = np.array([[ICM_dense[user-1]] * cutoff_Boost for user in user_list]).reshape(20000, -1)
+        icm_batch = np.array([[ICM_dense[item] for item in relevant_line]
+                             for relevant_line in relevant_items_boost.tolist()]).reshape(20000, -1)
 
         tracks_duration = np.array([[tracks_duration_list[item] for item in relevant_line]
                                     for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))

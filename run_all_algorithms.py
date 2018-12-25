@@ -34,6 +34,7 @@ if __name__ == '__main__':
     evaluate_algorithm = True
     delete_old_computations = False
     slim_after_hybrid = False
+    XGB_model_ready = False
 
     # delete_previous_intermediate_computations()
     # if not evaluate_algorithm:
@@ -204,10 +205,33 @@ if __name__ == '__main__':
         '''
         Our optimal run
         '''
-        recommender_list = recommender_list1 #+ recommender_list2 + recommender_list3
+        recommender_list = recommender_list1  # + recommender_list2 + recommender_list3
         onPop = True
+
+        # XGBoost
+        model = None
+        try:
+            if XGB_model_ready:
+                X_train = np.load("../Dataset/XGBoostTraining.npy")
+                y_train = np.load("../Dataset/XGBoostLabels.npy")
+                dtrain = xgb.DMatrix(X_train, label=y_train)
+
+                param = {
+                    'max_depth': 3,  # the maximum depth of each tree
+                    'eta': 0.3,  # the training step for each iteration
+                    'silent': 1,  # logging mode - quiet
+                    'objective': 'multi:softprob',  # error evaluation for multiclass training
+                    'num_class': 3}  # the number of classes that exist in this datset
+                num_round = 20  # the number of training iterations
+
+                model = xgb.train(param, dtrain, num_round)
+        except:
+            XGB_model_ready = False
+
         # On pop it used to choose if have dynamic weights for
-        recommender = recommender_class(URM_train, ICM, recommender_list, dynamic=False,
+        recommender = recommender_class(URM_train, ICM, recommender_list, XGB_model_ready=XGB_model_ready,
+                                        XGBoost_model=model,
+                                        dynamic=False,
                                         d_weights=d_weights, UCM_train=UCM_tfidf,
                                         URM_validation=URM_validation, onPop=onPop)
 
@@ -263,10 +287,9 @@ if __name__ == '__main__':
         # config
         # found.Config: {'top1': 50, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP
 
-
         recommender.fit(**{
-            "topK": [15, 595, 105, 15, 20], #+ [21, 220, 160, 70, -1] + [250, 180, 240, 151, 91, 311, -1],
-            "shrink": [210, 1, 30, -1, -1], #+ [75, 1, 150, -1, -1] + [55, 2, 19, -1, -1, -1, -1],
+            "topK": [15, 595, 105, 15, 20],  # + [21, 220, 160, 70, -1] + [250, 180, 240, 151, 91, 311, -1],
+            "shrink": [210, 1, 30, -1, -1],  # + [75, 1, 150, -1, -1] + [55, 2, 19, -1, -1, -1, -1],
             "pop": [130, 346],
             "weights": [1] * 5,
             "force_compute_sim": False,
@@ -293,7 +316,9 @@ if __name__ == '__main__':
         logFile.write("Algorithm: {}, results: \n{}\n".format(recommender.__class__, results_run_string))
         logFile.flush()
 
-        np.save("../Dataset/XGBoostTraining.npy", recommender.trainXGBoost)
+        if not XGB_model_ready:
+            np.save("../Dataset/XGBoostTraining.npy", recommender.trainXGBoost)
+            np.save("../Dataset/XGBoostLabels.npy", recommender.user_id_XGBoost)
 
         if not evaluate_algorithm:
             target_playlist = dataReader.get_target_playlist()

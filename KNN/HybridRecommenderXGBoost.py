@@ -395,12 +395,17 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
                                  for user in user_list]).reshape((-1, 1))
 
         # ucm_batch = self.UCM_train[user_list].toarray()
-        UCM_dense = self.UCM_train.toarray()
-        ucm_batch = np.array([[UCM_dense[user]] * cutoff_Boost for user in user_list]).reshape(20000, -1)
+        dim_ucm = int(len(user_list)*20)
+        UCM_dense = self.UCM_train.todense()
+        ucm_batch = np.array([UCM_dense[user] for _ in range(cutoff_Boost)
+                              for user in user_list]).reshape(dim_ucm, -1)
+        del UCM_dense
 
-        ICM_dense = self.ICM.toarray()
+        dim_icm = int(len(relevant_items_boost)*20)
+        ICM_dense = self.ICM.todense()
         icm_batch = np.array([[ICM_dense[item] for item in relevant_line]
-                             for relevant_line in relevant_items_boost.tolist()]).reshape(20000, -1)
+                             for relevant_line in relevant_items_boost.tolist()]).reshape(dim_icm, -1)
+        del ICM_dense
 
         tracks_duration = np.array([[tracks_duration_list[item] for item in relevant_line]
                                     for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
@@ -409,7 +414,9 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
         newTrainXGBoost = np.concatenate([relevant_items_boost, song_pop, playlist_pop, playlist_length,
                                           tracks_duration, icm_batch, ucm_batch], axis=1)
 
+
         if self.xgb_model_ready:
+            print("QUI")
             preds = self.xgbModel.predict(newTrainXGBoost)
             ranking = []
             ordered_tracks = []
@@ -432,8 +439,9 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
                 self.trainXGBoost = sparse.lil_matrix(newTrainXGBoost, dtype=int)
 
             elif not self.first_time:
-                self.trainXGBoost = sparse.vstack([self.trainXGBoost, newTrainXGBoost])
-
+                self.trainXGBoost = sparse.vstack([self.trainXGBoost, newTrainXGBoost], dtype=int)
+                x = self.trainXGBoost
+                y = 0
         # Return single list for one user, instead of list of lists
         # if single_user:
         #     ranking_list = ranking_list[0]

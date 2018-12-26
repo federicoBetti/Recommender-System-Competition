@@ -1,4 +1,7 @@
+import pickle
 import sys
+
+from scipy import sparse
 
 from Dataset.RS_Data_Loader import RS_Data_Loader
 from KNN.HybridRecommenderXGBoost import HybridRecommenderXGBoost
@@ -210,22 +213,23 @@ if __name__ == '__main__':
 
         # XGBoost
         model = None
-        try:
-            if XGB_model_ready:
-                X_train = np.load("../Dataset/XGBoostTraining.npy")
-                y_train = np.load("../Dataset/XGBoostLabels.npy")
-                dtrain = xgb.DMatrix(X_train, label=y_train)
+        # try:
+        if XGB_model_ready:
+            X_train = np.load("Dataset/XGBoostTraining.npy")
+            y_train = np.load("Dataset/XGBoostLabels.npy")
+            print("XGBoost training...")
+            dtrain = xgb.DMatrix(X_train, label=y_train)
 
-                param = {
-                    'max_depth': 3,  # the maximum depth of each tree
-                    'eta': 0.3,  # the training step for each iteration
-                    'silent': 1,  # logging mode - quiet
-                    'objective': 'multi:softprob',  # error evaluation for multiclass training
-                    'num_class': 3}  # the number of classes that exist in this datset
-                num_round = 20  # the number of training iterations
+            param = {
+                'max_depth': 5,  # the maximum depth of each tree
+                'eta': 0.3,  # the training step for each iteration
+                'silent': 1,  # logging mode - quiet
+                'objective': 'multi:softprob',  # error evaluation for multiclass training
+                'num_class': y_train.shape[0]}  # the number of classes that exist in this datset
+            num_round = 20  # the number of training iterations
 
-                model = xgb.train(param, dtrain, num_round)
-        except:
+            model = xgb.train(param, dtrain, num_round)
+        # except:
             XGB_model_ready = False
 
         # On pop it used to choose if have dynamic weights for
@@ -317,8 +321,11 @@ if __name__ == '__main__':
         logFile.flush()
 
         if not XGB_model_ready:
-            np.save("../Dataset/XGBoostTraining.npy", recommender.trainXGBoost)
-            np.save("../Dataset/XGBoostLabels.npy", recommender.user_id_XGBoost)
+            with open(os.path.join("Dataset", "XGBoostTraining.pkl"), 'wb') as handle:
+                pickle.dump(recommender.trainXGBoost, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+            with open(os.path.join("Dataset", "XGBoostLabels.pkl"), 'wb') as handle:
+                pickle.dump(recommender.user_id_XGBoost, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
         if not evaluate_algorithm:
             target_playlist = dataReader.get_target_playlist()

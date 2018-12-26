@@ -858,3 +858,45 @@ CUTOFF: 10 - ROC_AUC: 0.0000000, PRECISION: 0.0000000, RECALL: 0.0000000, RECALL
 Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
 CUTOFF: 10 - ROC_AUC: 0.0000000, PRECISION: 0.0000000, RECALL: 0.0000000, RECALL_TEST_LEN: 0.0000000, MAP: 0.0000000, MRR: 0.0000000, NDCG: 0.0000000, F1: 0.0000000, HIT_RATE: 0.0000000, ARHR: 0.0000000, NOVELTY: 0.0058749, DIVERSITY_MEAN_INTER_LIST: 0.9929320, DIVERSITY_HERFINDAHL: 0.9992833, COVERAGE_ITEM: 0.3769809, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2883838, SHANNON_ENTROPY: 11.4193705, 
 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Weights: 6 and recommender list: 5 have different lenghts
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Knns, Shrinks and recommender list have different lenghts 
+Algorithm: <module 'KNN.HybridRecommenderXGBoost' from '/home/raff/Documents/Github/Recommender/RecommenderSys2018_Competition/KNN/HybridRecommenderXGBoost.py'> - Exception: 'module' object is not callable
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: 'int' object is not subscriptable
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: 'int' object is not iterable
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: 'int' object is not iterable
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: all the input array dimensions except for the concatenation axis must match exactly
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: tolist not found
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: can only specify one unknown dimension
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: can only specify one unknown dimension
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: cannot reshape array of size 133360000 into shape (20000,newaxis,0)
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: 'numpy.ndarray' object has no attribute 'toarray'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: all the input array dimensions except for the concatenation axis must match exactly
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: all the input array dimensions except for the concatenation axis must match exactly
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: all the input array dimensions except for the concatenation axis must match exactly
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: name 'model' is not defined
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: local variable 'ranking' referenced before assignment
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: index 20635 is out of bounds for axis 0 with size 20635
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: index 20635 is out of bounds for axis 0 with size 20635
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: cannot reshape array of size 1 into shape (20000,newaxis)
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: all the input arrays must have same number of dimensions
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: cannot reshape array of size 59478560 into shape (20000,newaxis)
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: cannot reshape array of size 6668000 into shape (20000,newaxis)
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: cannot reshape array of size 173155040 into shape (20000,newaxis)
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: 'matrix' object has no attribute 'tolil'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: 'float' object cannot be interpreted as an integer
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3493722, PRECISION: 0.2043617, RECALL: 0.2008474, RECALL_TEST_LEN: 0.2043617, MAP: 0.1121381, MRR: 0.2957897, NDCG: 0.1797600, F1: 0.2025893, HIT_RATE: 0.9791064, ARHR: 0.3963280, NOVELTY: 0.0061297, DIVERSITY_MEAN_INTER_LIST: 0.9950916, DIVERSITY_HERFINDAHL: 0.9995072, COVERAGE_ITEM: 0.6891689, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2412119, SHANNON_ENTROPY: 12.0286088, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: [Errno 2] No such file or directory: '../Dataset/XGBoostTraining.npy'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3493722, PRECISION: 0.2043617, RECALL: 0.2008474, RECALL_TEST_LEN: 0.2043617, MAP: 0.1121381, MRR: 0.2957897, NDCG: 0.1797600, F1: 0.2025893, HIT_RATE: 0.9791064, ARHR: 0.3963280, NOVELTY: 0.0061297, DIVERSITY_MEAN_INTER_LIST: 0.9950916, DIVERSITY_HERFINDAHL: 0.9995072, COVERAGE_ITEM: 0.6891689, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2412119, SHANNON_ENTROPY: 12.0286088, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Input numpy.ndarray must be 2 dimensional
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Input numpy.ndarray must be 2 dimensional
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Input numpy.ndarray must be 2 dimensional
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: tuple index out of range
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Input numpy.ndarray must be 2 dimensional
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: 'numpy.ndarray' object has no attribute 'tocsr'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: module 'scipy.sparse' has no attribute 'to_csr'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all().
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all().

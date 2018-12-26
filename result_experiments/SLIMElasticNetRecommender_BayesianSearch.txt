@@ -49,3 +49,13 @@ BayesianSearch: Config is suboptimal. Config: {'topK': 70, 'l1_ratio': 0.1823666
 BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'l1_ratio': 0.34081070126250224} - MAP results: 0.00010558906017132912 - time: 2018-12-19 22:40:27.137151
 BayesianSearch: Config is suboptimal. Config: {'topK': 470, 'l1_ratio': 0.8301896235026469} - MAP results: 0.00010558906017132912 - time: 2018-12-19 22:46:28.646138
 BayesianSearch: Best config is: Config {'topK': 290, 'l1_ratio': 0.9276844891403508}, MAP value is 0.0001
+BayesianSearch: New best config found. Config: {'topK': 270, 'l1_ratio': 0.001} - MAP results: 0.042919271689500264 - time: 2018-12-23 18:05:26.322017
+BayesianSearch: New best config found. Config: {'topK': 180, 'l1_ratio': 0.001} - MAP results: 0.04292560514219221 - time: 2018-12-23 18:12:40.673878
+BayesianSearch: Config is suboptimal. Config: {'topK': 360, 'l1_ratio': 0.1} - MAP results: 0.00010558906017132912 - time: 2018-12-23 18:19:40.992203
+BayesianSearch: Config is suboptimal. Config: {'topK': 280, 'l1_ratio': 0.001} - MAP results: 0.04290975859031077 - time: 2018-12-23 18:27:45.058172
+BayesianSearch: New best config found. Config: {'topK': 290, 'l1_ratio': 0.0001} - MAP results: 0.0661011544939299 - time: 2018-12-23 18:37:13.281269
+BayesianSearch: New best config found. Config: {'topK': 450, 'l1_ratio': 1e-05} - MAP results: 0.06980604903979615 - time: 2018-12-23 18:52:55.119235
+BayesianSearch: Config is suboptimal. Config: {'topK': 460, 'l1_ratio': 1.0} - MAP results: 0.00010558906017132912 - time: 2018-12-23 18:59:56.224182
+BayesianSearch: New best config found. Config: {'topK': 370, 'l1_ratio': 1e-05} - MAP results: 0.07040095935837364 - time: 2018-12-23 19:15:22.179760
+BayesianSearch: Config is suboptimal. Config: {'topK': 390, 'l1_ratio': 0.0001} - MAP results: 0.06535684404859474 - time: 2018-12-23 19:26:18.807912
+BayesianSearch: Config is suboptimal. Config: {'topK': 10, 'l1_ratio': 0.01} - MAP results: 0.00010558906017132912 - time: 2018-12-23 19:33:16.761515

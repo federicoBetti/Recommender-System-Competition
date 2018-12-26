@@ -6,6 +6,7 @@ Created on 23/11/18
 @author: Federico Betti
 """
 import sys
+import random
 
 import torch
 from torch.autograd import Variable
@@ -240,14 +241,25 @@ class HybridPytorch(SimilarityMatrixRecommender, Recommender):
             for user_index in range(len(user_id_array)):
                 user_id = user_id_array[user_index]
                 seen = self.URM_train.indices[self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                target_var = np.ones((len(seen), 1))  # check if , 1 is useful or not
+                seel_len = len(seen)
+
+                target_var = np.ones((seel_len, 1))
+                only_positive_samples = True
+                if only_positive_samples:
+                    negative_items = []
+                else:
+                    negative_items = random.sample(range(1, self.URM_train.shape[1]), seel_len)
+                    target_var_zeros = np.zeros((seel_len, 1))
+                    target_var = np.concatenate((target_var, target_var_zeros))
 
                 user_scores = np.zeros((scores_batch.shape[1], self.recommender_number))
 
                 for rec_ind, score in enumerate(scores):
                     user_scores[:, rec_ind] = score[user_index].T
 
-                input_var = user_scores[seen, :]
+                # print("Seen: {}, negative items: {}".format(seen, negative_items))
+                # print("Shapes {}, {}".format(user_scores[seen, :].shape, user_scores[negative_items, :].shape))
+                input_var = np.concatenate((user_scores[seen, :], user_scores[negative_items, :]))
 
                 input_data_tensor = Variable(torch.Tensor(input_var)).to(self.device)
 
@@ -305,15 +317,17 @@ class HybridPytorch(SimilarityMatrixRecommender, Recommender):
 
         return ranking
 
-
+'''
+The model with two hidden layers became slower and decrease the performances
+'''
 class Hybridization_PyTorch_model(torch.nn.Module):
     def __init__(self, n_recommenders):
         super(Hybridization_PyTorch_model, self).__init__()
 
         self.n_recommenders = n_recommenders
 
-        self.layer_1 = torch.nn.Linear(in_features=self.n_recommenders, out_features=32)
-        self.layer_2 = torch.nn.Linear(in_features=32, out_features=1)
+        self.layer_1 = torch.nn.Linear(in_features=self.n_recommenders, out_features=1)
+        # self.layer_2 = torch.nn.Linear(in_features=32, out_features=1)
 
         self.activation_function1 = torch.nn.Sigmoid()
         self.activation_function2 = torch.nn.Sigmoid()
@@ -322,9 +336,9 @@ class Hybridization_PyTorch_model(torch.nn.Module):
         # print("Input: {}".format(input))
         prediction = self.layer_1(input)
         prediction = self.activation_function1(prediction)
-        prediction = self.layer_2(prediction)
+        # prediction = self.layer_2(prediction)
         # print("Prediction1: {}".format(prediction))
-        prediction = self.activation_function2(prediction)
+        # prediction = self.activation_function2(prediction)
         # print("Prediction final: {}".format(prediction))
 
         return prediction

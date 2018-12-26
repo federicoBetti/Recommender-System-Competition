@@ -943,3 +943,16 @@ Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: index 1220 is 
 Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'>, results: 
 CUTOFF: 10 - ROC_AUC: 0.3563422, PRECISION: 0.2060664, RECALL: 0.2026421, RECALL_TEST_LEN: 0.2060664, MAP: 0.1101344, MRR: 0.2979515, NDCG: 0.1797585, F1: 0.2043399, HIT_RATE: 0.9782936, ARHR: 0.3942779, NOVELTY: 0.0059029, DIVERSITY_MEAN_INTER_LIST: 0.9928740, DIVERSITY_HERFINDAHL: 0.9992854, COVERAGE_ITEM: 0.6004362, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2015617, SHANNON_ENTROPY: 11.5347174, 
 
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: all the input arrays must have same number of dimensions
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: all the input arrays must have same number of dimensions
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: 'int' object is not iterable
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: randint() takes 3 positional arguments but 4 were given
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: 'builtin_function_or_method' object has no attribute 'sample'
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: can't convert CUDA tensor to numpy. Use Tensor.cpu() to copy the tensor to host memory first.
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.2831770, PRECISION: 0.1599933, RECALL: 0.1572984, RECALL_TEST_LEN: 0.1599933, MAP: 0.0825351, MRR: 0.2304434, NDCG: 0.1378709, F1: 0.1586344, HIT_RATE: 0.7523887, ARHR: 0.2977109, NOVELTY: 0.0057246, DIVERSITY_MEAN_INTER_LIST: 0.9910047, DIVERSITY_HERFINDAHL: 0.9990985, COVERAGE_ITEM: 0.5303126, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.1857792, SHANNON_ENTROPY: 11.2102274, 
+
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: 'Hybridization_PyTorch_model' object has no attribute 'layer_2'
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.0567629, PRECISION: 0.0271373, RECALL: 0.0268162, RECALL_TEST_LEN: 0.0271373, MAP: 0.0098367, MRR: 0.0368832, NDCG: 0.0204690, F1: 0.0269758, HIT_RATE: 0.1171153, ARHR: 0.0396471, NOVELTY: 0.0068849, DIVERSITY_MEAN_INTER_LIST: 0.9971678, DIVERSITY_HERFINDAHL: 0.9997148, COVERAGE_ITEM: 0.6998304, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.3207832, SHANNON_ENTROPY: 12.5481089, 
+

@@ -28,7 +28,7 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
     RECOMMENDER_NAME = "ItemKNNCFRecommender"
 
     def __init__(self, URM_train, ICM, recommender_list, XGBoost_model=None, UCM_train=None, dynamic=False,
-                 d_weights=None, weights=None, XGB_model_ready = False,
+                 d_weights=None, weights=None, XGB_model_ready=False,
                  URM_validation=None, sparse_weights=True, onPop=True, moreHybrids=False):
         super(Recommender, self).__init__()
 
@@ -181,28 +181,6 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
 
             else:  # ItemCF, UserCF, ItemCBF, UserCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
-
-    # def change_weights(self, user_id):
-    #     if user_id in self.cluster_0:
-    #         # print("primo cluster")
-    #         return self.d_weights[0]
-    #         # return [0.45590938562950867, 0, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228,
-    #         #         0.19081956929601618, 0, 0.11267140391070507]
-    #         # return [0, 0, 0, 0, 0, 0, 0, 0]
-    #
-    #     elif user_id in self.cluster_2:
-    #         # print("secondo cluster")
-    #         return self.d_weights[2]
-    #         # return [0.973259052781316, 0, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645,
-    #         #         0.4723616073494711, 0, 0.4188403112229081]
-    #         # return [0, 0, 0, 0, 0, 0, 0, 0]
-    #
-    #     else:
-    #         # print("terzo cluster")
-    #         return self.d_weights[1]
-    #         # return [0.9780713488404191, 0, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535,
-    #         #         0.9504112133900943, 0, 0.9034510004379944]
-    #         # return [0, 0, 0, 0, 0, 0, 0, 0]
 
     def change_weights(self, level, pop):
         if level < pop[0]:
@@ -395,16 +373,16 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
                                  for user in user_list]).reshape((-1, 1))
 
         # ucm_batch = self.UCM_train[user_list].toarray()
-        dim_ucm = int(len(user_list)*20)
+        dim_ucm = int(len(user_list) * 20)
         UCM_dense = self.UCM_train.todense()
         ucm_batch = np.array([UCM_dense[user] for _ in range(cutoff_Boost)
                               for user in user_list]).reshape(dim_ucm, -1)
         del UCM_dense
 
-        dim_icm = int(len(relevant_items_boost)*20)
+        dim_icm = int(len(relevant_items_boost) * 20)
         ICM_dense = self.ICM.todense()
         icm_batch = np.array([[ICM_dense[item] for item in relevant_line]
-                             for relevant_line in relevant_items_boost.tolist()]).reshape(dim_icm, -1)
+                              for relevant_line in relevant_items_boost.tolist()]).reshape(dim_icm, -1)
         del ICM_dense
 
         tracks_duration = np.array([[tracks_duration_list[item] for item in relevant_line]
@@ -413,7 +391,6 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
         relevant_items_boost = relevant_items_boost.reshape(-1, 1)
         newTrainXGBoost = np.concatenate([relevant_items_boost, song_pop, playlist_pop, playlist_length,
                                           tracks_duration, icm_batch, ucm_batch], axis=1)
-
 
         if self.xgb_model_ready:
             print("QUI")
@@ -447,124 +424,4 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
         #     ranking_list = ranking_list[0]
 
         self.recommender_used = True
-        return ranking
-
-    def recommend_gradient_descent(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True,
-                                   remove_top_pop_flag=False,
-                                   remove_CustomItems_flag=False):
-
-        if np.isscalar(user_id_array):
-            user_id_array = np.atleast_1d(user_id_array)
-            single_user = True
-        else:
-            single_user = False
-
-        weights = self.weights
-        if cutoff == None:
-            # noinspection PyUnresolvedReferences
-            cutoff = self.URM_train.shape[1] - 1
-        else:
-            cutoff
-
-        # compute the scores using the dot product
-        # noinspection PyUnresolvedReferences
-        if self.sparse_weights:
-            scores = []
-            # noinspection PyUnresolvedReferences
-            for recommender in self.recommender_list:
-                if recommender.__class__ in [HybridRecommenderXGBoost]:
-                    scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop,
-                                                            remove_seen_flag=True, remove_top_pop_flag=False,
-                                                            remove_CustomItems_flag=False))
-                    continue
-                scores_batch = recommender.compute_item_score(user_id_array)
-                # scores_batch = np.ravel(scores_batch) # because i'm not using batch
-
-                for user_index in range(len(user_id_array)):
-
-                    user_id = user_id_array[user_index]
-
-                    if remove_seen_flag:
-                        scores_batch[user_index, :] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
-
-                if remove_top_pop_flag:
-                    scores_batch = self._remove_TopPop_on_scores(scores_batch)
-
-                if remove_CustomItems_flag:
-                    scores_batch = self._remove_CustomItems_on_scores(scores_batch)
-
-                scores.append(scores_batch)
-
-            final_score = np.zeros(scores[0].shape)
-
-            if self.dynamic:
-                for user_index in range(len(user_id_array)):
-                    user_id = user_id_array[user_index]
-                    user_profile = self.URM_train.indices[
-                                   self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                    # user profile sono gli 1 nella URM train
-                    test_songs = self.URM_validation.indices[
-                                 self.URM_validation.indptr[user_id]:self.URM_validation.indptr[user_id + 1]]
-                    if self.onPop:
-                        level = int(ged.playlist_popularity(user_profile, dict_pop))
-                    else:
-                        level = int(ged.lenght_playlist(user_profile))
-                    weights = self.change_weights(level, self.pop)
-                    assert len(weights) == len(scores), "Scores and weights have different lengths"
-
-                    final_score_line = np.zeros(scores[0].shape[1])
-                    if sum(weights) > 0:
-                        for score, weight in zip(scores, weights):
-                            final_score_line += score[user_index] * weight
-                        for ind, score in enumerate(scores):
-                            self.gradients[ind] += sum(
-                                np.sign(1 - final_score_line[test_songs]) * score[user_index, test_songs])
-                    self.MAE += sum(1 - final_score_line[test_songs])
-                    final_score[user_index] = final_score_line
-            else:
-                for user_index in range(len(user_id_array)):
-                    user_id = user_id_array[user_index]
-                    user_profile = self.URM_train.indices[
-                                   self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                    # user profile sono gli 1 nella URM train
-                    test_songs = self.URM_validation.indices[
-                                 self.URM_validation.indptr[user_id]:self.URM_validation.indptr[user_id + 1]]
-
-                    final_score_line = np.zeros(scores[0].shape[1])
-                    for score, weight in zip(scores, weights):
-                        final_score_line += score[user_index] * weight
-                    for ind, score in enumerate(scores):
-                        self.gradients[ind] += sum(
-                            np.sign(1 - final_score_line[test_songs]) * score[user_index, test_songs])
-                    self.MAE += sum(1 - final_score_line[test_songs])
-                    final_score[user_index] = final_score_line
-
-        else:
-            raise NotImplementedError
-
-        # relevant_items_partition is block_size x cutoff
-        relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
-
-        relevant_items_partition_original_value = final_score[
-            np.arange(final_score.shape[0])[:, None], relevant_items_partition]
-        relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-        ranking = relevant_items_partition[
-            np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
-
-        # scores = final_score
-        # # relevant_items_partition is block_size x cutoff
-        # relevant_items_partition = (-scores_batch).argpartition(cutoff, axis=1)[:, 0:cutoff]
-        #
-        # relevant_items_partition_original_value = scores_batch[
-        #     np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
-        # relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-        # ranking = relevant_items_partition[
-        #     np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
-
-        ranking_list = ranking.tolist()
-
-        # Return single list for one user, instead of list of lists
-        if single_user:
-            ranking_list = ranking_list[0]
-
         return ranking

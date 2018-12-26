@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on 23/11/18
-
-@author: Federico Betti
-"""
+from abc import ABC
 
 from Base.Recommender import Recommender
 from Base.Recommender_utils import check_matrix
 from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 import numpy as np
+from Dataset.RS_Data_Loader import RS_Data_Loader
+from scipy import sparse
 
 from GraphBased.P3alphaRecommender import P3alphaRecommender
 from GraphBased.RP3betaRecommender import RP3betaRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
-from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython, \
     MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
 from MatrixFactorization.PureSVD import PureSVDRecommender
@@ -22,27 +19,34 @@ from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 import Support_functions.get_evaluate_data as ged
 from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
+import bisect
 
 
-class HybridRecommender(SimilarityMatrixRecommender, Recommender):
+class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
     """ Hybrid recommender"""
 
     RECOMMENDER_NAME = "ItemKNNCFRecommender"
 
-    def __init__(self, URM_train, ICM, recommender_list, UCM_train=None, dynamic=False, d_weights=None, weights=None,
+    def __init__(self, URM_train, ICM, recommender_list, XGBoost_model=None, UCM_train=None, dynamic=False,
+                 d_weights=None, weights=None, XGB_model_ready = False,
                  URM_validation=None, sparse_weights=True, onPop=True, moreHybrids=False):
         super(Recommender, self).__init__()
 
         # CSR is faster during evaluation
+        self.first_time = True
         self.pop = None
         self.UCM_train = UCM_train
         self.URM_train = check_matrix(URM_train, 'csr')
         self.URM_validation = URM_validation
+        self.ICM = ICM
         self.dynamic = dynamic
         self.d_weights = d_weights
         self.dataset = None
         self.onPop = onPop
         self.moreHybrids = moreHybrids
+        self.recommender_used = False
+        self.xgbModel = XGBoost_model
+        self.xgb_model_ready = XGB_model_ready
 
         # with open(os.path.join("Dataset", "Cluster_0_dict_Kmeans_3.pkl"), 'rb') as handle:
         #     self.cluster_0 = pickle.load(handle)
@@ -79,7 +83,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             elif recommender in [UserKNNCBRecommender]:
                 self.recommender_list.append(recommender(self.UCM_train, URM_train))
             # For sake of simplicity the recommender in this case is initialized and fitted outside
-            elif recommender.__class__ in [HybridRecommender]:
+            elif recommender.__class__ in [HybridRecommenderXGBoost]:
                 self.recommender_list.append(recommender)
 
             else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
@@ -130,7 +134,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         rp3bcounter = 0
         slim_counter = 0
         factorCounter = 0
-        tfidf_counter = 0
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
             if recommender.__class__ is SLIM_BPR_Cython:
@@ -155,7 +158,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 recommender.fit(topK=knn, l1_ratio=similarity_args["l1_ratio"], force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [PureSVDRecommender]:
-                recommender.fit(num_factors=similarity_args["num_factors"][factorCounter], force_compute_sim=force_compute_sim)
+                recommender.fit(num_factors=similarity_args["num_factors"][factorCounter],
+                                force_compute_sim=force_compute_sim)
                 factorCounter += 1
 
             elif recommender.__class__ in [P3alphaRecommender]:
@@ -174,11 +178,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             elif recommender.__class__ in [ItemKNNCBFRecommender]:
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
                                 feature_weighting_index=similarity_args["feature_weighting_index"])
-
-            elif recommender.__class__ in [ItemKNNCFRecommender]:
-                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
-                                tfidf=similarity_args["tfidf"][tfidf_counter])
-                tfidf_counter += 1
 
             else:  # ItemCF, UserCF, ItemCBF, UserCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
@@ -228,7 +227,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         scores = []
         final_score = np.zeros(len(recommender.recommender_list))
         for rec in recommender.recommender_list:
-            if rec.__class__ in [HybridRecommender]:
+            if rec.__class__ in [HybridRecommenderXGBoost]:
                 scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop))
                 continue
             scores_batch = rec.compute_item_score(user_id_array)
@@ -271,6 +270,10 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 final_score += (score * weight)
         return final_score
 
+    def getUserProfile(self, user_id):
+        return self.URM_train.indices[
+               self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
+
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
 
@@ -287,23 +290,35 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         else:
             cutoff
 
+        cutoff_addition = 10
+        cutoff_Boost = cutoff + cutoff_addition
+
         # compute the scores using the dot product
         # noinspection PyUnresolvedReferences
+
         if self.sparse_weights:
             scores = []
             # noinspection PyUnresolvedReferences
             for recommender in self.recommender_list:
-                if recommender.__class__ in [HybridRecommender]:
+                if recommender.__class__ in [HybridRecommenderXGBoost]:
                     scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop,
                                                             remove_seen_flag=True, remove_top_pop_flag=False,
                                                             remove_CustomItems_flag=False))
-
 
                     continue
                 scores_batch = recommender.compute_item_score(user_id_array)
                 # scores_batch = np.ravel(scores_batch) # because i'm not using batch
 
                 for user_index in range(len(user_id_array)):
+
+                    if not self.recommender_used:
+
+                        if user_index == 0:
+                            self.user_id_XGBoost = np.array([user_index] * cutoff_Boost).reshape(-1, 1)
+                        else:
+                            self.user_id_XGBoost = np.concatenate([self.user_id_XGBoost,
+                                                                   np.array([user_index] *
+                                                                            cutoff_Boost).reshape(-1, 1)], axis=0)
 
                     user_id = user_id_array[user_index]
 
@@ -345,7 +360,11 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         else:
             raise NotImplementedError
 
-        # relevant_items_partition is block_size x cutoff
+        # i take the 20 elements with highest scores
+
+        relevant_items_boost = (-final_score).argpartition(cutoff_Boost, axis=1)[:,
+                               0:cutoff_Boost]
+
         relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
 
         relevant_items_partition_original_value = final_score[
@@ -354,26 +373,80 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         ranking = relevant_items_partition[
             np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
 
-        # scores = final_score
-        # # relevant_items_partition is block_size x cutoff
-        # relevant_items_partition = (-scores_batch).argpartition(cutoff, axis=1)[:, 0:cutoff]
-        #
-        # relevant_items_partition_original_value = scores_batch[
-        #     np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
-        # relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-        # ranking = relevant_items_partition[
-        #     np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
-
         ranking_list = ranking.tolist()
 
         # Creating numpy array for training XGBoost
 
+        dict_song_pop = ged.tracks_popularity()
+
+        # elements to add for each song
+
+        user_list = user_id_array.tolist()
+        dataReader = RS_Data_Loader()
+        tracks = dataReader.tracks
+        tracks_duration_list = np.array(tracks['duration_sec']).reshape((-1, 1))[:, 0].tolist()
+
+        song_pop = np.array([[dict_song_pop[item] for item in relevant_line]
+                             for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
+
+        playlist_length = np.array([[int(ged.lenght_playlist(self.getUserProfile(user)))] * cutoff_Boost
+                                    for user in user_list]).reshape((-1, 1))
+        playlist_pop = np.array([[int(ged.playlist_popularity(self.getUserProfile(user), dict_song_pop))] * cutoff_Boost
+                                 for user in user_list]).reshape((-1, 1))
+
+        # ucm_batch = self.UCM_train[user_list].toarray()
+        dim_ucm = int(len(user_list)*20)
+        UCM_dense = self.UCM_train.todense()
+        ucm_batch = np.array([UCM_dense[user] for _ in range(cutoff_Boost)
+                              for user in user_list]).reshape(dim_ucm, -1)
+        del UCM_dense
+
+        dim_icm = int(len(relevant_items_boost)*20)
+        ICM_dense = self.ICM.todense()
+        icm_batch = np.array([[ICM_dense[item] for item in relevant_line]
+                             for relevant_line in relevant_items_boost.tolist()]).reshape(dim_icm, -1)
+        del ICM_dense
+
+        tracks_duration = np.array([[tracks_duration_list[item] for item in relevant_line]
+                                    for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
+
+        relevant_items_boost = relevant_items_boost.reshape(-1, 1)
+        newTrainXGBoost = np.concatenate([relevant_items_boost, song_pop, playlist_pop, playlist_length,
+                                          tracks_duration, icm_batch, ucm_batch], axis=1)
 
 
+        if self.xgb_model_ready:
+            print("QUI")
+            preds = self.xgbModel.predict(newTrainXGBoost)
+            ranking = []
+            ordered_tracks = []
+            current_user_id = 0
+            current_user = user_list[current_user_id]
+            for track_idx in range(newTrainXGBoost.shape[0]):
+                ordered_tracks.append((relevant_items_boost[track_idx], preds[track_idx][current_user]))
+
+                if track_idx % cutoff_Boost:
+                    ordered_tracks.sort(key=lambda elem: elem[1])
+                    ordered_tracks = [track_id[0] for track_id in ordered_tracks]
+                    ranking.append(ordered_tracks)
+                    ordered_tracks = []
+                    current_user_id += 1
+
+
+        elif not self.xgb_model_ready:
+            if self.first_time:
+                self.first_time = False
+                self.trainXGBoost = sparse.lil_matrix(newTrainXGBoost, dtype=int)
+
+            elif not self.first_time:
+                self.trainXGBoost = sparse.vstack([self.trainXGBoost, newTrainXGBoost], dtype=int)
+                x = self.trainXGBoost
+                y = 0
         # Return single list for one user, instead of list of lists
-        if single_user:
-            ranking_list = ranking_list[0]
+        # if single_user:
+        #     ranking_list = ranking_list[0]
 
+        self.recommender_used = True
         return ranking
 
     def recommend_gradient_descent(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True,
@@ -399,7 +472,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             scores = []
             # noinspection PyUnresolvedReferences
             for recommender in self.recommender_list:
-                if recommender.__class__ in [HybridRecommender]:
+                if recommender.__class__ in [HybridRecommenderXGBoost]:
                     scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop,
                                                             remove_seen_flag=True, remove_top_pop_flag=False,
                                                             remove_CustomItems_flag=False))

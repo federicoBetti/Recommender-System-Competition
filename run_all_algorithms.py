@@ -81,19 +81,19 @@ if __name__ == '__main__':
 
     # ITEM CB, ITEM CF, USER CF, RP3BETA, PURE SVD
     recommender_list2 = [
-        # Random,
-        # TopPop,
-        # ItemKNNCBFRecommender,
-        # # UserKNNCBRecommender,
-        # ItemKNNCFRecommender,
-        # UserKNNCFRecommender,
-        # # P3alphaRecommender,
-        # RP3betaRecommender,
-        # # MatrixFactorization_BPR_Cython,
-        # # MatrixFactorization_FunkSVD_Cython,
-        # # SLIM_BPR_Cython,
-        # # SLIMElasticNetRecommender
-        # PureSVDRecommender
+        Random,
+        TopPop,
+        ItemKNNCBFRecommender,
+        # UserKNNCBRecommender,
+        ItemKNNCFRecommender,
+        UserKNNCFRecommender,
+        # P3alphaRecommender,
+        RP3betaRecommender,
+        # MatrixFactorization_BPR_Cython,
+        # MatrixFactorization_FunkSVD_Cython,
+        # SLIM_BPR_Cython,
+        # SLIMElasticNetRecommender
+        PureSVDRecommender
     ]
 
     # UserCBF, ItemCF, UserCF, P3alpha, RP3b, SLIM, PurSVD
@@ -101,16 +101,16 @@ if __name__ == '__main__':
         # Random,
         # TopPop,
         # ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
-        # ItemKNNCFRecommender,
-        # UserKNNCFRecommender,
-        # P3alphaRecommender,
-        # RP3betaRecommender,
+        UserKNNCBRecommender,
+        ItemKNNCFRecommender,
+        UserKNNCFRecommender,
+        P3alphaRecommender,
+        RP3betaRecommender,
         # # MatrixFactorization_BPR_Cython,
         # # MatrixFactorization_FunkSVD_Cython,
-        # SLIM_BPR_Cython,
+        SLIM_BPR_Cython,
         # # SLIMElasticNetRecommender
-        # PureSVDRecommender
+        PureSVDRecommender
     ]
 
     # For hybrid with weighted estimated rating
@@ -208,7 +208,7 @@ if __name__ == '__main__':
         '''
         Our optimal run
         '''
-        recommender_list = recommender_list1  # + recommender_list2 + recommender_list3
+        recommender_list = recommender_list1 + recommender_list2 + recommender_list3
         onPop = True
 
         # XGBoost
@@ -229,7 +229,7 @@ if __name__ == '__main__':
             num_round = 20  # the number of training iterations
 
             model = xgb.train(param, dtrain, num_round)
-        # except:
+            # except:
             XGB_model_ready = False
 
         # On pop it used to choose if have dynamic weights for

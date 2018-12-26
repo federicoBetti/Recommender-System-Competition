@@ -15,6 +15,7 @@ from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
 from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
 from KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
+from MatrixFactorization.PyTorch.MF_MSE_PyTorch import MF_MSE_PyTorch
 from ParameterTuning.RandomSearch import RandomSearch
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender, MultiThreadSLIM_ElasticNet
@@ -648,12 +649,12 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
             hyperparamethers_range_dictionary["batch_size"] = [1000]
             hyperparamethers_range_dictionary["positive_reg"] = [0.0, 1e-3, 1e-6, 1e-9]
             hyperparamethers_range_dictionary["negative_reg"] = [0.0, 1e-3, 1e-6, 1e-9]
-            hyperparamethers_range_dictionary["learning_rate"] = range(0, 1)
+            hyperparamethers_range_dictionary["learning_rate"] = [0.1, 1e-2, 1e-3, 1e-5]
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {'positive_threshold': 1},
                                      DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                                     DictionaryKeys.FIT_KEYWORD_ARGS: {"epochs": 1000, "validation_every_n": 5000,
+                                     DictionaryKeys.FIT_KEYWORD_ARGS: {"epochs": 1000, "validation_every_n": 500,
                                                                        "stop_on_validation": True,
                                                                        "evaluator_object": evaluator_validation_earlystopping,
                                                                        "lower_validatons_allowed": 20,
@@ -676,6 +677,23 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {'positive_threshold': 1},
                                      DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                                      DictionaryKeys.FIT_KEYWORD_ARGS: {"epochs": 40, "validation_every_n": 2000,
+                                                                       "stop_on_validation": False,
+                                                                       "evaluator_object": evaluator_validation_earlystopping,
+                                                                       "lower_validatons_allowed": 20,
+                                                                       "validation_metric": metric_to_optimize},
+                                     DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
+
+        ##########################################################################################################
+
+        if recommender_class is MF_MSE_PyTorch:
+            hyperparamethers_range_dictionary = {}
+            hyperparamethers_range_dictionary["num_factors"] = list(range(10, 200, 10))
+            hyperparamethers_range_dictionary["learning_rate"] = [0.001] # [1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+
+            recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
+                                     DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {'positive_threshold': 1},
+                                     DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
+                                     DictionaryKeys.FIT_KEYWORD_ARGS: {"epochs": 40, "validation_every_n": 20,
                                                                        "stop_on_validation": False,
                                                                        "evaluator_object": evaluator_validation_earlystopping,
                                                                        "lower_validatons_allowed": 20,
@@ -821,11 +839,12 @@ def read_data_split_and_search():
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
+        MF_MSE_PyTorch,
         # MatrixFactorization_FunkSVD_Cython,
         # MatrixFactorization_AsySVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
-        SLIMElasticNetRecommender,
+        # SLIMElasticNetRecommender,
         # MultiThreadSLIM_ElasticNet,
         # HybridRecommender
     ]

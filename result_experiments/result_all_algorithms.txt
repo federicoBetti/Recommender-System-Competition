@@ -924,3 +924,22 @@ Algorithm: <class 'KNN.HybridSimilaritiesRecommender.HybridSimilaritiesRecommend
 Algorithm: <class 'KNN.HybridSimilaritiesRecommender.HybridSimilaritiesRecommender'>, results:
 CUTOFF: 10 - ROC_AUC: 0.3580263, PRECISION: 0.2084409, RECALL: 0.2049665, RECALL_TEST_LEN: 0.2084409, MAP: 0.1124746, MRR: 0.3010903, NDCG: 0.1822954, F1: 0.2066891, HIT_RATE: 0.9904056, ARHR: 0.4006590, NOVELTY: 0.0059024, DIVERSITY_MEAN_INTER_LIST: 0.9928462, DIVERSITY_HERFINDAHL: 0.9992827, COVERAGE_ITEM: 0.6030531, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2032698, SHANNON_ENTROPY: 11.5457520,
 
+Algorithm: <class 'KNN.HybridSimilaritiesRecommender.HybridSimilaritiesRecommender'> - Exception: name 'd_weights' is not defined
+Algorithm: <class 'KNN.HybridSimilaritiesRecommender.HybridSimilaritiesRecommender'> - Exception: get_URM_train() missing 1 required positional argument: 'self'
+Algorithm: <class 'KNN.HybridSimilaritiesRecommender.HybridSimilaritiesRecommender'> - Exception: get_URM_train() missing 1 required positional argument: 'self'
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: only integer scalar arrays can be converted to a scalar index
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: local variable 'user_id' referenced before assignment
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: Variable data has to be a tensor, but got numpy.ndarray
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: 'numpy.ndarray' object has no attribute 'dim'
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: 'numpy.ndarray' object has no attribute 'dim'
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: Can't call numpy() on Variable that requires grad. Use var.detach().numpy() instead.
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: Can't call numpy() on Variable that requires grad. Use var.detach().numpy() instead.
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: Can't call numpy() on Variable that requires grad. Use var.detach().numpy() instead.
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: Can't call numpy() on Variable that requires grad. Use var.detach().numpy() instead.
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: Can't call numpy() on Variable that requires grad. Use var.detach().numpy() instead.
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: Can't call numpy() on Variable that requires grad. Use var.detach().numpy() instead.
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: index 1220 is out of bounds for axis 0 with size 1
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: index 1220 is out of bounds for axis 0 with size 1
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3563422, PRECISION: 0.2060664, RECALL: 0.2026421, RECALL_TEST_LEN: 0.2060664, MAP: 0.1101344, MRR: 0.2979515, NDCG: 0.1797585, F1: 0.2043399, HIT_RATE: 0.9782936, ARHR: 0.3942779, NOVELTY: 0.0059029, DIVERSITY_MEAN_INTER_LIST: 0.9928740, DIVERSITY_HERFINDAHL: 0.9992854, COVERAGE_ITEM: 0.6004362, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2015617, SHANNON_ENTROPY: 11.5347174, 
+

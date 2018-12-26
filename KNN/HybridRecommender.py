@@ -155,7 +155,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 recommender.fit(topK=knn, l1_ratio=similarity_args["l1_ratio"], force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [PureSVDRecommender]:
-                recommender.fit(num_factors=similarity_args["num_factors"][factorCounter], force_compute_sim=force_compute_sim)
+                recommender.fit(num_factors=similarity_args["num_factors"][factorCounter],
+                                force_compute_sim=force_compute_sim)
                 factorCounter += 1
 
             elif recommender.__class__ in [P3alphaRecommender]:
@@ -182,28 +183,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
             else:  # ItemCF, UserCF, ItemCBF, UserCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
-
-    # def change_weights(self, user_id):
-    #     if user_id in self.cluster_0:
-    #         # print("primo cluster")
-    #         return self.d_weights[0]
-    #         # return [0.45590938562950867, 0, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228,
-    #         #         0.19081956929601618, 0, 0.11267140391070507]
-    #         # return [0, 0, 0, 0, 0, 0, 0, 0]
-    #
-    #     elif user_id in self.cluster_2:
-    #         # print("secondo cluster")
-    #         return self.d_weights[2]
-    #         # return [0.973259052781316, 0, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645,
-    #         #         0.4723616073494711, 0, 0.4188403112229081]
-    #         # return [0, 0, 0, 0, 0, 0, 0, 0]
-    #
-    #     else:
-    #         # print("terzo cluster")
-    #         return self.d_weights[1]
-    #         # return [0.9780713488404191, 0, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535,
-    #         #         0.9504112133900943, 0, 0.9034510004379944]
-    #         # return [0, 0, 0, 0, 0, 0, 0, 0]
 
     def change_weights(self, level, pop):
         if level < pop[0]:
@@ -297,7 +276,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                     scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop,
                                                             remove_seen_flag=True, remove_top_pop_flag=False,
                                                             remove_CustomItems_flag=False))
-
 
                     continue
                 scores_batch = recommender.compute_item_score(user_id_array)

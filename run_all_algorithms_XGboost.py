@@ -63,7 +63,7 @@ if __name__ == '__main__':
     # CF, USER
     # CF, P3ALPHA, RP3BETA, PURE
     # SVD
-    recommender_list1 = [
+    recommender_list = [
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
@@ -79,51 +79,9 @@ if __name__ == '__main__':
         # PureSVDRecommender
     ]
 
-    # ITEM CB, ITEM CF, USER CF, RP3BETA, PURE SVD
-    recommender_list2 = [
-        # Random,
-        # TopPop,
-        ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        # P3alphaRecommender,
-        RP3betaRecommender,
-        # MatrixFactorization_BPR_Cython,
-        # MatrixFactorization_FunkSVD_Cython,
-        # SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender
-        PureSVDRecommender
-    ]
-
-    # UserCBF, ItemCF, UserCF, P3alpha, RP3b, SLIM, PurSVD
-    recommender_list3 = [
-        # Random,
-        # TopPop,
-        # ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        P3alphaRecommender,
-        RP3betaRecommender,
-        # # MatrixFactorization_BPR_Cython,
-        # # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
-        # # SLIMElasticNetRecommender
-        PureSVDRecommender
-    ]
-
     # For hybrid with weighted estimated rating
     d_weights = [
-        [0.6708034395599534, 0.4180455311930482, 0.013121631586130333, 0.9606783176615321, 0.9192576193987754,
-         0.517220112773677] + [0] * len(recommender_list2) + [0] * len(recommender_list3),
-        [0] * len(recommender_list1) + [0.03206429006541767, 0.022068399812202766, 0.5048937312439359,
-                                        0.5777889378285606, 0.002469536740713263]
-        + [0] * len(recommender_list3),
-        [0] * len(recommender_list1) + [0] * len(recommender_list2) + [0.2959761085665614, 0.08296490886624563,
-                                                                       0.72672714096492, 0.04856215067017522,
-                                                                       0.7144382800343254, 0.20367609381116258,
-                                                                       0.1080480529784491]
+        0.6708034395599534, 0.4180455311930482, 0.013121631586130333, 0.9606783176615321, 0.9192576193987754
     ]
     #
     # d_best = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
@@ -162,61 +120,19 @@ if __name__ == '__main__':
         recommender_class = HybridRecommenderXGBoost
         print("Algorithm: {}".format(recommender_class))
 
-        '''
-        Test run with hybrid of hybrids
-        '''
-        # onPop = True
-        # recommender_1 = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
-        #                                   d_weights=d_weights,
-        #                                   URM_validation=URM_validation, onPop=onPop)
-        #
-        # onPop = False
-        # recommender_2 = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
-        #                                   d_weights=d_weights,
-        #                                   URM_validation=URM_validation, onPop=onPop)
-        #
-        # pop = [130, 346]
-        # recommender_1.fit(**{"topK": topK,
-        #                      "shrink": shrinks,
-        #                      "pop": pop,
-        #                      # "pop": [130, 346],
-        #                      "weights": [1, 1],
-        #                      # put -1 where useless in order to force you to change when the became useful
-        #                      "force_compute_sim": True,
-        #                      'alphaP3': 0.6048420766420062,
-        #                      'alphaRP3': 1.5890147620983466,
-        #                      'betaRP': 0.28778362462762974})
-        #
-        # pop = [15, 30]
-        # recommender_2.fit(**{"topK": topK,
-        #                      "shrink": shrinks,
-        #                      "pop": pop,
-        #                      # "pop": [130, 346],
-        #                      "weights": [1, 1],
-        #                      # put -1 where useless in order to force you to change when the became useful
-        #                      "force_compute_sim": True,
-        #                      'alphaP3': 0.6048420766420062,
-        #                      'alphaRP3': 1.5890147620983466,
-        #                      'betaRP': 0.28778362462762974})
-        #
-        # recommender_list_2 = [recommender_1, recommender_2]
-        # recommender = recommender_class(URM_train, ICM, recommender_list_2, UCM_train=UCM_tfidf, dynamic=False,
-        #                                 d_weights=d_weights, weights=weights,
-        #                                 URM_validation=URM_validation, onPop=onPop, moreHybrids=False)
-        #
-
-        '''
-        Our optimal run
-        '''
-        recommender_list = recommender_list1 + recommender_list2 + recommender_list3
         onPop = True
 
         # XGBoost
         model = None
         # try:
         if XGB_model_ready:
-            X_train = np.load("Dataset/XGBoostTraining.npy")
-            y_train = np.load("Dataset/XGBoostLabels.npy")
+
+            with open(os.path.join("Dataset", "XGBoostTraining.pkl"), 'rb') as handle:
+                X_train = pickle.load(handle)
+
+            with open(os.path.join("Dataset", "XGBoostLabels.pkl"), 'rb') as handle:
+                y_train = pickle.load(handle)
+
             print("XGBoost training...")
             dtrain = xgb.DMatrix(X_train, label=y_train)
 
@@ -233,9 +149,9 @@ if __name__ == '__main__':
             XGB_model_ready = False
 
         # On pop it used to choose if have dynamic weights for
-        recommender = recommender_class(URM_train, ICM, recommender_list, XGB_model_ready=XGB_model_ready,
+        recommender = recommender_class(URM_train, ICM, recommender_list, dataReader.tracks, XGB_model_ready=XGB_model_ready,
                                         XGBoost_model=model,
-                                        dynamic=True,
+                                        dynamic=False,
                                         d_weights=d_weights, UCM_train=UCM_tfidf,
                                         URM_validation=URM_validation, onPop=onPop)
 
@@ -292,11 +208,11 @@ if __name__ == '__main__':
         # found.Config: {'top1': 50, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP
 
         recommender.fit(**{
-            "topK": [15, 595, 105, 15, 20] + [21, 220, 160, 70, -1] + [250, 180, 240, 151, 91, 311, -1],
-            "shrink": [210, 1, 30, -1, -1] + [75, 1, 150, -1, -1] + [55, 2, 19, -1, -1, -1, -1],
+            "topK": [15, 595, 105, 15, 20],
+            "shrink": [210, 1, 30, -1, -1],
             "pop": [130, 346],
             "weights": d_weights,
-            "force_compute_sim": True,
+            "force_compute_sim": False,
             "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
             "epochs": 1, "lambda_i": [0.10467537896611145],

@@ -956,3 +956,27 @@ Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'> - Exception: 'Hybridization
 Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'>, results: 
 CUTOFF: 10 - ROC_AUC: 0.0567629, PRECISION: 0.0271373, RECALL: 0.0268162, RECALL_TEST_LEN: 0.0271373, MAP: 0.0098367, MRR: 0.0368832, NDCG: 0.0204690, F1: 0.0269758, HIT_RATE: 0.1171153, ARHR: 0.0396471, NOVELTY: 0.0068849, DIVERSITY_MEAN_INTER_LIST: 0.9971678, DIVERSITY_HERFINDAHL: 0.9997148, COVERAGE_ITEM: 0.6998304, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.3207832, SHANNON_ENTROPY: 12.5481089, 
 
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Weights: 5 and recommender list: 19 have different lenghts
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Weights: 3 and recommender list: 19 have different lenghts
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Weights: 3 and recommender list: 17 have different lenghts
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Weights: 3 and recommender list: 17 have different lenghts
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Weights: 3 and recommender list: 17 have different lenghts
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Weights: 6 and recommender list: 5 have different lenghts
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3423887, PRECISION: 0.1967369, RECALL: 0.1933324, RECALL_TEST_LEN: 0.1967369, MAP: 0.1080612, MRR: 0.2884437, NDCG: 0.1736620, F1: 0.1950198, HIT_RATE: 0.9444555, ARHR: 0.3844921, NOVELTY: 0.0062067, DIVERSITY_MEAN_INTER_LIST: 0.9959225, DIVERSITY_HERFINDAHL: 0.9995903, COVERAGE_ITEM: 0.7062273, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2570690, SHANNON_ENTROPY: 12.1920605, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: [Errno 2] No such file or directory: 'Dataset/XGBoostTraining.npy'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: save() missing 1 required positional argument: 'arr'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Input numpy.ndarray must be 2 dimensional
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Input numpy.ndarray must be 2 dimensional
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Input numpy.ndarray must be 2 dimensional
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: name 'x_train' is not defined
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Input numpy.ndarray must be 2 dimensional
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Input numpy.ndarray must be 2 dimensional
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Input numpy.ndarray must be 2 dimensional
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: 'numpy.ndarray' object has no attribute 'A'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: Input numpy.ndarray must be 2 dimensional
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: [Errno 2] No such file or directory: 'Dataset/XGBoostTraining.pkl'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3423887, PRECISION: 0.1967369, RECALL: 0.1933324, RECALL_TEST_LEN: 0.1967369, MAP: 0.1080612, MRR: 0.2884437, NDCG: 0.1736620, F1: 0.1950198, HIT_RATE: 0.9444555, ARHR: 0.3844921, NOVELTY: 0.0062067, DIVERSITY_MEAN_INTER_LIST: 0.9959225, DIVERSITY_HERFINDAHL: 0.9995903, COVERAGE_ITEM: 0.7062273, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2570690, SHANNON_ENTROPY: 12.1920605, 
+

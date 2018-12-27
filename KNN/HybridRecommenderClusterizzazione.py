@@ -29,14 +29,13 @@ def get_top_items(newTrainXGBoost, songs_in_playlist):
     songs_not_in_train_in_play = np.asarray(songs_not_in_train_in_play)
 
     user_profile = songs_in_train_in_play.mean(axis=0)
-    print("User profile shape: {}".format(user_profile.shape))
+
     from scipy.spatial import distance
     distances = [distance.euclidean(s, user_profile) for s in songs_not_in_train_in_play]
     distances = np.asarray(distances)
     ind_max = np.argsort(-distances)[:10]
     distances_sorted = songs_not_in_train_in_play[ind_max]
     return [x[0] for x in distances_sorted]
-
 
 
 class HybridRecommenderClusterizzazione(SimilarityMatrixRecommender, Recommender):
@@ -243,13 +242,6 @@ class HybridRecommenderClusterizzazione(SimilarityMatrixRecommender, Recommender
             for recommender in self.recommender_list:
                 scores_batch = recommender.compute_item_score(user_id_array)
 
-                # for user_index in range(len(user_id_array)):
-                #
-                #     user_id = user_id_array[user_index]
-                #
-                #     if remove_seen_flag:
-                #         scores_batch[user_index, :] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
-
                 if remove_top_pop_flag:
                     scores_batch = self._remove_TopPop_on_scores(scores_batch)
 
@@ -281,7 +273,6 @@ class HybridRecommenderClusterizzazione(SimilarityMatrixRecommender, Recommender
             final_relevant_items_boost.append(to_append)
 
         relevant_items_boost = final_relevant_items_boost
-        a = 1
         dict_song_pop = ged.tracks_popularity()
 
         # elements to add for each song
@@ -292,42 +283,42 @@ class HybridRecommenderClusterizzazione(SimilarityMatrixRecommender, Recommender
 
         for user_index in range(len(user_id_array)):
             user_relevant_items = relevant_items_boost[user_index]
+            l = len(user_relevant_items)
             similarities_values = final_score[user_index, user_relevant_items].reshape((-1, 1))
             user_id = user_id_array[user_index]
             # Creating numpy array for training XGBoost
 
             song_pop = np.array([dict_song_pop[item] for item in user_relevant_items]).reshape((-1, 1))
 
-            # QUESTE DUE HANNO LUNGHEZZA 60 INVECE DI 64
-            playlist_length = np.array([int(ged.lenght_playlist(self.getUserProfile(user_id)))] * cutoff_Boost).reshape(
+            playlist_length = np.array([int(ged.lenght_playlist(self.getUserProfile(user_id)))] * l).reshape(
                 (-1, 1))
             playlist_pop = np.array(
-                [int(ged.playlist_popularity(self.getUserProfile(user_id), dict_song_pop))] * cutoff_Boost).reshape(
+                [int(ged.playlist_popularity(self.getUserProfile(user_id), dict_song_pop))] * l).reshape(
                 (-1, 1))
 
             # ucm_batch = self.UCM_train[user_list].toarray()
-            dim_ucm = len(user_relevant_items)
-            ucm_batch = np.array([self.UCM_dense[user_id] for _ in range(dim_ucm)]).reshape(dim_ucm, -1)
+            ucm_batch = np.array([self.UCM_dense[user_id]] * l).reshape(l, -1)
 
-            dim_icm = len(user_relevant_items)
-            icm_batch = np.array([self.ICM_dense[item] for item in user_relevant_items]).reshape(dim_icm, -1)
+            icm_batch = np.array([self.ICM_dense[item] for item in user_relevant_items]).reshape(l, -1)
 
             tracks_duration = np.array([tracks_duration_list[item] for item in user_relevant_items]).reshape((-1, 1))
 
             relevant_items_boost_user = np.asarray(user_relevant_items).reshape(-1, 1)
-            newTrainXGBoost = np.concatenate([relevant_items_boost_user, similarities_values, song_pop, playlist_pop, playlist_length,
-                                              tracks_duration, icm_batch, ucm_batch],
-                                             axis=1)
-            a = 1
+            newTrainXGBoost = np.concatenate(
+                [relevant_items_boost_user, similarities_values, song_pop, playlist_pop, playlist_length,
+                 tracks_duration, icm_batch, ucm_batch],
+                axis=1)
+
             ranking.append(get_top_items(newTrainXGBoost, self.getUserProfile(user_id)))
 
-        if not self.xgb_model_ready:
-            relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
+        try:
+            final_ranking = np.asarray(ranking, dtype=int)
+        except ValueError:
+            # Error here: ValueError: setting an array element with a sequence.
+            print(ranking)
+            print(user_id_array)
+            raise ValueError
 
-            relevant_items_partition_original_value = final_score[
-                np.arange(final_score.shape[0])[:, None], relevant_items_partition]
-            relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-            ranking = relevant_items_partition[
-                np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
-
-        return np.asarray(ranking)
+        assert final_ranking.shape[0] is len(user_id_array)
+        assert final_ranking.shape[1] is 10
+        return final_ranking

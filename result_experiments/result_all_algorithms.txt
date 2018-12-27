@@ -1003,3 +1003,9 @@ Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderCluste
 Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: cannot reshape array of size 1242368 into shape (60,newaxis)
 Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: 'list' object has no attribute 'reshape'
 Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: all the input array dimensions except for the concatenation axis must match exactly
+Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: arrays used as indices must be of integer (or boolean) type
+Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: arrays used as indices must be of integer (or boolean) type
+Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: arrays used as indices must be of integer (or boolean) type
+Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: setting an array element with a sequence.
+Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: setting an array element with a sequence.
+Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: 

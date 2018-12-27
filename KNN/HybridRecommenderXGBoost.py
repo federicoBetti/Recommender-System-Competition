@@ -237,13 +237,6 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
 
                 for user_index in range(len(user_id_array)):
 
-                    if self.user_id_XGBoost is None:
-                        self.user_id_XGBoost = np.array([user_index] * cutoff_Boost).reshape(-1, 1)
-                    else:
-                        self.user_id_XGBoost = np.concatenate([self.user_id_XGBoost,
-                                                               np.array([user_index] *
-                                                                        cutoff_Boost).reshape(-1, 1)], axis=0)
-
                     user_id = user_id_array[user_index]
 
                     if remove_seen_flag:
@@ -286,16 +279,27 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
 
         # i take the 20 elements with highest scores
 
+        for user_index in range(len(user_id_array)):
+
+            user_id = user_id_array[user_index]
+            if self.user_id_XGBoost is None:
+                self.user_id_XGBoost = np.array([user_id] * cutoff_Boost).reshape(-1, 1)
+            else:
+                self.user_id_XGBoost = np.concatenate([self.user_id_XGBoost,
+                                                       np.array([user_id] *
+                                                                cutoff_Boost).reshape(-1, 1)], axis=0)
+
         relevant_items_boost = (-final_score).argpartition(cutoff_Boost, axis=1)[:,
                                0:cutoff_Boost]
 
-        relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
+        if not self.xgb_model_ready:
+            relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
 
-        relevant_items_partition_original_value = final_score[
-            np.arange(final_score.shape[0])[:, None], relevant_items_partition]
-        relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-        ranking = relevant_items_partition[
-            np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
+            relevant_items_partition_original_value = final_score[
+                np.arange(final_score.shape[0])[:, None], relevant_items_partition]
+            relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
+            ranking = relevant_items_partition[
+                np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
 
         # Creating numpy array for training XGBoost
 

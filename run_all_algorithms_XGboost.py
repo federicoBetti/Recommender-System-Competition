@@ -2,6 +2,7 @@ import pickle
 import sys
 
 from scipy import sparse
+from sklearn.datasets import dump_svmlight_file
 
 from Dataset.RS_Data_Loader import RS_Data_Loader
 from KNN.HybridRecommenderXGBoost import HybridRecommenderXGBoost
@@ -37,7 +38,7 @@ if __name__ == '__main__':
     evaluate_algorithm = True
     delete_old_computations = False
     slim_after_hybrid = False
-    XGB_model_ready = False
+    XGB_model_ready = True
 
     # delete_previous_intermediate_computations()
     # if not evaluate_algorithm:
@@ -133,8 +134,14 @@ if __name__ == '__main__':
             with open(os.path.join("Dataset", "XGBoostLabels.pkl"), 'rb') as handle:
                 y_train = pickle.load(handle)
 
+            y_train = y_train.reshape(-1,)
+
             print("XGBoost training...")
-            dtrain = xgb.DMatrix(X_train, label=y_train)
+            print("X_train type: {}, shape: {}".format(type(X_train), X_train.shape))
+            print("y_train shape: {}".format(y_train.shape))
+            dump_svmlight_file(X_train, y_train, 'dtrain.svm', zero_based=True)
+            dtrain = xgb.DMatrix('dtrain.svm')
+            # dtrain = xgb.DMatrix(X_train, label=y_train)
 
             param = {
                 'max_depth': 5,  # the maximum depth of each tree

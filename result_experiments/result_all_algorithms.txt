@@ -980,3 +980,11 @@ Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exc
 Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'>, results: 
 CUTOFF: 10 - ROC_AUC: 0.3423887, PRECISION: 0.1967369, RECALL: 0.1933324, RECALL_TEST_LEN: 0.1967369, MAP: 0.1080612, MRR: 0.2884437, NDCG: 0.1736620, F1: 0.1950198, HIT_RATE: 0.9444555, ARHR: 0.3844921, NOVELTY: 0.0062067, DIVERSITY_MEAN_INTER_LIST: 0.9959225, DIVERSITY_HERFINDAHL: 0.9995903, COVERAGE_ITEM: 0.7062273, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2570690, SHANNON_ENTROPY: 12.1920605, 
 
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: expected y of shape (n_samples,), got (5044600, 1)
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: expected y of shape (n_samples,), got (5044600, 1)
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: expected y of shape (n_samples,), got (5044600, 1)
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3423887, PRECISION: 0.1967369, RECALL: 0.1933324, RECALL_TEST_LEN: 0.1967369, MAP: 0.1080612, MRR: 0.2884437, NDCG: 0.1736620, F1: 0.1950198, HIT_RATE: 0.9444555, ARHR: 0.3844921, NOVELTY: 0.0062067, DIVERSITY_MEAN_INTER_LIST: 0.9959225, DIVERSITY_HERFINDAHL: 0.9995903, COVERAGE_ITEM: 0.7062273, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2570690, SHANNON_ENTROPY: 12.1920605, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: expected y of shape (n_samples,), got (1008920, 1)
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: 'numpy.ndarray' object has no attribute 'reshpae'

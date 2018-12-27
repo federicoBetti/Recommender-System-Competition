@@ -319,6 +319,7 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
         playlist_pop = np.array([[int(ged.playlist_popularity(self.getUserProfile(user), dict_song_pop))] * cutoff_Boost
                                  for user in user_list]).reshape((-1, 1))
 
+        '''
         # ucm_batch = self.UCM_train[user_list].toarray()
         dim_ucm = int(len(user_list) * 20)
         ucm_batch = np.array([self.UCM_dense[user] for _ in range(cutoff_Boost)
@@ -327,13 +328,14 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
         dim_icm = int(len(relevant_items_boost) * 20)
         icm_batch = np.array([[self.ICM_dense[item] for item in relevant_line]
                               for relevant_line in relevant_items_boost.tolist()]).reshape(dim_icm, -1)
-
+        '''
         tracks_duration = np.array([[tracks_duration_list[item] for item in relevant_line]
                                     for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
 
         relevant_items_boost = relevant_items_boost.reshape(-1, 1)
         newTrainXGBoost = np.concatenate([relevant_items_boost, song_pop, playlist_pop, playlist_length,
-                                          tracks_duration, icm_batch, ucm_batch], axis=1)
+                                          tracks_duration],  # icm_batch, ucm_batch],
+                                         axis=1)
 
         if self.xgb_model_ready:
             print("QUI")

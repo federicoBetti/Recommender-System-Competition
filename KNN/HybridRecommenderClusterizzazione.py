@@ -1,28 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on 23/11/18
-
-@author: Federico Betti
-"""
-import pickle
-import os
-import time
-
-from scipy.sparse import csr_matrix
+from abc import ABC
 
 from Base.Recommender import Recommender
 from Base.Recommender_utils import check_matrix
 from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 import numpy as np
+from Dataset.RS_Data_Loader import RS_Data_Loader
+from scipy import sparse
 
-from Base.Similarity.Compute_Similarity import Compute_Similarity
 from GraphBased.P3alphaRecommender import P3alphaRecommender
 from GraphBased.RP3betaRecommender import RP3betaRecommender
-from KNN import HybridRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
-from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
-from KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython, \
     MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
 from MatrixFactorization.PureSVD import PureSVDRecommender
@@ -30,42 +19,57 @@ from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 import Support_functions.get_evaluate_data as ged
 from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
+import bisect
 
 
-def get_popularity_vector():
-    from Support_functions import get_evaluate_data as ged
-    d = ged.tracks_popularity()
-    songs_number = len(d)
-    popularity = np.asarray(list(d.values()))
-    sort_ind = np.argsort(-popularity)
+def get_top_items(newTrainXGBoost, songs_in_playlist):
+    songs_in_train_in_play = [x for x in newTrainXGBoost if x[0] in songs_in_playlist]
+    songs_in_train_in_play = np.asarray(songs_in_train_in_play)
+    songs_not_in_train_in_play = [x for x in newTrainXGBoost if x[0] not in songs_in_playlist]
+    songs_not_in_train_in_play = np.asarray(songs_not_in_train_in_play)
 
-    gs = np.geomspace(1, 5, songs_number)
-    vector = np.ones(songs_number)
-    for ind, elem in enumerate(sort_ind):
-        vector[elem] /= gs[ind]
+    user_profile = songs_in_train_in_play.mean(axis=0)
+    print("User profile shape: {}".format(user_profile.shape))
+    from scipy.spatial import distance
+    distances = [distance.euclidean(s, user_profile) for s in songs_not_in_train_in_play]
+    distances = np.asarray(distances)
+    ind_max = np.argsort(-distances)[:10]
+    distances_sorted = songs_not_in_train_in_play[ind_max]
+    return [x[0] for x in distances_sorted]
 
-    return vector
 
 
-class HybridSimilaritiesRecommender(SimilarityMatrixRecommender, Recommender):
+class HybridRecommenderClusterizzazione(SimilarityMatrixRecommender, Recommender):
     """ Hybrid recommender"""
 
-    RECOMMENDER_NAME = "HybridSimilaritiesRecommender"
+    RECOMMENDER_NAME = "HybridRecommenderClusterizzazione"
 
-    def __init__(self, URM_train, ICM, recommender_list, UCM_train=None, dynamic=False, d_weights=None, weights=None,
+    def __init__(self, URM_train, ICM, recommender_list, tracks, XGBoost_model=None, UCM_train=None, dynamic=False,
+                 d_weights=None, weights=None, XGB_model_ready=False,
                  URM_validation=None, sparse_weights=True, onPop=True, moreHybrids=False):
         super(Recommender, self).__init__()
 
         # CSR is faster during evaluation
+        self.first_time = True
         self.pop = None
         self.UCM_train = UCM_train
         self.URM_train = check_matrix(URM_train, 'csr')
         self.URM_validation = URM_validation
+        self.ICM = ICM
         self.dynamic = dynamic
         self.d_weights = d_weights
         self.dataset = None
         self.onPop = onPop
         self.moreHybrids = moreHybrids
+
+        # parameters for xgboost
+        self.user_id_XGBoost = None
+        self.xgbModel = XGBoost_model
+        self.xgb_model_ready = XGB_model_ready
+        self.tracks = tracks
+        self.UCM_dense = self.UCM_train.todense()
+        self.ICM_dense = self.ICM.todense()
+
         # with open(os.path.join("Dataset", "Cluster_0_dict_Kmeans_3.pkl"), 'rb') as handle:
         #     self.cluster_0 = pickle.load(handle)
         # with open(os.path.join("Dataset", "Cluster_1_dict_Kmeans_3.pkl"), 'rb') as handle:
@@ -74,7 +78,6 @@ class HybridSimilaritiesRecommender(SimilarityMatrixRecommender, Recommender):
         #     self.cluster_2 = pickle.load(handle)
 
         self.sparse_weights = sparse_weights
-        self.popularity_vector = get_popularity_vector().T
 
         self.recommender_list = []
         self.weights = weights
@@ -102,8 +105,6 @@ class HybridSimilaritiesRecommender(SimilarityMatrixRecommender, Recommender):
             elif recommender in [UserKNNCBRecommender]:
                 self.recommender_list.append(recommender(self.UCM_train, URM_train))
             # For sake of simplicity the recommender in this case is initialized and fitted outside
-            elif recommender.__class__ in [HybridRecommender]:
-                self.recommender_list.append(recommender)
 
             else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
                 self.recommender_list.append(recommender(URM_train))
@@ -111,7 +112,7 @@ class HybridSimilaritiesRecommender(SimilarityMatrixRecommender, Recommender):
     def fit(self, topK=None, shrink=None, weights=None, pop=None, weights1=None, weights2=None, weights3=None,
             weights4=None,
             weights5=None, weights6=None, weights7=None, weights8=None, pop1=None, pop2=None, similarity='cosine',
-            normalize=True, final_weights=None, final_weights1=None, final_weights2=None,
+            normalize=True,
             old_similarity_matrix=None, epochs=1, top1=None, shrink1=None,
             force_compute_sim=False, weights_to_dweights=-1, **similarity_args):
 
@@ -201,50 +202,18 @@ class HybridSimilaritiesRecommender(SimilarityMatrixRecommender, Recommender):
             else:  # ItemCF, UserCF, ItemCBF, UserCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
 
-        print("Recommender list before: {}".format(self.recommender_list))
-        self.W_sparse20 = csr_matrix(([], ([], [])), shape=(20635, 20635))
-        self.W_sparse50 = csr_matrix(([], ([], [])), shape=(50446, 50446))
-        to_delete = []
-        for index, recommender in enumerate(self.recommender_list):
-            try:
-                self.W_sparse20 += self.weights[index] * recommender.W_sparse
-                to_delete.append(recommender)
-                print("Recommender {} is summed in W_sparse20".format(recommender))
-                continue
-            except:
-                # the recommender doesn't have a W sparse matrix of that shape
-                a = 1
+    def change_weights(self, level, pop):
+        if level < pop[0]:
+            return self.d_weights[0]
 
-            try:
-                self.W_sparse50 += self.weights[index] * recommender.W_sparse
-                to_delete.append(recommender)
-                print("Recommender {} is summed in W_sparse50".format(recommender))
-                continue
-            except:
-                # the recommender doesn't have a W sparse matrix of that shape
-                a = 1
-
-        # remove recommenders that already has the similarity merged
-        self.recommender_list = [x for x in self.recommender_list if x not in to_delete]
-
-        print("Recommender list after: {}".format(self.recommender_list))
-        new_item_recommender = ItemKNNCFRecommender(self.URM_train)
-        new_item_recommender.W_sparse = self.W_sparse20
-        self.recommender_list.append(new_item_recommender)
-
-        new_user_recommender = UserKNNCFRecommender(self.URM_train)
-        new_user_recommender.W_sparse = self.W_sparse50
-        self.recommender_list.append(new_user_recommender)
-        print("Recommender list final: {}".format(self.recommender_list))
-
-        if final_weights is None:
-            self.final_weights = [final_weights1, final_weights2]
+        elif pop[0] < level < pop[1]:
+            return self.d_weights[1]
         else:
-            self.final_weights = final_weights
+            return self.d_weights[2]
 
-        assert len(final_weights) == len(
-            self.recommender_list), "Lunghezza di final weights e dei reccomender rimasti è diversa. Sono rimasti {} recommender con i final weight di lunghezza {}".format(
-            len(self.recommender_list), len(final_weights))
+    def getUserProfile(self, user_id):
+        return self.URM_train.indices[
+               self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
@@ -255,33 +224,31 @@ class HybridSimilaritiesRecommender(SimilarityMatrixRecommender, Recommender):
         else:
             single_user = False
 
-        weights = self.final_weights
+        weights = self.weights
         if cutoff == None:
             # noinspection PyUnresolvedReferences
             cutoff = self.URM_train.shape[1] - 1
         else:
             cutoff
 
+        cutoff_addition = 50
+        cutoff_Boost = cutoff + cutoff_addition
+
         # compute the scores using the dot product
         # noinspection PyUnresolvedReferences
+
         if self.sparse_weights:
             scores = []
             # noinspection PyUnresolvedReferences
             for recommender in self.recommender_list:
-                if recommender.__class__ in [HybridRecommender]:
-                    scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop,
-                                                            remove_seen_flag=True, remove_top_pop_flag=False,
-                                                            remove_CustomItems_flag=False))
-                    continue
                 scores_batch = recommender.compute_item_score(user_id_array)
-                # scores_batch = np.ravel(scores_batch) # because i'm not using batch
 
-                for user_index in range(len(user_id_array)):
-
-                    user_id = user_id_array[user_index]
-
-                    if remove_seen_flag:
-                        scores_batch[user_index, :] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
+                # for user_index in range(len(user_id_array)):
+                #
+                #     user_id = user_id_array[user_index]
+                #
+                #     if remove_seen_flag:
+                #         scores_batch[user_index, :] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
 
                 if remove_top_pop_flag:
                     scores_batch = self._remove_TopPop_on_scores(scores_batch)
@@ -294,35 +261,73 @@ class HybridSimilaritiesRecommender(SimilarityMatrixRecommender, Recommender):
             final_score = np.zeros(scores[0].shape)
 
             for score, weight in zip(scores, weights):
-                # score *= self.popularity_vector if you want to use the popularity vector just uncomment those lines
                 final_score += (score * weight)
 
         else:
             raise NotImplementedError
+        ranking = []
 
-        # relevant_items_partition is block_size x cutoff
-        relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
+        # i take the 20 elements with highest scores
 
-        relevant_items_partition_original_value = final_score[
-            np.arange(final_score.shape[0])[:, None], relevant_items_partition]
-        relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-        ranking = relevant_items_partition[
-            np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
+        relevant_items_boost = (-final_score).argpartition(cutoff_Boost, axis=1)[:,
+                               0:cutoff_Boost]
+        songs_in_play = []
+        final_relevant_items_boost = []
+        for user_index in range(len(user_id_array)):
+            user_id = user_id_array[user_index]
+            old_rel = list(relevant_items_boost[user_index])
+            profile_list = list(self.getUserProfile(user_id))
+            to_append = old_rel + profile_list
+            final_relevant_items_boost.append(to_append)
 
-        # scores = final_score
-        # # relevant_items_partition is block_size x cutoff
-        # relevant_items_partition = (-scores_batch).argpartition(cutoff, axis=1)[:, 0:cutoff]
-        #
-        # relevant_items_partition_original_value = scores_batch[
-        #     np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
-        # relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-        # ranking = relevant_items_partition[
-        #     np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
+        relevant_items_boost = final_relevant_items_boost
+        a = 1
+        dict_song_pop = ged.tracks_popularity()
 
-        ranking_list = ranking.tolist()
+        # elements to add for each song
 
-        # Return single list for one user, instead of list of lists
-        if single_user:
-            ranking_list = ranking_list[0]
+        user_list = user_id_array.tolist()
 
-        return ranking
+        tracks_duration_list = np.array(self.tracks['duration_sec']).reshape((-1, 1))[:, 0].tolist()
+
+        for user_index in range(len(user_id_array)):
+            user_relevant_items = relevant_items_boost[user_index]
+            similarities_values = final_score[user_index, user_relevant_items].reshape((-1, 1))
+            user_id = user_id_array[user_index]
+            # Creating numpy array for training XGBoost
+
+            song_pop = np.array([dict_song_pop[item] for item in user_relevant_items]).reshape((-1, 1))
+
+            # QUESTE DUE HANNO LUNGHEZZA 60 INVECE DI 64
+            playlist_length = np.array([int(ged.lenght_playlist(self.getUserProfile(user_id)))] * cutoff_Boost).reshape(
+                (-1, 1))
+            playlist_pop = np.array(
+                [int(ged.playlist_popularity(self.getUserProfile(user_id), dict_song_pop))] * cutoff_Boost).reshape(
+                (-1, 1))
+
+            # ucm_batch = self.UCM_train[user_list].toarray()
+            dim_ucm = len(user_relevant_items)
+            ucm_batch = np.array([self.UCM_dense[user_id] for _ in range(dim_ucm)]).reshape(dim_ucm, -1)
+
+            dim_icm = len(user_relevant_items)
+            icm_batch = np.array([self.ICM_dense[item] for item in user_relevant_items]).reshape(dim_icm, -1)
+
+            tracks_duration = np.array([tracks_duration_list[item] for item in user_relevant_items]).reshape((-1, 1))
+
+            relevant_items_boost_user = np.asarray(user_relevant_items).reshape(-1, 1)
+            newTrainXGBoost = np.concatenate([relevant_items_boost_user, similarities_values, song_pop, playlist_pop, playlist_length,
+                                              tracks_duration, icm_batch, ucm_batch],
+                                             axis=1)
+            a = 1
+            ranking.append(get_top_items(newTrainXGBoost, self.getUserProfile(user_id)))
+
+        if not self.xgb_model_ready:
+            relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
+
+            relevant_items_partition_original_value = final_score[
+                np.arange(final_score.shape[0])[:, None], relevant_items_partition]
+            relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
+            ranking = relevant_items_partition[
+                np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
+
+        return np.asarray(ranking)

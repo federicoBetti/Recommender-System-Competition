@@ -5,6 +5,7 @@ from scipy import sparse
 from sklearn.datasets import dump_svmlight_file
 
 from Dataset.RS_Data_Loader import RS_Data_Loader
+from KNN.HybridRecommenderClusterizzazione import HybridRecommenderClusterizzazione
 from KNN.HybridRecommenderXGBoost import HybridRecommenderXGBoost
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
@@ -118,49 +119,15 @@ if __name__ == '__main__':
         transfer_matrix = None
 
     try:
-        recommender_class = HybridRecommenderXGBoost
+        recommender_class = HybridRecommenderClusterizzazione
         print("Algorithm: {}".format(recommender_class))
 
         onPop = True
 
-        # XGBoost
-        model = None
-        # try:
-        if XGB_model_ready:
-            with open(os.path.join("Dataset", "XGBoostTraining.pkl"), 'rb') as handle:
-                X_train = pickle.load(handle)
-
-            with open(os.path.join("Dataset", "XGBoostLabels.pkl"), 'rb') as handle:
-                y_train = pickle.load(handle)
-
-            y_train = y_train.reshape(-1, )
-
-            print("XGBoost training...")
-            print("X_train type: {}, shape: {}".format(type(X_train), X_train.shape))
-            print("y_train shape: {}".format(y_train.shape))
-            print("N classes: {}".format(y_train[-1]))
-
-            dump_svmlight_file(X_train, y_train, 'dtrain.svm', zero_based=True)
-            dtrain = xgb.DMatrix('dtrain.svm')
-            # dtrain = xgb.DMatrix(X_train, label=y_train)
-
-            param = {
-                'max_depth': 5,  # the maximum depth of each tree
-                'eta': 0.3,  # the training step for each iteration
-                'silent': 1,  # logging mode - quiet
-                'objective': 'multi:softprob',  # error evaluation for multiclass training
-                'num_class': y_train[-1]}  # the number of classes that exist in this datset
-            num_round = 20  # the number of training iterations
-
-            model = xgb.train(param, dtrain, num_round, verbose_eval=2,
-                              evals=[(dtrain, 'train')])
-            # except:
-            XGB_model_ready = False
 
         # On pop it used to choose if have dynamic weights for
         recommender = recommender_class(URM_train, ICM, recommender_list, dataReader.tracks,
                                         XGB_model_ready=XGB_model_ready,
-                                        XGBoost_model=model,
                                         dynamic=False,
                                         d_weights=d_weights, UCM_train=UCM_tfidf,
                                         URM_validation=URM_validation, onPop=onPop)
@@ -178,44 +145,6 @@ if __name__ == '__main__':
         alphaRP3_2 = 0.9223827655310622
         betaRP3_2 = 0.2213306613226453
         num_factors_2 = 391
-
-        # UserCBF, ItemCF, UserCF, P3alpha, RP3b, SLIM, PurSVD
-        #
-        # Item
-        # Collaborative: Best
-        # config is: Config
-        # {'top1': 180, 'shrink1': 2}, MAP
-
-        # User
-        # Collaborative: Best
-        # config is: Config
-        # {'top1': 240, 'shrink1': 19}, MAP
-
-        # PureSVD: Best
-        # config is: Config: {'num_factors': 95} - MAP
-
-        # P3Beta: Best
-        # config is: Config
-        # {'shrink1': 80, 'top1': 151, 'alphaP3': 1.2827139967773968, 'normalize_similarity': False}, MAP
-
-        # RP3Beta: Best
-        # config is: Config
-        # {'top1': 91, 'shrink1': -1, 'alphaRP3': 0.49774549098196397, 'betaRP': 0.2333486973947896}, MAP
-
-        # SLIM_BPR: Best
-        # config is: Config
-        # {'top1': 311, 'lambda_i': 0.10467537896611145, 'lambda_j': 0.004454204678491891, 'shrink1': -1}, MAP
-
-        # Item
-        # Content: Schifo
-
-        # User
-        # Content: {'top1': 250, 'shrink1': 55, 'normalize': False} - MAP
-
-        # ElasticNet: New
-        # best
-        # config
-        # found.Config: {'top1': 50, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP
 
         recommender.fit(**{
             "topK": [15, 595, 105, 15, 20],

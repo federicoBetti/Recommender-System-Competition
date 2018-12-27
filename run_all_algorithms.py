@@ -308,6 +308,8 @@ if __name__ == '__main__':
             'l1_ratio': l1_ratio,
             "weights_to_dweights": -1})
 
+        print("TEST")
+
         print("Starting Evaluations...")
         # to indicate if plotting for lenght or for pop
 

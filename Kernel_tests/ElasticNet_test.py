@@ -1,16 +1,18 @@
+import datetime
+import os
 import sys
-
-import traceback, os
-from enum import Enum
-from random import shuffle
-
-import gc
-import pandas as pd
-import numpy as np
 import time
+import traceback
+from enum import Enum
+from functools import partial
+
+import numpy as np
+import pandas as pd
 from scipy.sparse import csr_matrix
 from sklearn.linear_model import ElasticNet
-import itertools
+
+# from bayes_opt import BayesianOptimization
+from ParameterTuning.BayesianOptimization_master.bayes_opt.bayesian_optimization import BayesianOptimization
 
 '''
 Elastic Net
@@ -424,6 +426,308 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
 
 
 '''
+For Bayesian Search
+'''
+
+
+class DictionaryKeys(Enum):
+    CONSTRUCTOR_POSITIONAL_ARGS = 'constructor_positional_args'
+    CONSTRUCTOR_KEYWORD_ARGS = 'constructor_keyword_args'
+    FIT_POSITIONAL_ARGS = 'fit_positional_args'
+    FIT_KEYWORD_ARGS = 'fit_keyword_args'
+    FIT_RANGE_KEYWORD_ARGS = 'fit_range_keyword_args'
+    LOG_LABEL = 'log_label'
+
+
+def from_fit_params_to_saved_params_function_default(recommender, paramether_dictionary):
+    paramether_dictionary = paramether_dictionary.copy()
+
+    # Attributes that might be determined through early stopping
+    # Name in param_dictionary: name in object
+    attributes_to_clone = {"epochs": 'epochs_best', "max_epochs": 'epochs_best'}
+
+    for external_attribute_name in attributes_to_clone:
+
+        recommender_attribute_name = attributes_to_clone[external_attribute_name]
+
+        if hasattr(recommender, recommender_attribute_name):
+            paramether_dictionary[external_attribute_name] = getattr(recommender, recommender_attribute_name)
+
+    return paramether_dictionary
+
+
+class EvaluatorWrapper(object):
+    def __init__(self, evaluator_object):
+        self.evaluator_object = evaluator_object
+
+    def evaluateRecommender(self, recommender_object, paramether_dictionary=None):
+        return self.evaluator_object.evaluateRecommender(recommender_object)
+
+
+class AbstractClassSearch(object):
+    ALGORITHM_NAME = "AbstractClassSearch"
+
+    def __init__(self, recommender_class,
+                 evaluator_validation=None, evaluator_test=None,
+                 from_fit_params_to_saved_params_function=None):
+
+        super(AbstractClassSearch, self).__init__()
+
+        self.recommender_class = recommender_class
+
+        self.results_test_best = {}
+        self.paramether_dictionary_best = {}
+
+        if evaluator_validation is None:
+            raise ValueError("AbstractClassSearch: evaluator_validation must be provided")
+        else:
+            self.evaluator_validation = evaluator_validation
+
+        if evaluator_test is None:
+            self.evaluator_test = None
+        else:
+            self.evaluator_test = evaluator_test
+
+        if from_fit_params_to_saved_params_function is None:
+            self.from_fit_params_to_saved_params_function = from_fit_params_to_saved_params_function_default
+        else:
+            self.from_fit_params_to_saved_params_function = from_fit_params_to_saved_params_function
+
+    def search(self, dictionary_input, metric="map", logFile=None, parallelPoolSize=2, parallelize=True):
+        raise NotImplementedError("Function search not implementated for this class")
+
+    def evaluate_on_test(self):
+
+        # Create an object of the same class of the imput
+        # Passing the paramether as a dictionary
+        recommender = self.recommender_class(*self.dictionary_input[DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS],
+                                             **self.dictionary_input[DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS])
+
+        # if self.save_model != "no":
+        #     recommender.loadModel(self.output_root_path, file_name="_best_model")
+        #
+        # else:
+        #     recommender.fit(*self.dictionary_input[DictionaryKeys.FIT_POSITIONAL_ARGS],
+        #                     **self.dictionary_input[DictionaryKeys.FIT_KEYWORD_ARGS],
+        #                     **self.best_solution_parameters)
+
+        # I must do that with hybrid because since I haven't saved the model due to lot of inner recommender,
+        # I can neither load it here, so I must fit it again
+        recommender.fit(*self.dictionary_input[DictionaryKeys.FIT_POSITIONAL_ARGS],
+                        **self.dictionary_input[DictionaryKeys.FIT_KEYWORD_ARGS],
+                        **self.best_solution_parameters)
+
+        result_dict, result_string, _ = self.evaluator_test.evaluateRecommender(recommender,
+                                                                                self.best_solution_parameters)
+        result_dict = result_dict[list(result_dict.keys())[0]]
+
+        return result_dict
+
+
+class BayesianSearch(AbstractClassSearch):
+    ALGORITHM_NAME = "BayesianSearch"
+
+    """
+    This class applies Bayesian parameter tuning using this package:
+    https://github.com/fmfn/BayesianOptimization
+
+    pip install bayesian-optimization
+    """
+
+    def __init__(self, recommender_class, evaluator_validation=None, evaluator_test=None):
+
+        super(BayesianSearch, self).__init__(recommender_class,
+                                             evaluator_validation=evaluator_validation, evaluator_test=evaluator_test)
+
+    def search(self, dictionary, metric="MAP", init_points=8, n_cases=20, output_root_path=None, parallelPoolSize=2,
+               parallelize=True,
+               save_model="best"):
+        '''
+
+        :param dictionary:
+        :param metric: metric to optimize
+        :param init_points: number of initial points to test before going down in the closes minimum
+        :param n_cases: number of cases starting from the best init_point to find the minimum
+        :param output_root_path:
+        :param parallelPoolSize:
+        :param parallelize:
+        :param save_model:
+        :return:
+        '''
+
+        # Associate the params that will be returned by BayesianOpt object to those you want to save
+        # E.g. with early stopping you know which is the optimal number of epochs only afterwards
+        # but you might want to save it as well
+        self.from_fit_params_to_saved_params = {}
+
+        self.dictionary_input = dictionary.copy()
+
+        # in this variable hyperparamethers_range_dictionary there is the dictionary with all params to test
+        hyperparamethers_range_dictionary = dictionary[DictionaryKeys.FIT_RANGE_KEYWORD_ARGS].copy()
+
+        self.output_root_path = output_root_path
+        if self.output_root_path is not None:
+            self.logFile = self.output_root_path + "_BayesianSearch.txt"
+        self.save_model = save_model
+        self.model_counter = 0
+
+        self.categorical_mapper_dict_case_to_index = {}
+        self.categorical_mapper_dict_index_to_case = {}
+
+        # Transform range element in a list of two elements: min, max
+        for key in hyperparamethers_range_dictionary.keys():
+
+            # Get the extremes for every range
+            current_range = hyperparamethers_range_dictionary[key]
+
+            if type(current_range) is range:
+                min_val = current_range.start
+                max_val = current_range.stop
+
+            elif type(current_range) is list:
+
+                categorical_mapper_dict_case_to_index_current = {}
+                categorical_mapper_dict_index_to_case_current = {}
+
+                for current_single_case in current_range:
+                    num_vaues = len(categorical_mapper_dict_case_to_index_current)
+                    categorical_mapper_dict_case_to_index_current[current_single_case] = num_vaues
+                    categorical_mapper_dict_index_to_case_current[num_vaues] = current_single_case
+
+                num_vaues = len(categorical_mapper_dict_case_to_index_current)
+
+                min_val = 0
+                max_val = num_vaues - 1
+
+                self.categorical_mapper_dict_case_to_index[key] = categorical_mapper_dict_case_to_index_current.copy()
+                self.categorical_mapper_dict_index_to_case[key] = categorical_mapper_dict_index_to_case_current.copy()
+
+            else:
+                raise TypeError(
+                    "BayesianSearch: for every parameter a range may be specified either by a 'range' object or by a list."
+                    "Provided object type for parameter '{}' was '{}'".format(key, type(current_range)))
+
+            hyperparamethers_range_dictionary[key] = [min_val, max_val]
+
+        self.runSingleCase_partial = partial(self.runSingleCase,
+                                             dictionary=dictionary,
+                                             metric=metric)
+
+        self.bayesian_optimizer = BayesianOptimization(self.runSingleCase_partial, hyperparamethers_range_dictionary)
+
+        self.best_solution_val = None
+        self.best_solution_parameters = None
+        # self.best_solution_object = None
+
+        print("Starting the Maximize function!")
+        self.bayesian_optimizer.maximize(init_points=init_points, n_iter=n_cases, kappa=2)
+
+        best_solution = self.bayesian_optimizer.res['max']
+
+        self.best_solution_val = best_solution["max_val"]
+        self.best_solution_parameters = best_solution["max_params"].copy()
+        self.best_solution_parameters = self.parameter_bayesian_to_token(self.best_solution_parameters)
+        self.best_solution_parameters = self.from_fit_params_to_saved_params[
+            frozenset(self.best_solution_parameters.items())]
+
+        print("BayesianSearch: Best config is: Config {}, {} value is {:.4f}\n".format(
+            self.best_solution_parameters, metric, self.best_solution_val))
+
+        return self.best_solution_parameters.copy()
+
+    def parameter_bayesian_to_token(self, paramether_dictionary):
+        """
+        The function takes the random values from BayesianSearch and transforms them in the corresponding categorical
+        tokens
+        :param paramether_dictionary:
+        :return:
+        """
+
+        # Convert categorical values
+        for key in paramether_dictionary.keys():
+
+            if key in self.categorical_mapper_dict_index_to_case:
+                float_value = paramether_dictionary[key]
+                index = int(round(float_value, 0))
+
+                categorical = self.categorical_mapper_dict_index_to_case[key][index]
+
+                paramether_dictionary[key] = categorical
+
+        return paramether_dictionary
+
+    def runSingleCase(self, dictionary, metric, **paramether_dictionary_input):
+
+        paramether_dictionary = self.parameter_bayesian_to_token(paramether_dictionary_input)
+
+        return self.runSingleCase_param_parsed(dictionary, metric, paramether_dictionary)
+
+    def runSingleCase_param_parsed(self, dictionary, metric, paramether_dictionary):
+
+        if time.time() - start_time > 60 * 60 * 5:
+            return -np.inf
+
+        try:
+
+            # Create an object of the same class of the imput
+            # Passing the paramether as a dictionary
+            recommender = self.recommender_class(*dictionary[DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS],
+                                                 **dictionary[DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS])
+
+            print("BayesianSearch: Testing config: {}".format(paramether_dictionary))
+
+            recommender.fit(*dictionary[DictionaryKeys.FIT_POSITIONAL_ARGS],
+                            **dictionary[DictionaryKeys.FIT_KEYWORD_ARGS],
+                            **paramether_dictionary)
+
+            # return recommender.evaluateRecommendations(self.URM_validation, at=5, mode="sequential")
+            result_dict, _, _ = self.evaluator_validation.evaluateRecommender(recommender, paramether_dictionary)
+            result_dict = result_dict[list(result_dict.keys())[0]]
+
+            paramether_dictionary_to_save = self.from_fit_params_to_saved_params_function(recommender,
+                                                                                          paramether_dictionary)
+
+            self.from_fit_params_to_saved_params[
+                frozenset(paramether_dictionary.items())] = paramether_dictionary_to_save
+
+            self.model_counter += 1
+
+            if self.best_solution_val is None or self.best_solution_val < result_dict[metric]:
+
+                self.write_log(
+                    "BayesianSearch: New best config found. Config: {} - MAP results: {} - time: {}\n".format(
+                        paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()))
+                print(
+                    "BayesianSearch: New best config found. Config: {} - MAP results: {} - time: {}\n".format(
+                        paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()))
+
+                self.best_solution_val = result_dict[metric]
+
+                if self.evaluator_test is not None:
+                    self.evaluate_on_test()
+
+            else:
+                self.write_log("BayesianSearch: Config is suboptimal. Config: {} - MAP results: {} - time: {}\n".format(
+                    paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()))
+
+                print("BayesianSearch: Config is suboptimal. Config: {} - MAP results: {} - time: {}\n".format(
+                    paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()))
+            del recommender
+            return result_dict[metric]
+
+
+        except Exception as e:
+            print("BayesianSearch: Testing config: {} - Exception {}\n".format(paramether_dictionary, str(e)))
+            traceback.print_exc()
+
+            return - np.inf
+
+    def write_log(self, string):
+        with open(self.logFile, 'a') as the_file:
+            the_file.write(string + '\n')
+
+
+'''
 Sequential Evaluator
 '''
 
@@ -554,8 +858,7 @@ class EvaluatorMetrics(Enum):
     SHANNON_ENTROPY = "SHANNON_ENTROPY"
 
 
-def create_empty_metrics_dict(n_items, n_users, URM_train, ignore_items, ignore_users, cutoff,
-                              diversity_similarity_object):
+def create_empty_metrics_dict():
     empty_dict = {}
 
     # from Base.Evaluation.ResultMetric import ResultMetric
@@ -695,12 +998,7 @@ class SequentialEvaluator(Evaluator):
         results_dict = {}
 
         for cutoff in self.cutoff_list:
-            results_dict[cutoff] = create_empty_metrics_dict(self.n_items, self.n_users,
-                                                             recommender_object.get_URM_train(),
-                                                             self.ignore_items_ID,
-                                                             self.ignore_users_ID,
-                                                             cutoff,
-                                                             self.diversity_object)
+            results_dict[cutoff] = create_empty_metrics_dict()
 
         n_users_evaluated = 0
 
@@ -888,6 +1186,7 @@ class RS_Data_Loader(object):
         return csr_matrix(([1] * row, (range(row), [0] * row)), shape=(row, col))
 
 
+start_time = time.time()
 if __name__ == '__main__':
     evaluate_algorithm = True
     delete_old_computations = False
@@ -906,35 +1205,30 @@ if __name__ == '__main__':
     URM_test = dataReader.get_URM_test()
 
     evaluator = SequentialEvaluator(URM_test, URM_train, exclude_seen=True)
+    evaluator_validation_wrapper = EvaluatorWrapper(evaluator)
 
     recommender_class = SLIMElasticNetRecommender
 
     # On pop it used to choose if have dynamic weights for
     recommender = recommender_class(URM_train)
 
-    topK_list = list(range(10, 500, 30))
-    l1_ratio_list = [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+    n_cases = 30
+    metric_to_optimize = 'MAP'
 
-    total_permutations = [x for x in list(itertools.product(topK_list, l1_ratio_list))]
-    shuffle(total_permutations)
+    parameterSearch = BayesianSearch(recommender_class, evaluator_validation_wrapper)
+    hyperparamethers_range_dictionary = {}
+    hyperparamethers_range_dictionary["topK"] = list(range(10, 500, 30))
+    hyperparamethers_range_dictionary["l1_ratio"] = [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
 
-    iter = 0
-    start_time = time.time()
-    for topK, l1_ratio in total_permutations:
-        if time.time() - start_time > 60 * 60 * 5:
-            # after 5 hours stop it!
-            continue
-
-        if iter > 30:
-            continue
-
-        recommender.fit(**{
-            "topK": topK,
-            'l1_ratio': l1_ratio})
-
-        results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender)
-
-        print("ElasticNet params topK: {}, l1_ratio: {}, MAP: {}".format(topK, l1_ratio, results_run[10]['MAP']))
-
-        gc.collect()
-        iter += 1
+    recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
+                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
+                             DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
+                             DictionaryKeys.FIT_KEYWORD_ARGS: dict(),
+                             DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
+    best_parameters = parameterSearch.search(recommenderDictionary,
+                                             n_cases=n_cases,
+                                             metric=metric_to_optimize,  # do not put output path
+                                             output_root_path="ElasticNet",
+                                             init_points=15
+                                             )
+    print(best_parameters)

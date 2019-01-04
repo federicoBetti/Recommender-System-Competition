@@ -160,7 +160,7 @@ class BayesianSearch(AbstractClassSearch):
 
         self.output_root_path = output_root_path
         if self.output_root_path is not None:
-            self.logFile = open(self.output_root_path + "_BayesianSearch.txt", "a")
+            self.logFile = self.output_root_path + "_BayesianSearch.txt"
         self.save_model = save_model
         self.model_counter = 0
 
@@ -287,8 +287,12 @@ class BayesianSearch(AbstractClassSearch):
 
             if self.best_solution_val is None or self.best_solution_val < result_dict[metric]:
 
-                print("BayesianSearch: New best config found. Config: {} - MAP results: {} - time: {}\n".format(
-                    paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()))
+                self.write_log(
+                    "BayesianSearch: New best config found. Config: {} - MAP results: {} - time: {}\n".format(
+                        paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()))
+                print(
+                    "BayesianSearch: New best config found. Config: {} - MAP results: {} - time: {}\n".format(
+                        paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()))
 
                 self.best_solution_val = result_dict[metric]
 
@@ -296,6 +300,9 @@ class BayesianSearch(AbstractClassSearch):
                     self.evaluate_on_test()
 
             else:
+                self.write_log("BayesianSearch: Config is suboptimal. Config: {} - MAP results: {} - time: {}\n".format(
+                    paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()))
+
                 print("BayesianSearch: Config is suboptimal. Config: {} - MAP results: {} - time: {}\n".format(
                     paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()))
             del recommender
@@ -307,6 +314,10 @@ class BayesianSearch(AbstractClassSearch):
             traceback.print_exc()
 
             return - np.inf
+
+    def write_log(self, string):
+        with open(self.logFile, 'a') as the_file:
+            the_file.write(string + '\n')
 
 
 '''
@@ -440,8 +451,7 @@ class EvaluatorMetrics(Enum):
     SHANNON_ENTROPY = "SHANNON_ENTROPY"
 
 
-def create_empty_metrics_dict(n_items, n_users, URM_train, ignore_items, ignore_users, cutoff,
-                              diversity_similarity_object):
+def create_empty_metrics_dict():
     empty_dict = {}
 
     # from Base.Evaluation.ResultMetric import ResultMetric
@@ -581,12 +591,7 @@ class SequentialEvaluator(Evaluator):
         results_dict = {}
 
         for cutoff in self.cutoff_list:
-            results_dict[cutoff] = create_empty_metrics_dict(self.n_items, self.n_users,
-                                                             recommender_object.get_URM_train(),
-                                                             self.ignore_items_ID,
-                                                             self.ignore_users_ID,
-                                                             cutoff,
-                                                             self.diversity_object)
+            results_dict[cutoff] = create_empty_metrics_dict()
 
         n_users_evaluated = 0
 
@@ -1286,6 +1291,7 @@ if __name__ == '__main__':
     best_parameters = parameterSearch.search(recommenderDictionary,
                                              n_cases=n_cases,
                                              metric=metric_to_optimize,  # do not put output path
+                                             output_root_path="RP3beta",
                                              init_points=50
                                              )
     print(best_parameters)

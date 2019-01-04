@@ -12,7 +12,6 @@ import pandas as pd
 import numpy as np
 import time
 from scipy.sparse import csr_matrix, csc_matrix
-import itertools
 # from bayes_opt import BayesianOptimization
 from ParameterTuning.BayesianOptimization_master.bayes_opt.bayesian_optimization import BayesianOptimization
 
@@ -1286,7 +1285,7 @@ if __name__ == '__main__':
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
     best_parameters = parameterSearch.search(recommenderDictionary,
                                              n_cases=n_cases,
-                                             metric=metric_to_optimize,
+                                             metric=metric_to_optimize,  # do not put output path
                                              init_points=50
                                              )
     print(best_parameters)

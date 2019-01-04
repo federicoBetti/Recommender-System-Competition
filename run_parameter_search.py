@@ -359,7 +359,6 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
     hyperparamethers_range_dictionary["alphaP3"] = range(0, 2)
     hyperparamethers_range_dictionary["normalize_similarity"] = [True, False]
 
-
     lambda_i = 0.1
     lambda_j = 0.05
     old_similrity_matrix = None
@@ -688,7 +687,8 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
         if recommender_class is MF_MSE_PyTorch:
             hyperparamethers_range_dictionary = {}
             hyperparamethers_range_dictionary["num_factors"] = list(range(10, 200, 10))
-            hyperparamethers_range_dictionary["learning_rate"] = [0.001] # [1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+            hyperparamethers_range_dictionary["learning_rate"] = [
+                0.001]  # [1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {'positive_threshold': 1},
@@ -742,15 +742,15 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
         if recommender_class is SLIMElasticNetRecommender:
             parameterSearch = BayesianSearch(recommender_class, evaluator_validation)
             hyperparamethers_range_dictionary = {}
-            hyperparamethers_range_dictionary["topK"] = list(range(10, 500, 10))
-            hyperparamethers_range_dictionary["l1_ratio"] = [1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+            hyperparamethers_range_dictionary["topK"] = list(range(10, 500, 30))
+            hyperparamethers_range_dictionary["l1_ratio"] = [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
                                      DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                                      DictionaryKeys.FIT_KEYWORD_ARGS: dict(),
                                      DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
-            n_cases = 10
+            n_cases = 20
 
         # if recommender_class is MultiThreadSLIM_ElasticNet:
         #     hyperparamethers_range_dictionary = {}
@@ -771,7 +771,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                                  n_cases=n_cases,
                                                  output_root_path=output_root_path_rec_name,
                                                  metric=metric_to_optimize,
-                                                 init_points=20
+                                                 # init_points=20
                                                  )
 
 
@@ -814,7 +814,7 @@ def read_data_split_and_search():
 
     # this line removes old matrices saved, comment it if testing only the weights of hybrid
     # delete_previous_intermediate_computations()
-    dataReader = RS_Data_Loader()
+    dataReader = RS_Data_Loader(distr_split=False)  # random train and test
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()
@@ -839,12 +839,12 @@ def read_data_split_and_search():
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
-        MF_MSE_PyTorch,
+        # MF_MSE_PyTorch,
         # MatrixFactorization_FunkSVD_Cython,
         # MatrixFactorization_AsySVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender,
+        SLIMElasticNetRecommender,
         # MultiThreadSLIM_ElasticNet,
         # HybridRecommender
     ]

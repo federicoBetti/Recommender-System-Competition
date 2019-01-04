@@ -26,12 +26,14 @@ def get_top_items(newTrainXGBoost, songs_in_playlist):
     songs_in_train_in_play = [x for x in newTrainXGBoost if x[0] in songs_in_playlist]
     songs_in_train_in_play = np.asarray(songs_in_train_in_play)
     songs_not_in_train_in_play = [x for x in newTrainXGBoost if x[0] not in songs_in_playlist]
+    if len(songs_not_in_train_in_play) < 10:
+        print("Problem on few elements in not in train, lenght: {}".format(len(songs_not_in_train_in_play)))
     songs_not_in_train_in_play = np.asarray(songs_not_in_train_in_play)
 
     user_profile = songs_in_train_in_play.mean(axis=0)
 
     from scipy.spatial import distance
-    distances = [distance.euclidean(s, user_profile) for s in songs_not_in_train_in_play]
+    distances = [distance.euclidean(s[1:], user_profile[1:]) for s in songs_not_in_train_in_play]
     distances = np.asarray(distances)
     ind_max = np.argsort(-distances)[:10]
     distances_sorted = songs_not_in_train_in_play[ind_max]
@@ -230,7 +232,7 @@ class HybridRecommenderClusterizzazione(SimilarityMatrixRecommender, Recommender
         else:
             cutoff
 
-        cutoff_addition = 50
+        cutoff_addition = 0
         cutoff_Boost = cutoff + cutoff_addition
 
         # compute the scores using the dot product
@@ -241,6 +243,13 @@ class HybridRecommenderClusterizzazione(SimilarityMatrixRecommender, Recommender
             # noinspection PyUnresolvedReferences
             for recommender in self.recommender_list:
                 scores_batch = recommender.compute_item_score(user_id_array)
+
+                for user_index in range(len(user_id_array)):
+
+                    user_id = user_id_array[user_index]
+
+                    if remove_seen_flag:
+                        scores_batch[user_index, :] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
 
                 if remove_top_pop_flag:
                     scores_batch = self._remove_TopPop_on_scores(scores_batch)
@@ -260,17 +269,27 @@ class HybridRecommenderClusterizzazione(SimilarityMatrixRecommender, Recommender
         ranking = []
 
         # i take the 20 elements with highest scores
+        not_enough_songs = True
+        while not_enough_songs:
+            not_enough_songs = False
+            relevant_items_boost = (-final_score).argpartition(cutoff_Boost, axis=1)[:,
+                                   0:cutoff_Boost]
+            songs_in_play = []
+            final_relevant_items_boost = []
+            for user_index in range(len(user_id_array)):
+                user_id = user_id_array[user_index]
+                profile_list = list(self.getUserProfile(user_id))
+                old_rel = list(relevant_items_boost[user_index])
+                not_in_playlist = [x for x in old_rel if x not in profile_list]
+                if len(not_in_playlist) < 10:
+                    not_enough_songs = True
+                    cutoff_Boost += 5
+                    print("Cutoff boost increased to {}".format(cutoff_Boost))
 
-        relevant_items_boost = (-final_score).argpartition(cutoff_Boost, axis=1)[:,
-                               0:cutoff_Boost]
-        songs_in_play = []
-        final_relevant_items_boost = []
-        for user_index in range(len(user_id_array)):
-            user_id = user_id_array[user_index]
-            old_rel = list(relevant_items_boost[user_index])
-            profile_list = list(self.getUserProfile(user_id))
-            to_append = old_rel + profile_list
-            final_relevant_items_boost.append(to_append)
+                to_append = old_rel + profile_list
+                # ho lasciato apposta doppi le canzoni che appaiono sia nelle top 50 che normalmente nella playlist,
+                # perchè significa che sono più importanti. Basta mettere queste due list come set per togliere il problema
+                final_relevant_items_boost.append(to_append)
 
         relevant_items_boost = final_relevant_items_boost
         dict_song_pop = ged.tracks_popularity()
@@ -284,29 +303,26 @@ class HybridRecommenderClusterizzazione(SimilarityMatrixRecommender, Recommender
         for user_index in range(len(user_id_array)):
             user_relevant_items = relevant_items_boost[user_index]
             l = len(user_relevant_items)
-            similarities_values = final_score[user_index, user_relevant_items].reshape((-1, 1))
+            # similarities_values = final_score[user_index, user_relevant_items].reshape((-1, 1))
             user_id = user_id_array[user_index]
             # Creating numpy array for training XGBoost
 
             song_pop = np.array([dict_song_pop[item] for item in user_relevant_items]).reshape((-1, 1))
 
-            playlist_length = np.array([int(ged.lenght_playlist(self.getUserProfile(user_id)))] * l).reshape(
+            playlist_length = np.array([int(ged.lenght_playlist(self.getUserProfile(user_id))) / 2] * l).reshape(
                 (-1, 1))
             playlist_pop = np.array(
                 [int(ged.playlist_popularity(self.getUserProfile(user_id), dict_song_pop))] * l).reshape(
                 (-1, 1))
 
-            # ucm_batch = self.UCM_train[user_list].toarray()
-            ucm_batch = np.array([self.UCM_dense[user_id]] * l).reshape(l, -1)
-
-            icm_batch = np.array([self.ICM_dense[item] for item in user_relevant_items]).reshape(l, -1)
+            icm_batch = np.array([self.ICM_dense[item] * 10 for item in user_relevant_items]).reshape((l, -1))
 
             tracks_duration = np.array([tracks_duration_list[item] for item in user_relevant_items]).reshape((-1, 1))
 
             relevant_items_boost_user = np.asarray(user_relevant_items).reshape(-1, 1)
             newTrainXGBoost = np.concatenate(
-                [relevant_items_boost_user, similarities_values, song_pop, playlist_pop, playlist_length,
-                 tracks_duration, icm_batch, ucm_batch],
+                [relevant_items_boost_user, song_pop, playlist_pop, playlist_length,
+                 tracks_duration, icm_batch],
                 axis=1)
 
             ranking.append(get_top_items(newTrainXGBoost, self.getUserProfile(user_id)))
@@ -317,8 +333,14 @@ class HybridRecommenderClusterizzazione(SimilarityMatrixRecommender, Recommender
             # Error here: ValueError: setting an array element with a sequence.
             print(ranking)
             print(user_id_array)
+            print(1)
+            a = 1
+
             raise ValueError
 
-        assert final_ranking.shape[0] is len(user_id_array)
-        assert final_ranking.shape[1] is 10
+        assert final_ranking.shape[0] == len(
+            user_id_array), "user_id_array shape:{}; final ranking shape: {} and {}".format(len(user_id_array),
+                                                                                            final_ranking.shape,
+                                                                                            final_ranking)
+        assert final_ranking.shape[1] == 10
         return final_ranking

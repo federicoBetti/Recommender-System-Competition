@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     filename = "hybrid_one_interval.csv"
 
-    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
+    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm, distr_split=False)
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()
@@ -124,7 +124,7 @@ if __name__ == '__main__':
             "weights": [0.5553160795197877, 0.7757009882288872, 0.5982445930826743, 0.5982445930826743,
                         0.9945089580422436, 0.19198495537212745],
             "final_weights": [1, 1],
-            "force_compute_sim": not evaluate_algorithm,
+            "force_compute_sim": True, #not evaluate_algorithm,
             "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
             "epochs": 50,

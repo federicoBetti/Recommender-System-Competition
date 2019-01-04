@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     filename = "hybrid_different_rec_for_diff_intervals_150.csv"
 
-    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
+    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm, distr_split=False)
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()
@@ -151,7 +151,7 @@ if __name__ == '__main__':
             "shrink": [210, 1, 30, -1, -1],
             "pop": [130, 346],
             "weights": d_weights,
-            "force_compute_sim": False,
+            "force_compute_sim": True,
             "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
             "epochs": 1, "lambda_i": [0.10467537896611145],

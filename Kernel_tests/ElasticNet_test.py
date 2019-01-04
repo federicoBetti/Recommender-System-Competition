@@ -8,12 +8,9 @@ import gc
 import pandas as pd
 import numpy as np
 import time
-from scipy.sparse import csr_matrix, csc_matrix
+from scipy.sparse import csr_matrix
 from sklearn.linear_model import ElasticNet
 import itertools
-
-from sklearn.preprocessing import normalize
-from scipy import sparse as sps
 
 '''
 Elastic Net
@@ -301,176 +298,49 @@ class SimilarityMatrixRecommender(object):
             return self.URM_train.T.dot(self.W[user_id])
 
 
-def similarityMatrixTopK(item_weights, forceSparseOutput=True, k=100, verbose=False, inplace=True):
+class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
     """
-    The function selects the TopK most similar elements, column-wise
-
-    :param item_weights:
-    :param forceSparseOutput:
-    :param k:
-    :param verbose:
-    :param inplace: Default True, WARNING matrix will be modified
-    :return:
+    Train a Sparse Linear Methods (SLIM) item similarity model.
+    NOTE: ElasticNet solver is parallel, a single intance of SLIM_ElasticNet will
+          make use of half the cores available
+    See:
+        Efficient Top-N Recommendation by Linear Regression,
+        M. Levy and K. Jack, LSRS workshop at RecSys 2013.
+        https://www.slideshare.net/MarkLevy/efficient-slides
+        SLIM: Sparse linear methods for top-n recommender systems,
+        X. Ning and G. Karypis, ICDM 2011.
+        http://glaros.dtc.umn.edu/gkhome/fetch/papers/SLIM2011icdm.pdf
     """
 
-    assert (item_weights.shape[0] == item_weights.shape[1]), "selectTopK: ItemWeights is not a square matrix"
-
-    start_time = time.time()
-
-    if verbose:
-        print("Generating topK matrix")
-
-    nitems = item_weights.shape[1]
-    k = min(k, nitems)
-
-    # for each column, keep only the top-k scored items
-    sparse_weights = not isinstance(item_weights, np.ndarray)
-
-    if not sparse_weights:
-
-        idx_sorted = np.argsort(item_weights, axis=0)  # sort data inside each column
-
-        if inplace:
-            W = item_weights
-        else:
-            W = item_weights.copy()
-
-        # index of the items that don't belong to the top-k similar items of each column
-        not_top_k = idx_sorted[:-k, :]
-        # use numpy fancy indexing to zero-out the values in sim without using a for loop
-        W[not_top_k, np.arange(nitems)] = 0.0
-
-        if forceSparseOutput:
-            W_sparse = csr_matrix(W, shape=(nitems, nitems))
-
-            if verbose:
-                print("Sparse TopK matrix generated in {:.2f} seconds".format(time.time() - start_time))
-
-            return W_sparse
-
-        if verbose:
-            print("Dense TopK matrix generated in {:.2f} seconds".format(time.time() - start_time))
-
-        return W
-
-    else:
-        # iterate over each column and keep only the top-k similar items
-        data, rows_indices, cols_indptr = [], [], []
-
-        for item_idx in range(nitems):
-            cols_indptr.append(len(data))
-
-            start_position = item_weights.indptr[item_idx]
-            end_position = item_weights.indptr[item_idx + 1]
-
-            column_data = item_weights.data[start_position:end_position]
-            column_row_index = item_weights.indices[start_position:end_position]
-
-            non_zero_data = column_data != 0
-
-            idx_sorted = np.argsort(column_data[non_zero_data])  # sort by column
-            top_k_idx = idx_sorted[-k:]
-
-            data.extend(column_data[non_zero_data][top_k_idx])
-            rows_indices.extend(column_row_index[non_zero_data][top_k_idx])
-
-        cols_indptr.append(len(data))
-
-        # During testing CSR is faster
-        W_sparse = csc_matrix((data, rows_indices, cols_indptr), shape=(nitems, nitems), dtype=np.float32)
-        W_sparse = W_sparse.tocsr()
-
-        if verbose:
-            print("Sparse TopK matrix generated in {:.2f} seconds".format(time.time() - start_time))
-
-        return W_sparse
-
-
-def check_matrix(X, format='csc', dtype=np.float32):
-    if format == 'csc' and not isinstance(X, sps.csc_matrix):
-        return X.tocsc().astype(dtype)
-    elif format == 'csr' and not isinstance(X, sps.csr_matrix):
-        return X.tocsr().astype(dtype)
-    elif format == 'coo' and not isinstance(X, sps.coo_matrix):
-        return X.tocoo().astype(dtype)
-    elif format == 'dok' and not isinstance(X, sps.dok_matrix):
-        return X.todok().astype(dtype)
-    elif format == 'bsr' and not isinstance(X, sps.bsr_matrix):
-        return X.tobsr().astype(dtype)
-    elif format == 'dia' and not isinstance(X, sps.dia_matrix):
-        return X.todia().astype(dtype)
-    elif format == 'lil' and not isinstance(X, sps.lil_matrix):
-        return X.tolil().astype(dtype)
-    else:
-        return X.astype(dtype)
-
-
-class RP3betaRecommender(SimilarityMatrixRecommender, Recommender):
-    """ RP3beta recommender """
-
-    RECOMMENDER_NAME = "RP3betaRecommender"
+    RECOMMENDER_NAME = "SLIMElasticNetRecommender"
 
     def __init__(self, URM_train):
-        super(RP3betaRecommender, self).__init__()
 
-        self.URM_train = check_matrix(URM_train, format='csr', dtype=np.float32)
-        self.sparse_weights = True
+        super(SLIMElasticNetRecommender, self).__init__()
 
-    def __str__(self):
-        return "RP3beta(alpha={}, beta={}, min_rating={}, topk={}, implicit={}, normalize_similarity={})".format(
-            self.alpha,
-            self.beta, self.min_rating, self.topK,
-            self.implicit, self.normalize_similarity)
+        self.URM_train = URM_train
 
-    def fit(self, alpha=1., beta=0.6, min_rating=0, topK=100, implicit=True, normalize_similarity=True,
-            force_compute_sim=True):
+    def fit(self, l1_ratio=0.1, positive_only=True, topK=100, force_compute_sim=True):
 
-        self.alpha = alpha
-        self.beta = beta
-        self.min_rating = min_rating
+        assert 0 <= l1_ratio <= 1, "SLIM_ElasticNet: l1_ratio must be between 0 and 1, provided value was {}".format(
+            l1_ratio)
+
+        self.l1_ratio = l1_ratio
+        self.positive_only = positive_only
         self.topK = topK
-        self.implicit = implicit
-        self.normalize_similarity = normalize_similarity
 
-        # if X.dtype != np.float32:
-        #     print("RP3beta fit: For memory usage reasons, we suggest to use np.float32 as dtype for the dataset")
+        # initialize the ElasticNet model
+        self.model = ElasticNet(alpha=1.0,
+                                l1_ratio=self.l1_ratio,
+                                positive=self.positive_only,
+                                fit_intercept=False,
+                                copy_X=False,
+                                precompute=True,
+                                selection='random',
+                                max_iter=80,
+                                tol=1e-4)
 
-        if self.min_rating > 0:
-            self.URM_train.data[self.URM_train.data < self.min_rating] = 0
-            self.URM_train.eliminate_zeros()
-            if self.implicit:
-                self.URM_train.data = np.ones(self.URM_train.data.size, dtype=np.float32)
-
-        # Pui is the row-normalized urm
-        Pui = normalize(self.URM_train, norm='l1', axis=1)
-
-        # Piu is the column-normalized, "boolean" urm transposed
-        X_bool = self.URM_train.transpose(copy=True)
-        X_bool.data = np.ones(X_bool.data.size, np.float32)
-
-        # Taking the degree of each item to penalize top popular
-        # Some rows might be zero, make sure their degree remains zero
-        X_bool_sum = np.array(X_bool.sum(axis=1)).ravel()
-
-        degree = np.zeros(self.URM_train.shape[1])
-
-        nonZeroMask = X_bool_sum != 0.0
-
-        degree[nonZeroMask] = np.power(X_bool_sum[nonZeroMask], -self.beta)
-
-        # ATTENTION: axis is still 1 because i transposed before the normalization
-        Piu = normalize(X_bool, norm='l1', axis=1)
-        del (X_bool)
-
-        # Alfa power
-        if self.alpha != 1.:
-            Pui = Pui.power(self.alpha)
-            Piu = Piu.power(self.alpha)
-
-        # Final matrix is computed as Pui * Piu * Pui
-        # Multiplication unpacked for memory usage reasons
-        block_dim = 200
-        d_t = Piu
+        n_items = URM_train.shape[1]
 
         # Use array as it reduces memory requirements compared to lists
         dataBlock = 10000000
@@ -484,59 +354,73 @@ class RP3betaRecommender(SimilarityMatrixRecommender, Recommender):
         start_time = time.time()
         start_time_printBatch = start_time
 
-        for current_block_start_row in range(0, Pui.shape[1], block_dim):
+        # fit each item's factors sequentially (not in parallel)
+        for currentItem in range(n_items):
 
-            if current_block_start_row + block_dim > Pui.shape[1]:
-                block_dim = Pui.shape[1] - current_block_start_row
+            # get the target column
+            y = URM_train[:, currentItem].toarray()
 
-            similarity_block = d_t[current_block_start_row:current_block_start_row + block_dim, :] * Pui
-            similarity_block = similarity_block.toarray()
+            # set the j-th column of X to zero
+            start_pos = URM_train.indptr[currentItem]
+            end_pos = URM_train.indptr[currentItem + 1]
 
-            for row_in_block in range(block_dim):
-                row_data = np.multiply(similarity_block[row_in_block, :], degree)
-                row_data[current_block_start_row + row_in_block] = 0
+            current_item_data_backup = URM_train.data[start_pos: end_pos].copy()
+            URM_train.data[start_pos: end_pos] = 0.0
 
-                best = row_data.argsort()[::-1][:self.topK]
+            # fit one ElasticNet model per column
+            self.model.fit(URM_train, y)
 
-                notZerosMask = row_data[best] != 0.0
+            # self.model.coef_ contains the coefficient of the ElasticNet model
+            # let's keep only the non-zero values
 
-                values_to_add = row_data[best][notZerosMask]
-                cols_to_add = best[notZerosMask]
+            # Select topK values
+            # Sorting is done in three steps. Faster then plain np.argsort for higher number of items
+            # - Partition the data to extract the set of relevant items
+            # - Sort only the relevant items
+            # - Get the original item index
 
-                for index in range(len(values_to_add)):
+            # nonzero_model_coef_index = self.model.coef_.nonzero()[0]
+            # nonzero_model_coef_value = self.model.coef_[nonzero_model_coef_index]
 
-                    if numCells == len(rows):
-                        rows = np.concatenate((rows, np.zeros(dataBlock, dtype=np.int32)))
-                        cols = np.concatenate((cols, np.zeros(dataBlock, dtype=np.int32)))
-                        values = np.concatenate((values, np.zeros(dataBlock, dtype=np.float32)))
+            nonzero_model_coef_index = self.model.sparse_coef_.indices
+            nonzero_model_coef_value = self.model.sparse_coef_.data
 
-                    rows[numCells] = current_block_start_row + row_in_block
-                    cols[numCells] = cols_to_add[index]
-                    values[numCells] = values_to_add[index]
+            local_topK = min(len(nonzero_model_coef_value) - 1, self.topK)
 
-                    numCells += 1
+            relevant_items_partition = (-nonzero_model_coef_value).argpartition(local_topK)[0:local_topK]
+            relevant_items_partition_sorting = np.argsort(-nonzero_model_coef_value[relevant_items_partition])
+            ranking = relevant_items_partition[relevant_items_partition_sorting]
 
-            if time.time() - start_time_printBatch > 60:
-                print("Processed {} ( {:.2f}% ) in {:.2f} minutes. Rows per second: {:.0f}".format(
-                    current_block_start_row,
-                    100.0 * float(current_block_start_row) / Pui.shape[1],
+            for index in range(len(ranking)):
+
+                if numCells == len(rows):
+                    rows = np.concatenate((rows, np.zeros(dataBlock, dtype=np.int32)))
+                    cols = np.concatenate((cols, np.zeros(dataBlock, dtype=np.int32)))
+                    values = np.concatenate((values, np.zeros(dataBlock, dtype=np.float32)))
+
+                rows[numCells] = nonzero_model_coef_index[ranking[index]]
+                cols[numCells] = currentItem
+                values[numCells] = nonzero_model_coef_value[ranking[index]]
+
+                numCells += 1
+
+            # finally, replace the original values of the j-th column
+            URM_train.data[start_pos:end_pos] = current_item_data_backup
+
+            if time.time() - start_time_printBatch > 30 or currentItem == n_items - 1:
+                print("Processed {} ( {:.2f}% ) in {:.2f} minutes. Items per second: {:.0f}".format(
+                    currentItem + 1,
+                    100.0 * float(currentItem + 1) / n_items,
                     (time.time() - start_time) / 60,
-                    float(current_block_start_row) / (time.time() - start_time)))
-
+                    float(currentItem) / (time.time() - start_time)))
                 sys.stdout.flush()
                 sys.stderr.flush()
 
                 start_time_printBatch = time.time()
 
-        self.W = csr_matrix((values[:numCells], (rows[:numCells], cols[:numCells])),
-                            shape=(Pui.shape[1], Pui.shape[1]))
-
-        if self.normalize_similarity:
-            self.W = normalize(self.W, norm='l1', axis=1)
-
-        if self.topK != False:
-            self.W_sparse = similarityMatrixTopK(self.W, forceSparseOutput=True, k=self.topK)
-            self.sparse_weights = True
+        # generate the sparse weight matrix
+        self.W_sparse = csr_matrix((values[:numCells], (rows[:numCells], cols[:numCells])),
+                                   shape=(n_items, n_items), dtype=np.float32)
 
 
 '''
@@ -1023,21 +907,20 @@ if __name__ == '__main__':
 
     evaluator = SequentialEvaluator(URM_test, URM_train, exclude_seen=True)
 
-    recommender_class = RP3betaRecommender
+    recommender_class = SLIMElasticNetRecommender
 
     # On pop it used to choose if have dynamic weights for
     recommender = recommender_class(URM_train)
 
-    topK_list = list(range(1, 800, 10))
-    alpha_list = list(np.linspace(0.001, 2.0, 500))  # range(0, 2)
-    beta_list = list(np.linspace(0.001, 2.0, 500))
+    topK_list = list(range(10, 500, 30))
+    l1_ratio_list = [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
 
-    total_permutations = [x for x in list(itertools.product(topK_list, alpha_list, beta_list))]
+    total_permutations = [x for x in list(itertools.product(topK_list, l1_ratio_list))]
     shuffle(total_permutations)
 
     iter = 0
     start_time = time.time()
-    for topK, alpha, beta in total_permutations:
+    for topK, l1_ratio in total_permutations:
         if time.time() - start_time > 60 * 60 * 5:
             # after 5 hours stop it!
             continue
@@ -1047,13 +930,11 @@ if __name__ == '__main__':
 
         recommender.fit(**{
             "topK": topK,
-            'alpha': alpha,
-            'beta': beta})
+            'l1_ratio': l1_ratio})
 
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender)
 
-        print("Rp3beta params topK: {}, alpha: {}, beta: {}, MAP: {}".format(topK, alpha, beta,
-                                                                             results_run[10]['MAP']))
+        print("ElasticNet params topK: {}, l1_ratio: {}, MAP: {}".format(topK, l1_ratio, results_run[10]['MAP']))
 
         gc.collect()
         iter += 1

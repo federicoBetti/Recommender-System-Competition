@@ -118,7 +118,7 @@ class RandomSearch(AbstractClassSearch):
 
     def search(self, dictionary_input, metric="map", n_cases=60, output_root_path=None, parallelPoolSize=6,
                parallelize=True,
-               save_model="best", max_ram_occupied_perc=None):
+               save_model="no", max_ram_occupied_perc=None):
 
         # Associate the params that will be returned by BayesianOpt object to those you want to save
         # E.g. with early stopping you know which is the optimal number of epochs only afterwards
@@ -211,7 +211,8 @@ class RandomSearch(AbstractClassSearch):
         if self.best_solution_val == None or self.best_solution_val < process_object.result_dict[self.metric]:
 
             writeLog(self.ALGORITHM_NAME + ": New best config found. Config {}: {} - MAP results: {}\n".format(
-                self.model_counter, paramether_dictionary_to_save, process_object.result_dict[self.metric]), self.logFile)
+                self.model_counter, paramether_dictionary_to_save, process_object.result_dict[self.metric]),
+                     self.logFile)
 
             pickle.dump(paramether_dictionary_to_save.copy(),
                         open(self.output_root_path + "_best_parameters", "wb"),
@@ -235,10 +236,10 @@ class RandomSearch(AbstractClassSearch):
 
         else:
             writeLog(self.ALGORITHM_NAME + ": Config is suboptimal. Config {}: {} - MAP results: {}\n".format(
-                self.model_counter, paramether_dictionary_to_save, process_object.result_dict[self.metric]), self.logFile)
+                self.model_counter, paramether_dictionary_to_save, process_object.result_dict[self.metric]),
+                     self.logFile)
 
             dereference_recommender_attributes(process_object.recommender)
-
 
         dump_garbage()
 
@@ -303,7 +304,7 @@ class RandomSearch(AbstractClassSearch):
             # WARNING: apparently the function "queue_job_todo.empty()" is not reliable
             while (
                         (num_cases_active < self.parallelPoolSize and not memory_threshold_reached) or (
-                        num_cases_active == 0)) \
+                                num_cases_active == 0)) \
                     and not termination_sent:
 
                 memory_threshold_reached, memory_used_quota = get_memory_threshold_reached(self.max_ram_occupied_perc)
@@ -328,6 +329,7 @@ class RandomSearch(AbstractClassSearch):
                     print("Termination sent")
                     queue_job_todo.put(None)
                     termination_sent = True
+                gc.collect()
 
             # Read all completed jobs. WARNING: apparently the function "empty" is not reliable
             queue_job_done_is_empty = False
@@ -346,6 +348,7 @@ class RandomSearch(AbstractClassSearch):
                     queue_job_done_is_empty = True
 
             time.sleep(1)
+            gc.collect()
             # print("num_cases_evaluated {}".format(num_cases_evaluated))
 
             # print("Evaluated {}, started {}, active {}".format(num_cases_evaluated, num_cases_started, num_cases_active))

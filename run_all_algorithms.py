@@ -54,6 +54,7 @@ if __name__ == '__main__':
     URM_validation = dataReader.get_URM_validation()
     URM_test = dataReader.get_URM_test()
     ICM = dataReader.get_ICM()
+
     UCM_tfidf = dataReader.get_tfidf_artists()
     # _ = dataReader.get_tfidf_album()
 
@@ -211,7 +212,7 @@ if __name__ == '__main__':
         '''
         Our optimal run
         '''
-        recommender_list = recommender_list1 + recommender_list2# + recommender_list3
+        recommender_list = recommender_list1 #+ recommender_list2# + recommender_list3
         onPop = True
 
 
@@ -277,7 +278,7 @@ if __name__ == '__main__':
             "topK": [15, 595, 400, 105, 15, 20],#+ [21, 220, 300, 160, 70, -1],# + [250, 180, 240, 151, 91, 311, -1],
             "shrink": [210, 1, 1, 30, -1, -1],# + [75, 1, 1, 150, -1, -1],# + [55, 2, 19, -1, -1, -1, -1],
             "pop": [350],
-            "weights": [1] * 12,
+            "weights": [1] * 6,
             "force_compute_sim": False,
             # "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
@@ -288,7 +289,7 @@ if __name__ == '__main__':
             'alphaRP3': [0.457685370741483, 0.9223827655310622, 0.49774549098196397],
             'betaRP': [0.289432865731463, 0.2213306613226453, 0.2333486973947896],
             'l1_ratio': l1_ratio,
-            "weights_to_dweights": -1})
+            "weights_to_dweights":-1})
 
         print("TEST")
 
@@ -297,7 +298,7 @@ if __name__ == '__main__':
 
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
                                                                                                 plot_stats=True,
-                                                                                                onPop=onPop)
+                                                                                                onPop=False)
 
         print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
                                                     results_run_string))

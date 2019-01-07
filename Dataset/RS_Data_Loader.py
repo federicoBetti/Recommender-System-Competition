@@ -33,11 +33,24 @@ def get_icm_matrix(tracks):
     tracks_arr = tracks.track_id.values
     album_arr = tracks.album_id.unique()
     artists_arr = tracks.artist_id.unique()
-    feature_tracks = np.ndarray(shape=(tracks_arr.shape[0], album_arr.shape[0] + artists_arr.shape[0]))
+    feature_tracks = np.ndarray(shape=(tracks_arr.shape[0], album_arr.shape[0] + artists_arr.shape[0] + 1))
+
+    def encode_duration_sec(duration):
+        if duration < 120:
+            return 0
+        elif 120 < duration < 320:
+            return 1
+        elif 320 < duration < 420:
+            return 2
+        else:
+            return 3
 
     def create_feature(entry):
         feature_tracks[entry.track_id][entry.album_id] = 1
         feature_tracks[entry.track_id][album_arr.shape[0] + entry.artist_id] = 0.8
+        duration_encoded = encode_duration_sec(entry.duration_sec)
+        feature_tracks[entry.track_id][
+            album_arr.shape[0] + artists_arr.shape[0]] = duration_encoded
 
     tracks.apply(create_feature, axis=1)
     to_ret = csr_matrix(feature_tracks)

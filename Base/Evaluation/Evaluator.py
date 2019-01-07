@@ -833,7 +833,7 @@ class SequentialEvaluator(Evaluator):
                                                   ignore_items=ignore_items, ignore_users=ignore_users)
 
     def _run_evaluation_on_selected_users(self, recommender_object, usersToEvaluate, block_size=1000, plot_stats=False,
-                                          onPop=True):
+                                          onPop=False):
 
         to_ret = []
         start_time = time.time()

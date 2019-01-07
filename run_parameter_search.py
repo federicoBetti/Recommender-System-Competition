@@ -186,7 +186,7 @@ def runParameterSearch_Content(recommender_class, URM_train, ICM_object, ICM_nam
 def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recommender_list, n_cases=35,
                                       evaluator_validation=None, evaluator_test=None, metric_to_optimize="MAP",
                                       output_root_path="result_experiments/", parallelizeKNN=False, URM_test=None,
-                                      old_similrity_matrix=None, UCM_train=None):
+                                      old_similrity_matrix=None, UCM_train=None, URM_pagerank=None):
     # If directory does not exist, create
     if not os.path.exists(output_root_path):
         os.makedirs(output_root_path)
@@ -197,21 +197,20 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
-        # ItemKNNCFPageRankRecommender,
-        # UserKNNCBRecommender,
+        UserKNNCBRecommender,
+        ItemKNNCFPageRankRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        P3alphaRecommender,
+        # P3alphaRecommender,
         RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        # SLIM_BPR_Cython,
-        # PureSVDRecommender,
-
-        # SLIMElasticNetRecommender
+        SLIM_BPR_Cython,
+        SLIMElasticNetRecommender
+        # PureSVDRecommender
     ]
 
-    this_output_root_path = output_root_path + "Hybrid_no_intervals:" + "{}".format(
+    this_output_root_path = output_root_path + "2_intervals_parameter_tuning/Hybrid_second_interval:" + "{}".format(
         "_".join([x.RECOMMENDER_NAME for x in recommender_list]))
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
@@ -223,30 +222,18 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     hyperparamethers_range_dictionary["weights3"] = range(0, 1)
     hyperparamethers_range_dictionary["weights4"] = range(0, 1)
     hyperparamethers_range_dictionary["weights5"] = range(0, 1)
-    # hyperparamethers_range_dictionary["weights6"] = range(0, 1)
-    # hyperparamethers_range_dictionary["weights7"] = range(0, 1)
-    # hyperparamethers_range_dictionary["weights8"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights6"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights7"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights8"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights7"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["weights8"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["pop1"] = list(range(80, 200))  # list(np.linspace(0, 1, 11))
     # hyperparamethers_range_dictionary["pop2"] = list(range(250, 450))  # list(np.linspace(0, 1, 11))
 
-
-    lambda_i = 0.03868852215907281
-    lambda_j = 0.020779886132281544
     old_similrity_matrix = None
     num_factors = 95
-    l1_ratio = 1e-06
+    l1_ratio = 1e-05
 
-    alphaRP3_1 = 0.457685370741483
-    betaRP_1 = 0.289432865731463
-    lambda_i_1 = 0.6892356201296567
-    lambda_j_1 = 0.35586838378889707
-
-    alphaRP3_3 = 0.49774549098196397
-    betaRP_3 = 0.2333486973947896
-    lambda_i_3 = 0.10467537896611145
-    lambda_j_3 = 0.004454204678491891
     num_factors_3 = 95
 
     dynamic_best = [
@@ -256,26 +243,28 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     ]
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
-                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": False,
-                                                                       "UCM_train": UCM_train, "URM_pagerank": URM_pagerank},
+                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": True,
+                                                                       "UCM_train": UCM_train,
+                                                                       "URM_PageRank_train": URM_pagerank
+                                                                       },
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {
-                                 "topK": [10, 220, 160, 61, 276],
-                                 "shrink": [180, 1, 2, -1, -1],
-                                 "pop": [130, 346],
+                                 "topK": [10, 170, 160, 220, 160, 276, 66, 50],
+                                 "shrink": [180, 196, 6, 1, 2, -1, -1, -1],
+                                 "pop": [280],
                                  "weights": [1, 1, 1, 1],
                                  "force_compute_sim": False,
                                  "feature_weighting_index": 0,
                                  "old_similarity_matrix": old_similrity_matrix,
                                  "epochs": 50,
-                                 "lambda_i": [lambda_i_3],
-                                 "lambda_j": [lambda_j_3],
+                                 'lambda_i': [0.06928490242552432],
+                                 'lambda_j': [0.9408725374123923],
                                  "num_factors": num_factors_3,
                                  'alphaP3': [0.5203791059230995],
                                  'alphaRP3': [0.8182264529058118],
                                  'betaRP': [0.3775651302605211],
                                  'l1_ratio': l1_ratio,
-                                 "weights_to_dweights": -1},
+                                 "weights_to_dweights": 1},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
@@ -283,7 +272,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     best_parameters = parameterSearch.search(recommenderDictionary,
                                              n_cases=50,
                                              output_root_path=output_root_path_similarity,
-                                             metric=metric_to_optimize
+                                             metric=metric_to_optimize,
+                                             init_points=20
                                              )
     print(best_parameters)
 
@@ -291,7 +281,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
 def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, recommender_list, n_cases=35,
                                              evaluator_validation=None, evaluator_test=None, metric_to_optimize="MAP",
                                              output_root_path="result_experiments/", parallelizeKNN=False,
-                                             URM_test=None,
+                                             URM_test=None, URM_page_rank=None,
                                              old_similrity_matrix=None, UCM_train=None):
     # If directory does not exist, create
     if not os.path.exists(output_root_path):
@@ -362,7 +352,6 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
     hyperparamethers_range_dictionary["alphaP3"] = range(0, 2)
     hyperparamethers_range_dictionary["normalize_similarity"] = [True, False]
 
-
     lambda_i = 0.1
     lambda_j = 0.05
     old_similrity_matrix = None
@@ -379,21 +368,21 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": True,
                                                                        "UCM_train": UCM_train},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                             DictionaryKeys.FIT_KEYWORD_ARGS: {  "topK": [60, 100, 150, 146, 50, 100, 100],
-                                 # "shrink": [5, 50, 10, -1, -1, -1],
-                                 "pop": [130, 346],
-                                 # "weights": [1],
-                                 "force_compute_sim": True,
-                                 "old_similarity_matrix": old_similrity_matrix,
-                                 "epochs": 30,
-                                 # "lambda_i": lambda_i,
-                                 # "lambda_j": lambda_j,
-                                 # "num_factors": num_factors,
-                                 # 'alphaP3': 1.160296393373262,
-                                 # 'alphaRP3': 0.4156476217553893,
-                                 # 'betaRP': 0.20430089442930188,
-                                 # 'l1_ratio': l1_ratio,
-                                 "weights_to_dweights": -1},
+                             DictionaryKeys.FIT_KEYWORD_ARGS: {"topK": [60, 100, 150, 146, 50, 100, 100],
+                                                               # "shrink": [5, 50, 10, -1, -1, -1],
+                                                               "pop": [130, 346],
+                                                               # "weights": [1],
+                                                               "force_compute_sim": True,
+                                                               "old_similarity_matrix": old_similrity_matrix,
+                                                               "epochs": 30,
+                                                               # "lambda_i": lambda_i,
+                                                               # "lambda_j": lambda_j,
+                                                               # "num_factors": num_factors,
+                                                               # 'alphaP3': 1.160296393373262,
+                                                               # 'alphaRP3': 0.4156476217553893,
+                                                               # 'betaRP': 0.20430089442930188,
+                                                               # 'l1_ratio': l1_ratio,
+                                                               "weights_to_dweights": -1},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
@@ -410,7 +399,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                      evaluator_validation=None, evaluator_test=None,
                                      evaluator_validation_earlystopping=None,
                                      output_root_path="result_experiments/", parallelizeKNN=False, n_cases=30,
-                                     URM_validation=None, UCM_train=None):
+                                     URM_validation=None, UCM_train=None, URM_page_rank=None):
     from ParameterTuning.AbstractClassSearch import DictionaryKeys
 
     # If directory does not exist, create
@@ -495,6 +484,24 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                     run_KNNCFRecommender_on_similarity_type_partial(similarity_type)
 
             return
+
+        ##########################################################################################################
+        ##########################################################################################################
+
+
+        if recommender_class is ItemKNNCFPageRankRecommender:
+            similarity_type_list = ['cosine']  # , 'jaccard', "asymmetric", "dice", "tversky"]
+
+            hyperparamethers_range_dictionary = {}
+            hyperparamethers_range_dictionary["topK"] = list(range(40, 250, 10))
+            hyperparamethers_range_dictionary["shrink"] = list(range(0, 50, 2))
+            hyperparamethers_range_dictionary["normalize"] = [True, False]
+
+            recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, URM_page_rank],
+                                     DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
+                                     DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
+                                     DictionaryKeys.FIT_KEYWORD_ARGS: dict(),  # questi sono quelli fissi
+                                     DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
             ##########################################################################################################
             ##########################################################################################################
@@ -687,7 +694,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                      DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
         ##########################################################################################################
-
+        '''
         if recommender_class is MF_MSE_PyTorch:
             hyperparamethers_range_dictionary = {}
             hyperparamethers_range_dictionary["num_factors"] = list(range(10, 200, 10))
@@ -703,7 +710,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                                                        "lower_validatons_allowed": 20,
                                                                        "validation_metric": metric_to_optimize},
                                      DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
-
+        '''
         ##########################################################################################################
 
         if recommender_class is PureSVDRecommender:
@@ -756,17 +763,17 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                      DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
             n_cases = 20
 
-        # if recommender_class is MultiThreadSLIM_ElasticNet:
-        #     hyperparamethers_range_dictionary = {}
-        #     hyperparamethers_range_dictionary["topK"] = [50, 100, 150, 200, 300, 400, 500, 600, 700, 800]
-        #     hyperparamethers_range_dictionary["l1_penalty"] = [1.0, 0.1, 1e-2, 1e-4, 1e-6]
-        #     hyperparamethers_range_dictionary["l2_penalty"] = [1.0, 0.1, 1e-2, 1e-4, 1e-6]
-        #
-        #     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
-        #                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
-        #                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-        #                              DictionaryKeys.FIT_KEYWORD_ARGS: dict(),
-        #                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
+        if recommender_class is MultiThreadSLIM_ElasticNet:
+            hyperparamethers_range_dictionary = {}
+            hyperparamethers_range_dictionary["topK"] = list(range(10, 500, 30))
+            hyperparamethers_range_dictionary["alpha"] = range(0, 2)
+            hyperparamethers_range_dictionary["l1_ratio"] = [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+
+            recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
+                                     DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
+                                     DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
+                                     DictionaryKeys.FIT_KEYWORD_ARGS: dict(),
+                                     DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
         #########################################################################################################
 
@@ -818,7 +825,7 @@ def read_data_split_and_search():
 
     # this line removes old matrices saved, comment it if testing only the weights of hybrid
     # delete_previous_intermediate_computations()
-    dataReader = RS_Data_Loader(distr_split=False)  # random train and test
+    dataReader = RS_Data_Loader(distr_split=True)  # random train and test
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()
@@ -840,7 +847,8 @@ def read_data_split_and_search():
         # ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
         # P3alphaRecommender,
-        # RP3betaRecommender,
+        # # RP3betaRecommender,
+        # ItemKNNCFPageRankRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
@@ -850,7 +858,7 @@ def read_data_split_and_search():
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
-        # MultiThreadSLIM_ElasticNet,
+        MultiThreadSLIM_ElasticNet,
         # HybridRecommender
     ]
 
@@ -900,8 +908,9 @@ def read_data_split_and_search():
                         # Random,
                         # TopPop,
                         ItemKNNCBFRecommender,
-                        # UserKNNCBRecommender,
-                        # ItemKNNCFRecommender,
+                        UserKNNCBRecommender,
+                        ItemKNNCFPageRankRecommender,
+                        ItemKNNCFRecommender,
                         UserKNNCFRecommender,
                         # P3alphaRecommender,
                         RP3betaRecommender,
@@ -933,7 +942,7 @@ def read_data_split_and_search():
                                                                  evaluator_validation=evaluator_validation,
                                                                  evaluator_test=evaluator_test, URM_test=URM_test,
                                                                  old_similrity_matrix=transfer_matrix,
-                                                                 UCM_train=UCM_train)
+                                                                 UCM_train=UCM_train, URM_page_rank=URM_pagerank)
                 else:
 
                     runParameterSearch_Collaborative_partial = partial(runParameterSearch_Collaborative,
@@ -942,12 +951,10 @@ def read_data_split_and_search():
                                                                        metric_to_optimize="MAP",
                                                                        evaluator_validation_earlystopping=evaluator_validation_earlystopping,
                                                                        evaluator_validation=evaluator_validation,
-                                                                       # evaluator_test=evaluator_test, # I'm not
-                                                                       # passing it because validation and test for
-                                                                       # us is the same
                                                                        output_root_path=output_root_path,
                                                                        n_cases=30,
-                                                                       URM_validation=URM_validation)
+                                                                       URM_validation=URM_validation,
+                                                                       URM_page_rank=URM_pagerank)
                     runParameterSearch_Collaborative_partial(recommender_class)
 
             except Exception as e:

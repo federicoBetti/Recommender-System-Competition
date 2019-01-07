@@ -37,7 +37,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         super(Recommender, self).__init__()
 
         # CSR is faster during evaluation
-        self.URM_PageRank_train = URM_PageRank_train
         self.pop = None
         self.UCM_train = UCM_train
         self.URM_train = check_matrix(URM_train, 'csr')
@@ -83,7 +82,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             elif recommender in [UserKNNCBRecommender]:
                 self.recommender_list.append(recommender(self.UCM_train, URM_train))
             elif recommender in [ItemKNNCFPageRankRecommender]:
-                self.recommender_list.append(recommender(self.URM_train, self.URM_PageRank_train))
+                self.recommender_list.append(recommender(self.URM_train, URM_PageRank_train))
 
             # For sake of simplicity the recommender in this case is initialized and fitted outside
             elif recommender.__class__ in [HybridRecommender]:

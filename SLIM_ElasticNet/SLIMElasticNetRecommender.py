@@ -35,7 +35,7 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
 
         self.URM_train = URM_train
 
-    def fit(self, l1_ratio=0.1, positive_only=True, topK=100, force_compute_sim=True):
+    def fit(self, l1_ratio=0.1, positive_only=True, topK=100, force_compute_sim=True, alpha=1.0):
 
         assert 0 <= l1_ratio <= 1, "SLIM_ElasticNet: l1_ratio must be between 0 and 1, provided value was {}".format(
             l1_ratio)
@@ -56,9 +56,10 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
         self.l1_ratio = l1_ratio
         self.positive_only = positive_only
         self.topK = topK
+        self.alpha = alpha
 
         # initialize the ElasticNet model
-        self.model = ElasticNet(alpha=1.0,
+        self.model = ElasticNet(alpha=self.alpha,
                                 l1_ratio=self.l1_ratio,
                                 positive=self.positive_only,
                                 fit_intercept=False,
@@ -174,7 +175,7 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, SimilarityMatrixReco
         )
 
     def _partial_fit(self, currentItem, X, topK):
-        model = ElasticNet(alpha=1.0,
+        model = ElasticNet(alpha=self.alpha,
                            l1_ratio=self.l1_ratio,
                            positive=self.positive_only,
                            fit_intercept=False,
@@ -215,15 +216,13 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, SimilarityMatrixReco
         #
         return values, rows, cols
 
-    def fit(self, l1_penalty=0.1,
-            l2_penalty=0.1,
+    def fit(self, l1_ratio=0.1,
             positive_only=True,
-            topK=100,
-            workers=multiprocessing.cpu_count()):
-        self.l1_penalty = l1_penalty
-        self.l2_penalty = l2_penalty
+            topK=100, alpha=1.0,
+            workers=multiprocessing.cpu_count() - 2):
         self.positive_only = positive_only
-        self.l1_ratio = self.l1_penalty / (self.l1_penalty + self.l2_penalty)
+        self.alpha = alpha
+        self.l1_ratio = l1_ratio
         self.topK = topK
 
         self.workers = workers

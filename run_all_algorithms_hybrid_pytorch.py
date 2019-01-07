@@ -1,7 +1,7 @@
 import sys
 
 from Dataset.RS_Data_Loader import RS_Data_Loader
-from KNN.HybridPytorch import HybridPytorch
+from KNN.HybridPytorch import HybridPytorch_SLIM
 from KNN.HybridSimilaritiesRecommender import HybridSimilaritiesRecommender
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     logFile = open(output_root_path + "result_all_algorithms.txt", "a")
 
     try:
-        recommender_class = HybridPytorch
+        recommender_class = HybridPytorch_SLIM
         print("Algorithm: {}".format(recommender_class))
 
         d_weights = []

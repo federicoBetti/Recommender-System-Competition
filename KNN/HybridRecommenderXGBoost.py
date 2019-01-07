@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import random
 from abc import ABC
 
 from Base.Recommender import Recommender
@@ -8,10 +9,11 @@ from Base.SimilarityMatrixRecommender import SimilarityMatrixRecommender
 import numpy as np
 from Dataset.RS_Data_Loader import RS_Data_Loader
 from scipy import sparse
-
+import xgboost as xgb
 from GraphBased.P3alphaRecommender import P3alphaRecommender
 from GraphBased.RP3betaRecommender import RP3betaRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
+from KNN.ItemKNNCFPageRankRecommender import ItemKNNCFPageRankRecommender
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython, \
     MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
 from MatrixFactorization.PureSVD import PureSVDRecommender
@@ -27,9 +29,10 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
 
     RECOMMENDER_NAME = "HybridRecommenderXGBoost"
 
-    def __init__(self, URM_train, ICM, recommender_list, tracks, XGBoost_model=None, UCM_train=None, dynamic=False,
+    def __init__(self, URM_train, ICM, recommender_list, URM_PageRank_train=None,
+                 XGBoost_model=None, UCM_train=None, dynamic=False,
                  d_weights=None, weights=None, XGB_model_ready=False,
-                 URM_validation=None, sparse_weights=True, onPop=True, moreHybrids=False):
+                 URM_validation=None, sparse_weights=True, onPop=True, moreHybrids=False, tracks=None):
         super(Recommender, self).__init__()
 
         # CSR is faster during evaluation
@@ -44,6 +47,7 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
         self.dataset = None
         self.onPop = onPop
         self.moreHybrids = moreHybrids
+        self.URM_PageRank_train = URM_PageRank_train
 
         # parameters for xgboost
         self.user_id_XGBoost = None
@@ -90,6 +94,8 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
             # For sake of simplicity the recommender in this case is initialized and fitted outside
             elif recommender.__class__ in [HybridRecommenderXGBoost]:
                 self.recommender_list.append(recommender)
+            elif recommender in [ItemKNNCFPageRankRecommender]:
+                self.recommender_list.append(recommender(self.URM_train, self.URM_PageRank_train))
 
             else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
                 self.recommender_list.append(recommender(URM_train))
@@ -200,7 +206,114 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
         return self.URM_train.indices[
                self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
 
+    def xgboost_data_prediction(self, user_id_array, relevant_items_boost, cutoff_Boost):
+        dict_song_pop = ged.tracks_popularity()
 
+        # elements to add for each song
+
+        user_list = user_id_array.tolist()
+
+        tracks_duration_list = np.array(self.tracks['duration_sec']).reshape((-1, 1))[:, 0].tolist()
+
+        song_pop = np.array([[dict_song_pop[item] for item in relevant_line]
+                             for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
+
+        playlist_length = np.array([[int(ged.lenght_playlist(self.getUserProfile(user)))] * cutoff_Boost
+                                    for user in user_list]).reshape((-1, 1))
+        playlist_pop = np.array([[int(ged.playlist_popularity(self.getUserProfile(user), dict_song_pop))] * cutoff_Boost
+                                 for user in user_list]).reshape((-1, 1))
+
+        '''
+        # ucm_batch = self.UCM_train[user_list].toarray()
+        dim_ucm = int(len(user_list) * 20)
+        ucm_batch = np.array([self.UCM_dense[user] for _ in range(cutoff_Boost)
+                              for user in user_list]).reshape(dim_ucm, -1)
+        '''
+        dim_icm = int(len(relevant_items_boost) * 20)
+        icm_batch = np.array([[self.ICM_dense[item] for item in relevant_line]
+                              for relevant_line in relevant_items_boost.tolist()], dtype=int).reshape(dim_icm, -1)
+
+        tracks_duration = np.array([[tracks_duration_list[item] for item in relevant_line]
+                                    for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
+
+        relevant_items_boost = relevant_items_boost.reshape(-1, 1)
+        return np.concatenate([relevant_items_boost, song_pop, playlist_pop, playlist_length,
+                               tracks_duration, icm_batch], axis=1)  # , ucm_batch],
+
+    def mean_pl_length(self, URM, songs):
+        length_list = []
+        for song in songs:
+            length = 0
+            relevant_users = np.argwhere(URM[:, song])[:, 0]
+            for user in relevant_users:
+                length += int(ged.lenght_playlist(self.getUserProfile(user)))
+
+            if relevant_users.shape[0] == 0:
+                length_list.append(0)
+                continue
+            length = int(length / relevant_users.shape[0])
+            length_list.append(length)
+
+        return length_list
+
+    def mean_pl_pop(self, URM, songs, pop_dict):
+        pop_list = []
+        for song in songs:
+            pop = 0
+            relevant_users = np.argwhere(URM[:, song])[:, 0]
+            for user in relevant_users:
+                pop += int(ged.playlist_popularity(self.getUserProfile(user), pop_dict))
+
+            if relevant_users.shape[0] == 0:
+                pop_list.append(0)
+                continue
+
+            pop = int(pop / relevant_users.shape[0])
+            pop_list.append(pop)
+
+        return pop_list
+
+    def xgboost_data_training(self, user_id, URM_train):
+
+        dict_song_pop = ged.tracks_popularity()
+        tracks_duration_list = np.array(self.tracks['duration_sec']).reshape((-1, 1))[:, 0].tolist()
+        all_tracks = range(0, URM_train.shape[1])
+        # elements to add for each song
+
+        playlist_pos_song_cut = URM_train[user_id].indices.tolist()
+        playlist_neg_song_cut = random.sample([x for x in all_tracks if x not in playlist_pos_song_cut],
+                                              len(playlist_pos_song_cut))
+        playlist_songs_selected = playlist_pos_song_cut + playlist_neg_song_cut
+        playlist_songs_selected_array = np.array(playlist_songs_selected).reshape(-1, 1)
+
+        songs_pop = np.array([dict_song_pop[item] for item in playlist_songs_selected]).reshape(-1, 1)
+        mean_playlist_length = np.array(self.mean_pl_length(URM_train, playlist_songs_selected)).reshape(-1, 1)
+        mean_playlist__pop = np.array(self.mean_pl_pop(URM_train, playlist_songs_selected, dict_song_pop)).reshape(-1,
+                                                                                                                   1)
+        tracks_duration = np.array([tracks_duration_list[item] for item in playlist_songs_selected]).reshape(-1, 1)
+
+        '''
+        # ucm_batch = self.UCM_train[user_list].toarray()
+        dim_ucm = int(len(user_list) * 20)
+        ucm_batch = np.array([self.UCM_dense[user] for _ in range(cutoff_Boost)
+                              for user in user_list]).reshape(dim_ucm, -1)
+        '''
+        icm_batch = np.array([self.ICM_dense[item] for item in
+                              playlist_songs_selected], dtype=int).reshape(len(playlist_songs_selected), -1)
+
+        return np.concatenate([playlist_songs_selected_array, songs_pop, mean_playlist__pop, mean_playlist_length,
+                               tracks_duration, icm_batch], axis=1)  # , ucm_batch],
+
+    def reorder_songs(self, preds, user_recommendations):
+
+        ordered_tracks = []
+        count = 0
+        for track in user_recommendations[:, 0]:
+            ordered_tracks.append((track, (preds[count][0])))
+            count += 1
+
+        ordered_tracks.sort(key=lambda elem: elem[1])
+        return [track_id[0] for track_id in ordered_tracks]
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
@@ -281,95 +394,87 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
 
         # i take the 20 elements with highest scores
 
-        for user_index in range(len(user_id_array)):
-
-            user_id = user_id_array[user_index]
-            if self.user_id_XGBoost is None:
-                self.user_id_XGBoost = np.array([user_id] * cutoff_Boost).reshape(-1, 1)
-            else:
-                self.user_id_XGBoost = np.concatenate([self.user_id_XGBoost,
-                                                       np.array([user_id] *
-                                                                cutoff_Boost).reshape(-1, 1)], axis=0)
-
         relevant_items_boost = (-final_score).argpartition(cutoff_Boost, axis=1)[:,
                                0:cutoff_Boost]
 
-        if not self.xgb_model_ready:
-            relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
+        # if not self.xgb_model_ready:
+        relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
 
-            relevant_items_partition_original_value = final_score[
-                np.arange(final_score.shape[0])[:, None], relevant_items_partition]
-            relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-            ranking = relevant_items_partition[
-                np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
+        relevant_items_partition_original_value = final_score[
+            np.arange(final_score.shape[0])[:, None], relevant_items_partition]
+        relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
+        ranking = relevant_items_partition[
+            np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
 
         # Creating numpy array for training XGBoost
+        data_reader = RS_Data_Loader()
+        URM_train = data_reader.get_URM_train()
 
-        dict_song_pop = ged.tracks_popularity()
+        pred_data_xgboost = self.xgboost_data_prediction(user_id_array, relevant_items_boost, cutoff_Boost)
 
-        # elements to add for each song
+        param = {
+            'max_depth': 3,  # the maximum depth of each tree
+            'eta': 0.3,  # the training step for each iteration
+            'silent': 1,  # logging mode - quiet
+            'objective': 'multi:softprob',  # error evaluation for multiclass training
+            'num_class': 2}  # the number of classes that exist in this datset
+        num_round = 20
 
-        user_list = user_id_array.tolist()
+        ranking = []
+        for user_index in range(len(user_id_array)):
+            user_id = user_id_array[user_index]
+            # if self.user_id_XGBoost is None:
+            #     self.user_id_XGBoost = np.array([user_id] * cutoff_Boost).reshape(-1, 1)
+            # else:
+            #     self.user_id_XGBoost = np.concatenate([self.user_id_XGBoost,
+            #                                            np.array([user_id] *
+            #                                                     cutoff_Boost).reshape(-1, 1)], axis=0)
 
-        tracks_duration_list = np.array(self.tracks['duration_sec']).reshape((-1, 1))[:, 0].tolist()
+            train_xgboost = self.xgboost_data_training(user_id, URM_train)
+            labels_train = np.array([1 for _ in range(int(train_xgboost.shape[0] / 2))] +
+                                    [0 for _ in range(int(train_xgboost.shape[0] / 2))])
+            dtrain = xgb.DMatrix(train_xgboost, label=labels_train)
+            bst = xgb.train(param, dtrain, num_round)
 
-        song_pop = np.array([[dict_song_pop[item] for item in relevant_line]
-                             for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
+            user_recommendations = pred_data_xgboost[user_index * cutoff_Boost:(user_index + 1) * cutoff_Boost]
+            dtest = xgb.DMatrix(user_recommendations)
+            preds = bst.predict(dtest)
+            predictions = self.reorder_songs(preds, user_recommendations)[:cutoff]
+            ranking.append(predictions)
+            print(user_id, predictions)
 
-        playlist_length = np.array([[int(ged.lenght_playlist(self.getUserProfile(user)))] * cutoff_Boost
-                                    for user in user_list]).reshape((-1, 1))
-        playlist_pop = np.array([[int(ged.playlist_popularity(self.getUserProfile(user), dict_song_pop))] * cutoff_Boost
-                                 for user in user_list]).reshape((-1, 1))
-
-        '''
-        # ucm_batch = self.UCM_train[user_list].toarray()
-        dim_ucm = int(len(user_list) * 20)
-        ucm_batch = np.array([self.UCM_dense[user] for _ in range(cutoff_Boost)
-                              for user in user_list]).reshape(dim_ucm, -1)
-
-        dim_icm = int(len(relevant_items_boost) * 20)
-        icm_batch = np.array([[self.ICM_dense[item] for item in relevant_line]
-                              for relevant_line in relevant_items_boost.tolist()]).reshape(dim_icm, -1)
-        '''
-        tracks_duration = np.array([[tracks_duration_list[item] for item in relevant_line]
-                                    for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
-
-        relevant_items_boost = relevant_items_boost.reshape(-1, 1)
-        newTrainXGBoost = np.concatenate([relevant_items_boost, song_pop, playlist_pop, playlist_length,
-                                          tracks_duration],  # icm_batch, ucm_batch],
-                                         axis=1)
-
-        if self.xgb_model_ready:
-            print("QUI")
-            preds = self.xgbModel.predict_proba(newTrainXGBoost)
-            # preds = self.xgbModel.predict(newTrainXGBoost)
-            ranking = []
-            ordered_tracks = []
-            current_user_id = 0
-            current_user = user_list[current_user_id]
-            for track_idx in range(newTrainXGBoost.shape[0]):
-                ordered_tracks.append((relevant_items_boost[track_idx], preds[track_idx][current_user]))
-
-                if track_idx % cutoff_Boost and track_idx != 0:
-                    ordered_tracks.sort(key=lambda elem: elem[1])
-                    ordered_tracks = [track_id[0] for track_id in ordered_tracks]
-                    ranking.append(ordered_tracks)
-                    ordered_tracks = []
-                    current_user_id += 1
-
-
-        elif not self.xgb_model_ready:
-            if self.first_time:
-                self.first_time = False
-                self.trainXGBoost = sparse.lil_matrix(newTrainXGBoost, dtype=int)
-                x = self.trainXGBoost
-                y = self.user_id_XGBoost
-                print()
-
-            elif not self.first_time:
-                self.trainXGBoost = sparse.vstack([self.trainXGBoost, newTrainXGBoost], dtype=int)
-                x = self.trainXGBoost
-                y = 0
+        #
+        # if self.xgb_model_ready:
+        #     print("QUI")
+        #     preds = self.xgbModel.predict_proba(newTrainXGBoost)
+        #     # preds = self.xgbModel.predict(newTrainXGBoost)
+        #     ranking = []
+        #     ordered_tracks = []
+        #     current_user_id = 0
+        #     current_user = user_list[current_user_id]
+        #     for track_idx in range(newTrainXGBoost.shape[0]):
+        #         ordered_tracks.append((relevant_items_boost[track_idx], preds[track_idx][current_user]))
+        #
+        #         if track_idx % cutoff_Boost and track_idx != 0:
+        #             ordered_tracks.sort(key=lambda elem: elem[1])
+        #             ordered_tracks = [track_id[0] for track_id in ordered_tracks]
+        #             ranking.append(ordered_tracks)
+        #             ordered_tracks = []
+        #             current_user_id += 1
+        #
+        #
+        # elif not self.xgb_model_ready:
+        #     if self.first_time:
+        #         self.first_time = False
+        #         self.trainXGBoost = sparse.lil_matrix(newTrainXGBoost, dtype=int)
+        #         x = self.trainXGBoost
+        #         y = self.user_id_XGBoost
+        #         print()
+        #
+        #     elif not self.first_time:
+        #         self.trainXGBoost = sparse.vstack([self.trainXGBoost, newTrainXGBoost], dtype=int)
+        #         x = self.trainXGBoost
+        #         y = 0
         # Return single list for one user, instead of list of lists
         # if single_user:
         #     ranking_list = ranking_list[0]
@@ -379,172 +484,173 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
     '''
     QUESTA L'HO SOLO COMMENTATA PER CREARNE UNA SOPRA, QUESTA È QUELLA VECCHIA CHE AVEVAMO FATTO PRIMA
     '''
-    def recommend_OLD(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
-                  remove_CustomItems_flag=False):
 
-        if np.isscalar(user_id_array):
-            user_id_array = np.atleast_1d(user_id_array)
-            single_user = True
-        else:
-            single_user = False
-
-        weights = self.weights
-        if cutoff == None:
-            # noinspection PyUnresolvedReferences
-            cutoff = self.URM_train.shape[1] - 1
-        else:
-            cutoff
-
-        cutoff_addition = 10
-        cutoff_Boost = cutoff + cutoff_addition
-
-        # compute the scores using the dot product
-        # noinspection PyUnresolvedReferences
-
-        if self.sparse_weights:
-            scores = []
-            # noinspection PyUnresolvedReferences
-            for recommender in self.recommender_list:
-                if recommender.__class__ in [HybridRecommenderXGBoost]:
-                    scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop,
-                                                            remove_seen_flag=True, remove_top_pop_flag=False,
-                                                            remove_CustomItems_flag=False))
-
-                    continue
-                scores_batch = recommender.compute_item_score(user_id_array)
-                # scores_batch = np.ravel(scores_batch) # because i'm not using batch
-
-                for user_index in range(len(user_id_array)):
-
-                    user_id = user_id_array[user_index]
-
-                    if remove_seen_flag:
-                        scores_batch[user_index, :] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
-
-                if remove_top_pop_flag:
-                    scores_batch = self._remove_TopPop_on_scores(scores_batch)
-
-                if remove_CustomItems_flag:
-                    scores_batch = self._remove_CustomItems_on_scores(scores_batch)
-
-                scores.append(scores_batch)
-
-            final_score = np.zeros(scores[0].shape)
-
-            if self.dynamic:
-                for user_index in range(len(user_id_array)):
-                    user_id = user_id_array[user_index]
-                    user_profile = self.URM_train.indices[
-                                   self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                    if self.onPop:
-                        level = int(ged.playlist_popularity(user_profile, dict_pop))
-                    else:
-                        level = int(ged.lenght_playlist(user_profile))
-                    # weights = self.change_weights(user_id)
-                    weights = self.change_weights(level, self.pop)
-                    assert len(weights) == len(scores), "Scores and weights have different lengths"
-
-                    final_score_line = np.zeros(scores[0].shape[1])
-                    if sum(weights) > 0:
-                        for score, weight in zip(scores, weights):
-                            final_score_line += score[user_index] * weight
-                    final_score[user_index] = final_score_line
-            else:
-                for score, weight in zip(scores, weights):
-                    final_score += (score * weight)
-
-        else:
-            raise NotImplementedError
-
-        # i take the 20 elements with highest scores
-
-        for user_index in range(len(user_id_array)):
-
-            user_id = user_id_array[user_index]
-            if self.user_id_XGBoost is None:
-                self.user_id_XGBoost = np.array([user_id] * cutoff_Boost).reshape(-1, 1)
-            else:
-                self.user_id_XGBoost = np.concatenate([self.user_id_XGBoost,
-                                                       np.array([user_id] *
-                                                                cutoff_Boost).reshape(-1, 1)], axis=0)
-
-        relevant_items_boost = (-final_score).argpartition(cutoff_Boost, axis=1)[:,
-                               0:cutoff_Boost]
-
-        if not self.xgb_model_ready:
-            relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
-
-            relevant_items_partition_original_value = final_score[
-                np.arange(final_score.shape[0])[:, None], relevant_items_partition]
-            relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-            ranking = relevant_items_partition[
-                np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
-
-        # Creating numpy array for training XGBoost
-
-        dict_song_pop = ged.tracks_popularity()
-
-        # elements to add for each song
-
-        user_list = user_id_array.tolist()
-
-        tracks_duration_list = np.array(self.tracks['duration_sec']).reshape((-1, 1))[:, 0].tolist()
-
-        song_pop = np.array([[dict_song_pop[item] for item in relevant_line]
-                             for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
-
-        playlist_length = np.array([[int(ged.lenght_playlist(self.getUserProfile(user)))] * cutoff_Boost
-                                    for user in user_list]).reshape((-1, 1))
-        playlist_pop = np.array([[int(ged.playlist_popularity(self.getUserProfile(user), dict_song_pop))] * cutoff_Boost
-                                 for user in user_list]).reshape((-1, 1))
-
-        '''
-        # ucm_batch = self.UCM_train[user_list].toarray()
-        dim_ucm = int(len(user_list) * 20)
-        ucm_batch = np.array([self.UCM_dense[user] for _ in range(cutoff_Boost)
-                              for user in user_list]).reshape(dim_ucm, -1)
-
-        dim_icm = int(len(relevant_items_boost) * 20)
-        icm_batch = np.array([[self.ICM_dense[item] for item in relevant_line]
-                              for relevant_line in relevant_items_boost.tolist()]).reshape(dim_icm, -1)
-        '''
-        tracks_duration = np.array([[tracks_duration_list[item] for item in relevant_line]
-                                    for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
-
-        relevant_items_boost = relevant_items_boost.reshape(-1, 1)
-        newTrainXGBoost = np.concatenate([relevant_items_boost, song_pop, playlist_pop, playlist_length,
-                                          tracks_duration],  # icm_batch, ucm_batch],
-                                         axis=1)
-
-        if self.xgb_model_ready:
-            print("QUI")
-            preds = self.xgbModel.predict(newTrainXGBoost)
-            ranking = []
-            ordered_tracks = []
-            current_user_id = 0
-            current_user = user_list[current_user_id]
-            for track_idx in range(newTrainXGBoost.shape[0]):
-                ordered_tracks.append((relevant_items_boost[track_idx], preds[track_idx][current_user]))
-
-                if track_idx % cutoff_Boost and track_idx != 0:
-                    ordered_tracks.sort(key=lambda elem: elem[1])
-                    ordered_tracks = [track_id[0] for track_id in ordered_tracks]
-                    ranking.append(ordered_tracks)
-                    ordered_tracks = []
-                    current_user_id += 1
-
-
-        elif not self.xgb_model_ready:
-            if self.first_time:
-                self.first_time = False
-                self.trainXGBoost = sparse.lil_matrix(newTrainXGBoost, dtype=int)
-
-            elif not self.first_time:
-                self.trainXGBoost = sparse.vstack([self.trainXGBoost, newTrainXGBoost], dtype=int)
-                x = self.trainXGBoost
-                y = 0
-        # Return single list for one user, instead of list of lists
-        # if single_user:
-        #     ranking_list = ranking_list[0]
-
-        return ranking
+    # def recommend_OLD(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
+    #                   remove_CustomItems_flag=False):
+    #
+    #     if np.isscalar(user_id_array):
+    #         user_id_array = np.atleast_1d(user_id_array)
+    #         single_user = True
+    #     else:
+    #         single_user = False
+    #
+    #     weights = self.weights
+    #     if cutoff == None:
+    #         # noinspection PyUnresolvedReferences
+    #         cutoff = self.URM_train.shape[1] - 1
+    #     else:
+    #         cutoff
+    #
+    #     cutoff_addition = 10
+    #     cutoff_Boost = cutoff + cutoff_addition
+    #
+    #     # compute the scores using the dot product
+    #     # noinspection PyUnresolvedReferences
+    #
+    #     if self.sparse_weights:
+    #         scores = []
+    #         # noinspection PyUnresolvedReferences
+    #         for recommender in self.recommender_list:
+    #             if recommender.__class__ in [HybridRecommenderXGBoost]:
+    #                 scores.append(self.compute_score_hybrid(recommender, user_id_array, dict_pop,
+    #                                                         remove_seen_flag=True, remove_top_pop_flag=False,
+    #                                                         remove_CustomItems_flag=False))
+    #
+    #                 continue
+    #             scores_batch = recommender.compute_item_score(user_id_array)
+    #             # scores_batch = np.ravel(scores_batch) # because i'm not using batch
+    #
+    #             for user_index in range(len(user_id_array)):
+    #
+    #                 user_id = user_id_array[user_index]
+    #
+    #                 if remove_seen_flag:
+    #                     scores_batch[user_index, :] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
+    #
+    #             if remove_top_pop_flag:
+    #                 scores_batch = self._remove_TopPop_on_scores(scores_batch)
+    #
+    #             if remove_CustomItems_flag:
+    #                 scores_batch = self._remove_CustomItems_on_scores(scores_batch)
+    #
+    #             scores.append(scores_batch)
+    #
+    #         final_score = np.zeros(scores[0].shape)
+    #
+    #         if self.dynamic:
+    #             for user_index in range(len(user_id_array)):
+    #                 user_id = user_id_array[user_index]
+    #                 user_profile = self.URM_train.indices[
+    #                                self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
+    #                 if self.onPop:
+    #                     level = int(ged.playlist_popularity(user_profile, dict_pop))
+    #                 else:
+    #                     level = int(ged.lenght_playlist(user_profile))
+    #                 # weights = self.change_weights(user_id)
+    #                 weights = self.change_weights(level, self.pop)
+    #                 assert len(weights) == len(scores), "Scores and weights have different lengths"
+    #
+    #                 final_score_line = np.zeros(scores[0].shape[1])
+    #                 if sum(weights) > 0:
+    #                     for score, weight in zip(scores, weights):
+    #                         final_score_line += score[user_index] * weight
+    #                 final_score[user_index] = final_score_line
+    #         else:
+    #             for score, weight in zip(scores, weights):
+    #                 final_score += (score * weight)
+    #
+    #     else:
+    #         raise NotImplementedError
+    #
+    #     # i take the 20 elements with highest scores
+    #
+    #     for user_index in range(len(user_id_array)):
+    #
+    #         user_id = user_id_array[user_index]
+    #         if self.user_id_XGBoost is None:
+    #             self.user_id_XGBoost = np.array([user_id] * cutoff_Boost).reshape(-1, 1)
+    #         else:
+    #             self.user_id_XGBoost = np.concatenate([self.user_id_XGBoost,
+    #                                                    np.array([user_id] *
+    #                                                             cutoff_Boost).reshape(-1, 1)], axis=0)
+    #
+    #     relevant_items_boost = (-final_score).argpartition(cutoff_Boost, axis=1)[:,
+    #                            0:cutoff_Boost]
+    #
+    #     if not self.xgb_model_ready:
+    #         relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
+    #
+    #         relevant_items_partition_original_value = final_score[
+    #             np.arange(final_score.shape[0])[:, None], relevant_items_partition]
+    #         relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
+    #         ranking = relevant_items_partition[
+    #             np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
+    #
+    #     # Creating numpy array for training XGBoost
+    #
+    #     dict_song_pop = ged.tracks_popularity()
+    #
+    #     # elements to add for each song
+    #
+    #     user_list = user_id_array.tolist()
+    #
+    #     tracks_duration_list = np.array(self.tracks['duration_sec']).reshape((-1, 1))[:, 0].tolist()
+    #
+    #     song_pop = np.array([[dict_song_pop[item] for item in relevant_line]
+    #                          for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
+    #
+    #     playlist_length = np.array([[int(ged.lenght_playlist(self.getUserProfile(user)))] * cutoff_Boost
+    #                                 for user in user_list]).reshape((-1, 1))
+    #     playlist_pop = np.array([[int(ged.playlist_popularity(self.getUserProfile(user), dict_song_pop))] * cutoff_Boost
+    #                              for user in user_list]).reshape((-1, 1))
+    #
+    #     '''
+    #     # ucm_batch = self.UCM_train[user_list].toarray()
+    #     dim_ucm = int(len(user_list) * 20)
+    #     ucm_batch = np.array([self.UCM_dense[user] for _ in range(cutoff_Boost)
+    #                           for user in user_list]).reshape(dim_ucm, -1)
+    #
+    #     dim_icm = int(len(relevant_items_boost) * 20)
+    #     icm_batch = np.array([[self.ICM_dense[item] for item in relevant_line]
+    #                           for relevant_line in relevant_items_boost.tolist()]).reshape(dim_icm, -1)
+    #     '''
+    #     tracks_duration = np.array([[tracks_duration_list[item] for item in relevant_line]
+    #                                 for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
+    #
+    #     relevant_items_boost = relevant_items_boost.reshape(-1, 1)
+    #     newTrainXGBoost = np.concatenate([relevant_items_boost, song_pop, playlist_pop, playlist_length,
+    #                                       tracks_duration],  # icm_batch, ucm_batch],
+    #                                      axis=1)
+    #
+    #     if self.xgb_model_ready:
+    #         print("QUI")
+    #         preds = self.xgbModel.predict(newTrainXGBoost)
+    #         ranking = []
+    #         ordered_tracks = []
+    #         current_user_id = 0
+    #         current_user = user_list[current_user_id]
+    #         for track_idx in range(newTrainXGBoost.shape[0]):
+    #             ordered_tracks.append((relevant_items_boost[track_idx], preds[track_idx][current_user]))
+    #
+    #             if track_idx % cutoff_Boost and track_idx != 0:
+    #                 ordered_tracks.sort(key=lambda elem: elem[1])
+    #                 ordered_tracks = [track_id[0] for track_id in ordered_tracks]
+    #                 ranking.append(ordered_tracks)
+    #                 ordered_tracks = []
+    #                 current_user_id += 1
+    #
+    #
+    #     elif not self.xgb_model_ready:
+    #         if self.first_time:
+    #             self.first_time = False
+    #             self.trainXGBoost = sparse.lil_matrix(newTrainXGBoost, dtype=int)
+    #
+    #         elif not self.first_time:
+    #             self.trainXGBoost = sparse.vstack([self.trainXGBoost, newTrainXGBoost], dtype=int)
+    #             x = self.trainXGBoost
+    #             y = 0
+    #     # Return single list for one user, instead of list of lists
+    #     # if single_user:
+    #     #     ranking_list = ranking_list[0]
+    #
+    #     return ranking

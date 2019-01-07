@@ -163,7 +163,7 @@ if __name__ == '__main__':
         transfer_matrix = None
 
     try:
-        recommender_class = HybridRecommender
+        recommender_class = HybridRecommenderXGBoost
         print("Algorithm: {}".format(recommender_class))
 
         '''
@@ -220,7 +220,7 @@ if __name__ == '__main__':
         recommender = recommender_class(URM_train, ICM, recommender_list, URM_PageRank_train=URM_PageRank_train,
                                         dynamic=False,
                                         d_weights=d_weights, UCM_train=UCM_tfidf,
-                                        URM_validation=URM_validation, onPop=onPop)
+                                        URM_validation=URM_validation, onPop=onPop, tracks=dataReader.tracks)
 
         # dtrain = xgb.DMatrix(URM_train, label=)
         # dtest = xgb.DMatrix(X_test, label=y_test)
@@ -289,6 +289,7 @@ if __name__ == '__main__':
             'alphaRP3': [0.457685370741483, 0.9223827655310622, 0.49774549098196397],
             'betaRP': [0.289432865731463, 0.2213306613226453, 0.2333486973947896],
             'l1_ratio': l1_ratio,
+            'feature_weighting_index': 1,
             "weights_to_dweights":-1})
 
         print("TEST")

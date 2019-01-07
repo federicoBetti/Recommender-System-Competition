@@ -60,3 +60,5 @@ BayesianSearch: New best config found. Config: {'topK': 370, 'l1_ratio': 1e-05} 
 BayesianSearch: Config is suboptimal. Config: {'topK': 390, 'l1_ratio': 0.0001} - MAP results: 0.06535684404859474 - time: 2018-12-23 19:26:18.807912
 BayesianSearch: Config is suboptimal. Config: {'topK': 10, 'l1_ratio': 0.01} - MAP results: 0.00010558906017132912 - time: 2018-12-23 19:33:16.761515
 BayesianSearch: New best config found. Config: {'topK': 370, 'l1_ratio': 0.01} - MAP results: 6.0686921207071774e-05 - time: 2019-01-04 10:11:53.820565
+
+from kernel: topK: 100, l1_ratio: 1e-05, MAP: 0.07621263405636987

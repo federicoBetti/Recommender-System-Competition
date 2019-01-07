@@ -63,11 +63,12 @@ if __name__ == '__main__':
     # CF, USER
     # CF, P3ALPHA, RP3BETA, PURE
     # SVD
-    recommender_list1 = [
+    recommender_list = [
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
+        ItemKNNCFRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
         P3alphaRecommender,
@@ -75,68 +76,10 @@ if __name__ == '__main__':
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender
-        # PureSVDRecommender
+        # PureSVDRecommender,
+
+        SLIMElasticNetRecommender
     ]
-
-    # ITEM CB, ITEM CF, USER CF, RP3BETA, PURE SVD
-    recommender_list2 = [
-        # Random,
-        # TopPop,
-        ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        # P3alphaRecommender,
-        RP3betaRecommender,
-        # MatrixFactorization_BPR_Cython,
-        # MatrixFactorization_FunkSVD_Cython,
-        # SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender
-        PureSVDRecommender
-    ]
-
-    # UserCBF, ItemCF, UserCF, P3alpha, RP3b, SLIM, PurSVD
-    recommender_list3 = [
-        # Random,
-        # TopPop,
-        # ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        P3alphaRecommender,
-        RP3betaRecommender,
-        # # MatrixFactorization_BPR_Cython,
-        # # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
-        # # SLIMElasticNetRecommender
-        PureSVDRecommender
-    ]
-
-    # For hybrid with weighted estimated rating
-    d_weights = [
-        [0.6708034395599534, 0.4180455311930482, 0.013121631586130333, 0.9606783176615321, 0.9192576193987754,
-         0.517220112773677] + [0] * len(recommender_list2) + [0] * len(recommender_list3),
-        [0] * len(recommender_list1) + [0.03206429006541767, 0.022068399812202766, 0.5048937312439359,
-                                        0.5777889378285606, 0.002469536740713263]
-        + [0] * len(recommender_list3),
-        [0] * len(recommender_list1) + [0] * len(recommender_list2) + [0.2959761085665614, 0.08296490886624563,
-                                                                       0.72672714096492, 0.04856215067017522,
-                                                                       0.7144382800343254, 0.20367609381116258,
-                                                                       0.1080480529784491]
-    ]
-    #
-    # d_best = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
-    #            0.4112843940329439],
-    #           [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
-    #            0.6888103295594851],
-    #           [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
-    #            0.5873532658846817]]
-
-    # BEST RESULT : d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
-
-    # Dynamics for Hybrid with Top_N. usefull for testing where each recommender works better
-    # d_weights = [[2, 4, 0], [1, 4, 5], [0, 2, 8]]
 
     from Base.Evaluation.Evaluator import SequentialEvaluator
 
@@ -159,7 +102,7 @@ if __name__ == '__main__':
         transfer_matrix = None
 
     try:
-        recommender_class = HybridRecommenderXGBoost
+        recommender_class = HybridRecommender
         print("Algorithm: {}".format(recommender_class))
 
         '''
@@ -208,35 +151,12 @@ if __name__ == '__main__':
         '''
         Our optimal run
         '''
-        recommender_list = recommender_list1 + recommender_list2 + recommender_list3
+
         onPop = True
 
-        # XGBoost
-        model = None
-        # try:
-        if XGB_model_ready:
-            X_train = np.load("Dataset/XGBoostTraining.npy")
-            y_train = np.load("Dataset/XGBoostLabels.npy")
-            print("XGBoost training...")
-            dtrain = xgb.DMatrix(X_train, label=y_train)
-
-            param = {
-                'max_depth': 5,  # the maximum depth of each tree
-                'eta': 0.3,  # the training step for each iteration
-                'silent': 1,  # logging mode - quiet
-                'objective': 'multi:softprob',  # error evaluation for multiclass training
-                'num_class': y_train.shape[0]}  # the number of classes that exist in this datset
-            num_round = 20  # the number of training iterations
-
-            model = xgb.train(param, dtrain, num_round)
-            # except:
-            XGB_model_ready = False
-
         # On pop it used to choose if have dynamic weights for
-        recommender = recommender_class(URM_train, ICM, recommender_list, XGB_model_ready=XGB_model_ready,
-                                        XGBoost_model=model,
-                                        dynamic=True,
-                                        d_weights=d_weights, UCM_train=UCM_tfidf,
+        recommender = recommender_class(URM_train, ICM, recommender_list,
+                                        dynamic=False, UCM_train=UCM_tfidf,
                                         URM_validation=URM_validation, onPop=onPop)
 
         # dtrain = xgb.DMatrix(URM_train, label=)
@@ -290,23 +210,22 @@ if __name__ == '__main__':
         # best
         # config
         # found.Config: {'top1': 50, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP
-
+        weights = [0.6276800879257863, 0.005867148701749425, 0.5046705814623391, 0.7515813267324801, 0.6536841000399135, 0.43313976601203563, 0.9628753418301093]
         recommender.fit(**{
-            "topK": [15, 595, 105, 15, 20] + [21, 220, 160, 70, -1] + [250, 180, 240, 151, 91, 311, -1],
-            "shrink": [210, 1, 30, -1, -1] + [75, 1, 150, -1, -1] + [55, 2, 19, -1, -1, -1, -1],
+            "topK": [10, 220, 150, 160, 61, 236, 40],
+            "shrink": [180, 0, 15, 2, -1, -1, -1],
             "pop": [130, 346],
-            "weights": d_weights,
+            "weights": weights,
             "force_compute_sim": True,
             "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
-            "epochs": 1, "lambda_i": [0.10467537896611145],
-            "lambda_j": [0.004454204678491891],  # SOLO ULTIMO HA SLIM
-            "num_factors": [395, 391, 95],
-            'alphaP3': [0.7100641282565131, 1.2827139967773968],
-            'alphaRP3': [0.457685370741483, 0.9223827655310622, 0.49774549098196397],
-            'betaRP': [0.289432865731463, 0.2213306613226453, 0.2333486973947896],
-            'l1_ratio': l1_ratio,
-            "weights_to_dweights": -1})
+            "epochs": 50,
+            'alphaP3': [0.5203791059230995],
+            'alphaRP3': [0.3855771543086173],
+            'betaRP': [0.5217815631262526],
+            'l1_ratio': 2.726530612244898e-05,
+            "weights_to_dweights": -1,
+            "tfidf": [True, False]})
 
         print("TEST")
 
@@ -322,12 +241,6 @@ if __name__ == '__main__':
         logFile.write("Algorithm: {}, results: \n{}\n".format(recommender.__class__, results_run_string))
         logFile.flush()
 
-        if not XGB_model_ready:
-            with open(os.path.join("Dataset", "XGBoostTraining.pkl"), 'wb') as handle:
-                pickle.dump(recommender.trainXGBoost, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-            with open(os.path.join("Dataset", "XGBoostLabels.pkl"), 'wb') as handle:
-                pickle.dump(recommender.user_id_XGBoost, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
         if not evaluate_algorithm:
             target_playlist = dataReader.get_target_playlist()

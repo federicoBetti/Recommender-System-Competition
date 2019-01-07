@@ -1255,6 +1255,147 @@ class RP3betaRecommender(SimilarityMatrixRecommender, Recommender):
             self.sparse_weights = True
 
 
+class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
+    """ P3alpha recommender """
+
+    RECOMMENDER_NAME = "P3alphaRecommender"
+
+    def __init__(self, URM_train):
+        super(P3alphaRecommender, self).__init__()
+
+        self.URM_train = check_matrix(URM_train, format='csr', dtype=np.float32)
+        self.sparse_weights = True
+
+    def __str__(self):
+        return "P3alpha(alpha={}, min_rating={}, topk={}, implicit={}, normalize_similarity={})".format(self.alpha,
+                                                                                                        self.min_rating,
+                                                                                                        self.topK,
+                                                                                                        self.implicit,
+                                                                                                        self.normalize_similarity)
+
+    def fit(self, topK=100, alpha=1., min_rating=0, implicit=True, normalize_similarity=False, force_compute_sim=True):
+
+        self.topK = topK
+        self.alpha = alpha
+        self.min_rating = min_rating
+        self.implicit = implicit
+        self.normalize_similarity = normalize_similarity
+
+        if not force_compute_sim:
+            found = True
+            try:
+                with open(os.path.join("P3alphaMatrix.pkl"), 'rb') as handle:
+                    (topK_new, W_sparse_new) = pickle.load(handle)
+            except FileNotFoundError:
+                print("File {} not found".format(os.path.join("IntermediateComputations", "P3alphaMatrix.pkl")))
+                found = False
+
+            if found and self.topK == topK_new:
+                self.W_sparse = W_sparse_new
+                print("Saved P3alpha Similarity Matrix Used!")
+                return
+        #
+        # if X.dtype != np.float32:
+        #     print("P3ALPHA fit: For memory usage reasons, we suggest to use np.float32 as dtype for the dataset")
+
+        if self.min_rating > 0:
+            self.URM_train.data[self.URM_train.data < self.min_rating] = 0
+            self.URM_train.eliminate_zeros()
+            if self.implicit:
+                self.URM_train.data = np.ones(self.URM_train.data.size, dtype=np.float32)
+
+        # Pui is the row-normalized urm
+        Pui = normalize(self.URM_train, norm='l1', axis=1)
+
+        # Piu is the column-normalized, "boolean" urm transposed
+        X_bool = self.URM_train.transpose(copy=True)
+        X_bool.data = np.ones(X_bool.data.size, np.float32)
+        # ATTENTION: axis is still 1 because i transposed before the normalization
+        Piu = normalize(X_bool, norm='l1', axis=1)
+        del (X_bool)
+
+        # Alfa power
+        if self.alpha != 1.:
+            Pui = Pui.power(self.alpha)
+            Piu = Piu.power(self.alpha)
+
+        # Final matrix is computed as Pui * Piu * Pui
+        # Multiplication unpacked for memory usage reasons
+        block_dim = 200
+        d_t = Piu
+
+        # Use array as it reduces memory requirements compared to lists
+        dataBlock = 10000000
+
+        rows = np.zeros(dataBlock, dtype=np.int32)
+        cols = np.zeros(dataBlock, dtype=np.int32)
+        values = np.zeros(dataBlock, dtype=np.float32)
+
+        numCells = 0
+
+        start_time = time.time()
+        start_time_printBatch = start_time
+
+        for current_block_start_row in range(0, Pui.shape[1], block_dim):
+
+            if current_block_start_row + block_dim > Pui.shape[1]:
+                block_dim = Pui.shape[1] - current_block_start_row
+
+            similarity_block = d_t[current_block_start_row:current_block_start_row + block_dim, :] * Pui
+            similarity_block = similarity_block.toarray()
+
+            for row_in_block in range(block_dim):
+                row_data = similarity_block[row_in_block, :]
+                row_data[current_block_start_row + row_in_block] = 0
+
+                best = row_data.argsort()[::-1][:self.topK]
+
+                notZerosMask = row_data[best] != 0.0
+
+                values_to_add = row_data[best][notZerosMask]
+                cols_to_add = best[notZerosMask]
+
+                for index in range(len(values_to_add)):
+
+                    if numCells == len(rows):
+                        rows = np.concatenate((rows, np.zeros(dataBlock, dtype=np.int32)))
+                        cols = np.concatenate((cols, np.zeros(dataBlock, dtype=np.int32)))
+                        values = np.concatenate((values, np.zeros(dataBlock, dtype=np.float32)))
+
+                    rows[numCells] = current_block_start_row + row_in_block
+                    cols[numCells] = cols_to_add[index]
+                    values[numCells] = values_to_add[index]
+
+                    numCells += 1
+
+            if time.time() - start_time_printBatch > 60:
+                print("Processed {} ( {:.2f}% ) in {:.2f} minutes. Rows per second: {:.0f}".format(
+                    current_block_start_row,
+                    100.0 * float(current_block_start_row) / Pui.shape[1],
+                    (time.time() - start_time) / 60,
+                    float(current_block_start_row) / (time.time() - start_time)))
+
+                sys.stdout.flush()
+                sys.stderr.flush()
+
+                start_time_printBatch = time.time()
+
+        self.W_sparse = sps.csr_matrix((values[:numCells], (rows[:numCells], cols[:numCells])),
+                                       shape=(Pui.shape[1], Pui.shape[1]))
+
+        if self.normalize_similarity:
+            self.W_sparse = normalize(self.W_sparse, norm='l1', axis=1)
+
+        if self.topK != False:
+            self.W_sparse = similarityMatrixTopK(self.W_sparse, forceSparseOutput=True, k=self.topK)
+            self.sparse_weights = True
+
+        with open(os.path.join("P3alphaMatrix.pkl"), 'wb') as handle:
+            pickle.dump((self.topK, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
+            print("P3alpha similarity matrix saved")
+
+
+
 start_time = time.time()
 if __name__ == '__main__':
     dataReader = RS_Data_Loader(distr_split=False)
@@ -1266,19 +1407,18 @@ if __name__ == '__main__':
     evaluator = SequentialEvaluator(URM_test, URM_train, exclude_seen=True)
     evaluator_validation_wrapper = EvaluatorWrapper(evaluator)
 
-    recommender_class = RP3betaRecommender
+    recommender_class = P3alphaRecommender
 
     # On pop it used to choose if have dynamic weights for
     recommender = recommender_class(URM_train)
 
-    n_cases = 80
+    n_cases = 100
     metric_to_optimize = 'MAP'
 
     parameterSearch = BayesianSearch(recommender_class, evaluator_validation_wrapper)
     hyperparamethers_range_dictionary = {}
     hyperparamethers_range_dictionary["topK"] = list(range(1, 800, 5))
-    hyperparamethers_range_dictionary["alpha"] = list(np.linspace(0.001, 2.0, 500))  # range(0, 2)
-    hyperparamethers_range_dictionary["beta"] = list(np.linspace(0.001, 2.0, 500))  # range(0, 2) np.linespace()
+    hyperparamethers_range_dictionary["alpha"] = range(0, 2)
     hyperparamethers_range_dictionary["normalize_similarity"] = [True, False]
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
@@ -1289,7 +1429,7 @@ if __name__ == '__main__':
     best_parameters = parameterSearch.search(recommenderDictionary,
                                              n_cases=n_cases,
                                              metric=metric_to_optimize,  # do not put output path
-                                             output_root_path="RP3beta",
-                                             init_points=50
+                                             output_root_path="P3Alpha",
+                                             init_points=60
                                              )
     print(best_parameters)

@@ -8,6 +8,7 @@ from functools import partial
 
 import numpy as np
 import pandas as pd
+from scipy import sparse as sps
 from scipy.sparse import csr_matrix
 from sklearn.linear_model import ElasticNet
 
@@ -18,6 +19,24 @@ from ParameterTuning.BayesianOptimization_master.bayes_opt.bayesian_optimization
 Elastic Net
 '''
 
+
+def check_matrix(X, format='csc', dtype=np.float32):
+    if format == 'csc' and not isinstance(X, sps.csc_matrix):
+        return X.tocsc().astype(dtype)
+    elif format == 'csr' and not isinstance(X, sps.csr_matrix):
+        return X.tocsr().astype(dtype)
+    elif format == 'coo' and not isinstance(X, sps.coo_matrix):
+        return X.tocoo().astype(dtype)
+    elif format == 'dok' and not isinstance(X, sps.dok_matrix):
+        return X.todok().astype(dtype)
+    elif format == 'bsr' and not isinstance(X, sps.bsr_matrix):
+        return X.tobsr().astype(dtype)
+    elif format == 'dia' and not isinstance(X, sps.dia_matrix):
+        return X.todia().astype(dtype)
+    elif format == 'lil' and not isinstance(X, sps.lil_matrix):
+        return X.tolil().astype(dtype)
+    else:
+        return X.astype(dtype)
 
 class Recommender(object):
     """Abstract Recommender"""
@@ -339,10 +358,11 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
                                 copy_X=False,
                                 precompute=True,
                                 selection='random',
-                                max_iter=80,
+                                max_iter=30,
                                 tol=1e-4)
 
-        n_items = URM_train.shape[1]
+        URM_train = check_matrix(self.URM_train, 'csc', dtype=np.float32)
+        n_items = self.URM_train.shape[1]
 
         # Use array as it reduces memory requirements compared to lists
         dataBlock = 10000000
@@ -360,14 +380,14 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
         for currentItem in range(n_items):
 
             # get the target column
-            y = URM_train[:, currentItem].toarray()
+            y = self.URM_train[:, currentItem].toarray()
 
             # set the j-th column of X to zero
-            start_pos = URM_train.indptr[currentItem]
-            end_pos = URM_train.indptr[currentItem + 1]
+            start_pos = self.URM_train.indptr[currentItem]
+            end_pos = self.URM_train.indptr[currentItem + 1]
 
-            current_item_data_backup = URM_train.data[start_pos: end_pos].copy()
-            URM_train.data[start_pos: end_pos] = 0.0
+            current_item_data_backup = self.URM_train.data[start_pos: end_pos].copy()
+            self.URM_train.data[start_pos: end_pos] = 0.0
 
             # fit one ElasticNet model per column
             self.model.fit(URM_train, y)
@@ -407,7 +427,7 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
                 numCells += 1
 
             # finally, replace the original values of the j-th column
-            URM_train.data[start_pos:end_pos] = current_item_data_backup
+            self.URM_train.data[start_pos:end_pos] = current_item_data_backup
 
             if time.time() - start_time_printBatch > 30 or currentItem == n_items - 1:
                 print("Processed {} ( {:.2f}% ) in {:.2f} minutes. Items per second: {:.0f}".format(
@@ -1218,7 +1238,7 @@ if __name__ == '__main__':
     parameterSearch = BayesianSearch(recommender_class, evaluator_validation_wrapper)
     hyperparamethers_range_dictionary = {}
     hyperparamethers_range_dictionary["topK"] = list(range(10, 500, 30))
-    hyperparamethers_range_dictionary["l1_ratio"] = [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+    hyperparamethers_range_dictionary["l1_ratio"] = list(np.linspace(0.000001, 0.0001, 50))
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},

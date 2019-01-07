@@ -64,6 +64,7 @@ class HybridPytorch(SimilarityMatrixRecommender, Recommender):
         # pytorch initialization
         self.batch_size = batch_size
         self.learning_rate = learning_rate
+        self.training = True
 
         use_cuda = False
         if use_cuda and torch.cuda.is_available():
@@ -244,11 +245,12 @@ class HybridPytorch(SimilarityMatrixRecommender, Recommender):
                 seel_len = len(seen)
 
                 target_var = np.ones((seel_len, 1))
-                only_positive_samples = True
+                only_positive_samples = False
                 if only_positive_samples:
                     negative_items = []
                 else:
                     negative_items = random.sample(range(1, self.URM_train.shape[1]), seel_len)
+                    negative_items = [x for x in negative_items if x not in list(seen)]
                     target_var_zeros = np.zeros((seel_len, 1))
                     target_var = np.concatenate((target_var, target_var_zeros))
 
@@ -259,22 +261,23 @@ class HybridPytorch(SimilarityMatrixRecommender, Recommender):
 
                 # print("Seen: {}, negative items: {}".format(seen, negative_items))
                 # print("Shapes {}, {}".format(user_scores[seen, :].shape, user_scores[negative_items, :].shape))
-                input_var = np.concatenate((user_scores[seen, :], user_scores[negative_items, :]))
+                if self.training:
+                    input_var = np.concatenate((user_scores[seen, :], user_scores[negative_items, :]))
 
-                input_data_tensor = Variable(torch.Tensor(input_var)).to(self.device)
+                    input_data_tensor = Variable(torch.Tensor(input_var)).to(self.device)
 
-                label_tensor = Variable(torch.Tensor(target_var)).to(self.device)
+                    label_tensor = Variable(torch.Tensor(target_var)).to(self.device)
 
-                # FORWARD pass
-                prediction = self.pyTorchModel(input_data_tensor)
-                # print("Predictions on ones: {}".format(prediction))
-                # Pass prediction and label removing last empty dimension of prediction
-                loss = self.lossFunction(prediction.view(-1), label_tensor)
+                    # FORWARD pass
+                    prediction = self.pyTorchModel(input_data_tensor)
+                    # print("Predictions on ones: {}".format(prediction))
+                    # Pass prediction and label removing last empty dimension of prediction
+                    loss = self.lossFunction(prediction.view(-1), label_tensor)
 
-                # BACKWARD pass
-                self.optimizer.zero_grad()
-                loss.backward()
-                self.optimizer.step()
+                    # BACKWARD pass
+                    self.optimizer.zero_grad()
+                    loss.backward()
+                    self.optimizer.step()
 
                 final_prediction = self.pyTorchModel(torch.Tensor(user_scores).to(self.device))
                 # print(final_prediction)
@@ -326,19 +329,19 @@ class Hybridization_PyTorch_model(torch.nn.Module):
 
         self.n_recommenders = n_recommenders
 
-        self.layer_1 = torch.nn.Linear(in_features=self.n_recommenders, out_features=1)
-        # self.layer_2 = torch.nn.Linear(in_features=32, out_features=1)
+        self.layer_1 = torch.nn.Linear(in_features=self.n_recommenders, out_features=32)
+        self.layer_2 = torch.nn.Linear(in_features=32, out_features=1)
 
-        self.activation_function1 = torch.nn.Sigmoid()
+        self.activation_function1 = torch.nn.ReLU()
         self.activation_function2 = torch.nn.Sigmoid()
 
     def forward(self, input):
         # print("Input: {}".format(input))
         prediction = self.layer_1(input)
         prediction = self.activation_function1(prediction)
-        # prediction = self.layer_2(prediction)
+        prediction = self.layer_2(prediction)
         # print("Prediction1: {}".format(prediction))
-        # prediction = self.activation_function2(prediction)
+        prediction = self.activation_function2(prediction)
         # print("Prediction final: {}".format(prediction))
 
         return prediction

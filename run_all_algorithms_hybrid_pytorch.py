@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     filename = "hybrid_one_interval.csv"
 
-    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm, distr_split=False)
+    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm, distr_split=True)
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()
@@ -86,14 +86,6 @@ if __name__ == '__main__':
         os.makedirs(output_root_path)
 
     logFile = open(output_root_path + "result_all_algorithms.txt", "a")
-
-    transfer_learning = False
-    if transfer_learning:
-        recommender_IB = ItemKNNCFRecommender(URM_train)
-        recommender_IB.fit(200, 15)
-        transfer_matrix = recommender_IB.W_sparse
-    else:
-        transfer_matrix = None
 
     try:
         recommender_class = HybridPytorch
@@ -145,6 +137,7 @@ if __name__ == '__main__':
 
             print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
                                                         results_run_string))
+            recommender.training = False
         logFile.write("Algorithm: {}, results: \n{}\n".format(recommender.__class__, results_run_string))
         logFile.flush()
 

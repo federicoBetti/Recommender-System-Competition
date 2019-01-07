@@ -106,6 +106,7 @@ def get_tfidf(matrix):
     tfidf = transformer.fit_transform(matrix)
     return csr_matrix(tfidf.toarray())
 
+
 def tfidf(matrix):
     transformer = TfidfTransformer(smooth_idf=False)
     tfidf = transformer.fit_transform(matrix)

@@ -78,9 +78,12 @@ if __name__ == '__main__':
 
     # For hybrid with weighted estimated rating
     d_weights = [
-        [0.45590938562950867, 0.017972928905949592, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228, 0.19081956929601618, 0.11601757370322985, 0.11267140391070507],
-        [0.973259052781316, 0.037386979507335605, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645, 0.4723616073494711, 0.5939341460905799, 0.4188403112229081],
-        [0.28230055912596863, 0.16247739973707465, 0.805610621042323, 0.8154550481439302, 0.9548692423411846, 0.6687733529933616, 0.7785004291094528, 0.9255473647188621]]
+        [0.45590938562950867, 0.017972928905949592, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228,
+         0.19081956929601618, 0.11601757370322985, 0.11267140391070507],
+        [0.973259052781316, 0.037386979507335605, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645,
+         0.4723616073494711, 0.5939341460905799, 0.4188403112229081],
+        [0.28230055912596863, 0.16247739973707465, 0.805610621042323, 0.8154550481439302, 0.9548692423411846,
+         0.6687733529933616, 0.7785004291094528, 0.9255473647188621]]
 
     d_best = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
                0.4112843940329439],
@@ -119,49 +122,6 @@ if __name__ == '__main__':
         print("Algorithm: {}".format(recommender_class))
 
         '''
-        Test run with hybrid of hybrids
-        '''
-        # onPop = True
-        # recommender_1 = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
-        #                                   d_weights=d_weights,
-        #                                   URM_validation=URM_validation, onPop=onPop)
-        #
-        # onPop = False
-        # recommender_2 = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=True,
-        #                                   d_weights=d_weights,
-        #                                   URM_validation=URM_validation, onPop=onPop)
-        #
-        # pop = [130, 346]
-        # recommender_1.fit(**{"topK": topK,
-        #                      "shrink": shrinks,
-        #                      "pop": pop,
-        #                      # "pop": [130, 346],
-        #                      "weights": [1, 1],
-        #                      # put -1 where useless in order to force you to change when the became useful
-        #                      "force_compute_sim": True,
-        #                      'alphaP3': 0.6048420766420062,
-        #                      'alphaRP3': 1.5890147620983466,
-        #                      'betaRP': 0.28778362462762974})
-        #
-        # pop = [15, 30]
-        # recommender_2.fit(**{"topK": topK,
-        #                      "shrink": shrinks,
-        #                      "pop": pop,
-        #                      # "pop": [130, 346],
-        #                      "weights": [1, 1],
-        #                      # put -1 where useless in order to force you to change when the became useful
-        #                      "force_compute_sim": True,
-        #                      'alphaP3': 0.6048420766420062,
-        #                      'alphaRP3': 1.5890147620983466,
-        #                      'betaRP': 0.28778362462762974})
-        #
-        # recommender_list_2 = [recommender_1, recommender_2]
-        # recommender = recommender_class(URM_train, ICM, recommender_list_2, UCM_train=UCM_tfidf, dynamic=False,
-        #                                 d_weights=d_weights, weights=weights,
-        #                                 URM_validation=URM_validation, onPop=onPop, moreHybrids=False)
-        #
-
-        '''
         Our optimal run
         '''
         onPop = True
@@ -174,20 +134,21 @@ if __name__ == '__main__':
         lambda_j = 0.05
         old_similrity_matrix = None
         num_factors = 165
-        recommender.fit(**{"topK": [60],# 150, 100, 150, 56, 146, 50, -1],
-                           # "shrink": [5, 10, 50, 10, -1, -1, -1, -1],
-                           # "topK": [100], "shrink": [50],
-                           "pop": [136, 323],
-                           "weights": [1],# 1, 1, 1, 1, 1, 1, 1],
-                           # put -1 where useless in order to force you to change when the became useful
-                           "force_compute_sim": False,
-                           "old_similarity_matrix": old_similrity_matrix,
-                           "epochs": 1, "lambda_i": lambda_i,
-                           "lambda_j": lambda_j,
-                           "num_factors": num_factors,
-                           'alphaP3': 1.160296393373262,
-                           'alphaRP3': 0.4156476217553893,
-                           'betaRP': 0.20430089442930188})
+        recommender.fit({
+            "topK": [10, 220, 150, 160, 61, 236, 40],
+            "shrink": [180, 0, 15, 2, -1, -1, -1],
+            "pop": [130, 346],
+            "weights": [1, 1, 1, 1],
+            "force_compute_sim": False,
+            "feature_weighting_index": 0,
+            "old_similarity_matrix": old_similrity_matrix,
+            "epochs": 50,
+            'alphaP3': [0.5203791059230995],
+            'alphaRP3': [0.3855771543086173],
+            'betaRP': [0.5217815631262526],
+            'l1_ratio': 2.726530612244898e-05,
+            "weights_to_dweights": -1,
+            "tfidf": [True, False]})
 
         print("Starting Evaluations...")
         # to indicate if plotting for lenght or for pop

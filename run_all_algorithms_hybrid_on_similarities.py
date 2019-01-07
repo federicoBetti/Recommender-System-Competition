@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
     filename = "hybrid_with similarities.csv"
 
-    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm, distr_split=False)
+    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm, distr_split=True)
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()
@@ -141,29 +141,7 @@ if __name__ == '__main__':
 
         print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
                                                     results_run_string))
-        # cioa()
-        # # Testing to use this similarity computed as starting point for a SLIM improvement
-        # transfer_matrix = recommender.W_sparse20
-        # evaluator_validation_earlystopping = SequentialEvaluator(URM_validation, URM_train, cutoff_list=[10])
-        # SLIM_recommender = SLIM_BPR_Cython(URM_train, URM_validation=URM_validation)
-        # SLIM_recommender.fit(old_similarity_matrix=transfer_matrix, epochs=200,
-        #                      force_compute_sim=True, topK=66,
-        #                      lambda_i=0.06928490242552432,
-        #                      lambda_j=0.9408725374123923,
-        #                      validation_every_n=20, stop_on_validation=False,
-        #                      evaluator_object=evaluator_validation_earlystopping,
-        #                      lower_validatons_allowed=0
-        #                      )
-        #
-        # print("Starting Evaluations...")
-        # # to indicate if plotting for lenght or for pop
-        #
-        # results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(SLIM_BPR_Cython,
-        #                                                                                         plot_stats=True,
-        #                                                                                         onPop=onPop)
 
-        print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
-                                                    results_run_string))
         logFile.write("Algorithm: {}, results: \n{}\n".format(recommender.__class__, results_run_string))
         logFile.flush()
 

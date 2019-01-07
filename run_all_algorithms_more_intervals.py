@@ -1,6 +1,11 @@
+import pickle
 import sys
 
+from scipy import sparse
+
 from Dataset.RS_Data_Loader import RS_Data_Loader
+from KNN.HybridRecommenderXGBoost import HybridRecommenderXGBoost
+from KNN.ItemKNNCFPageRankRecommender import ItemKNNCFPageRankRecommender
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 
@@ -9,6 +14,8 @@ from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactoriz
 from MatrixFactorization.PureSVD import PureSVDRecommender
 
 from Base.NonPersonalizedRecommender import TopPop, Random
+
+import numpy as np
 
 from KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from KNN.HybridRecommenderTopNapproach import HybridRecommenderTopNapproach
@@ -19,78 +26,95 @@ from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
 import Support_functions.get_evaluate_data as ged
 from GraphBased.RP3betaRecommender import RP3betaRecommender
 from GraphBased.P3alphaRecommender import P3alphaRecommender
-
-from data.Movielens_10M.Movielens10MReader import Movielens10MReader
-
+import xgboost as xgb
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
 import traceback, os
 
 import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = True
+    evaluate_algorithm = False
     delete_old_computations = False
     slim_after_hybrid = False
 
-    if not evaluate_algorithm:
-        delete_previous_intermediate_computations()
-    else:
-        print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
+    # delete_previous_intermediate_computations()
+    # if not evaluate_algorithm:
+    #     delete_previous_intermediate_computations()
+    # else:
+    #     print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
 
-    filename = "URM_tfidf.csv"
+    filename = "hybrid_different_rec_for_diff_intervals_150.csv"
 
     dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
 
     URM_train = dataReader.get_URM_train()
+    URM_PageRank_train = dataReader.get_page_rank_URM()
     URM_validation = dataReader.get_URM_validation()
     URM_test = dataReader.get_URM_test()
     ICM = dataReader.get_ICM()
     UCM_tfidf = dataReader.get_tfidf_artists()
     # _ = dataReader.get_tfidf_album()
 
-    recommender_list = [
+    # URM_train = dataReader.get_page_rank_URM()
+    #
+    # ITEMB
+    # CB, ITEM
+    # CF, USER
+    # CF, P3ALPHA, RP3BETA, PURE
+    # SVD
+    recommender_list1 = [
         # Random,
         # TopPop,
-        # ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
-        # ItemKNNCFRecommender,
-        # UserKNNCFRecommender,
+        ItemKNNCBFRecommender,
+        UserKNNCBRecommender,
+        ItemKNNCFPageRankRecommender,
+        ItemKNNCFRecommender,
+        UserKNNCFRecommender,
         # P3alphaRecommender,
-        # RP3betaRecommender,
+        RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender
+        SLIMElasticNetRecommender
         # PureSVDRecommender
     ]
 
-    weights = [
-        1,
-        # 1
+    # ITEM CB, ITEM CF, USER CF, RP3BETA, PURE SVD
+    recommender_list2 = [
+        # Random,
+        # TopPop,
+        ItemKNNCBFRecommender,
+        UserKNNCBRecommender,
+        ItemKNNCFPageRankRecommender,
+        ItemKNNCFRecommender,
+        UserKNNCFRecommender,
+        # P3alphaRecommender,
+        RP3betaRecommender,
+        # MatrixFactorization_BPR_Cython,
+        # MatrixFactorization_FunkSVD_Cython,
+        SLIM_BPR_Cython,
+        SLIMElasticNetRecommender
+        # PureSVDRecommender
     ]
-
-    # content topk = 60 e shrink = 5
-    # topK = [100, 150]
-    # topk = [60, 100, 150, 56, 146, 50, -1, -1]
-
-    # shrinks = [5, 10, 50, 10, -1, -1, -1, -1]
-    # shrinks = [5, 50]
 
     # For hybrid with weighted estimated rating
     d_weights = [
-        [0.45590938562950867, 0.017972928905949592, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228,
-         0.19081956929601618, 0.11601757370322985, 0.11267140391070507],
-        [0.973259052781316, 0.037386979507335605, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645,
-         0.4723616073494711, 0.5939341460905799, 0.4188403112229081],
-        [0.28230055912596863, 0.16247739973707465, 0.805610621042323, 0.8154550481439302, 0.9548692423411846,
-         0.6687733529933616, 0.7785004291094528, 0.9255473647188621]]
-
-    d_best = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
-               0.4112843940329439],
-              [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
-               0.6888103295594851],
-              [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
-               0.5873532658846817]]
+        [0.984401118329907, 0.05591749040619598, 0.0717074521624177, 0.9111210808110396, 0.8514786217531927,
+         0.9689211840541242, 0.04666331643700139, 0.7571738187696899]
+        + [0] * len(recommender_list2),
+        [0] * len(recommender_list1) +
+        [0.7448859819729983, 0.16774482302422034, 0.08339327704978294, 0.8581864819839616, 0.7513098800576871,
+         0.8628477763545819, 0.2659101932596918, 0.900628320529232],
+    ]
+    #
+    # d_best = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
+    #            0.4112843940329439],
+    #           [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
+    #            0.6888103295594851],
+    #           [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
+    #            0.5873532658846817]]
 
     # BEST RESULT : d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
 
@@ -124,31 +148,50 @@ if __name__ == '__main__':
         '''
         Our optimal run
         '''
+        recommender_list = recommender_list1 + recommender_list2  # + recommender_list3
+
         onPop = True
+
         # On pop it used to choose if have dynamic weights for
-        recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=False,
-                                        d_weights=d_weights,
+        recommender = recommender_class(URM_train, ICM, recommender_list, URM_PageRank_train=URM_PageRank_train,
+                                        dynamic=True,
+                                        d_weights=d_weights, UCM_train=UCM_tfidf,
                                         URM_validation=URM_validation, onPop=onPop)
+
+        # dtrain = xgb.DMatrix(URM_train, label=)
+        # dtest = xgb.DMatrix(X_test, label=y_test)
 
         lambda_i = 0.1
         lambda_j = 0.05
         old_similrity_matrix = None
-        num_factors = 165
-        recommender.fit({
-            "topK": [10, 220, 150, 160, 61, 236, 40],
-            "shrink": [180, 0, 15, 2, -1, -1, -1],
-            "pop": [130, 346],
-            "weights": [1, 1, 1, 1],
-            "force_compute_sim": False,
-            "feature_weighting_index": 0,
+        num_factors = 395
+        l1_ratio = 1e-06
+
+        # Variabili secondo intervallo
+        alphaRP3_2 = 0.9223827655310622
+        betaRP3_2 = 0.2213306613226453
+        num_factors_2 = 391
+
+        recommender.fit(**{
+            "topK": [10, 170, 160, 220, 160, 276, 66, 50] + [10, 170, 160, 220, 160, 276, 66, 50],
+            "shrink": [180, 196, 6, 1, 2, -1, -1, -1] + [180, 196, 6, 1, 2, -1, -1, -1],
+            "pop": [280],
+            "weights": [1] * 16,
+            "force_compute_sim": not evaluate_algorithm,
+            # "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
-            "epochs": 50,
-            'alphaP3': [0.5203791059230995],
-            'alphaRP3': [0.3855771543086173],
-            'betaRP': [0.5217815631262526],
-            'l1_ratio': 2.726530612244898e-05,
-            "weights_to_dweights": -1,
-            "tfidf": [True, False]})
+            "epochs": 1,
+            "lambda_i": [0.06928490242552432, 0.06928490242552432],
+            "lambda_j": [0.9408725374123923, 0.9408725374123923],
+            "num_factors": [395, 391, 95],
+            'alphaP3': [0.7100641282565131, 1.2827139967773968],
+            'alphaRP3': [0.8182264529058118, 0.8182264529058118],
+            'betaRP': [0.3775651302605211, 0.3775651302605211],
+            'l1_ratio': l1_ratio,
+            'epochs': 1,
+            "weights_to_dweights": -1})
+
+        print("TEST")
 
         print("Starting Evaluations...")
         # to indicate if plotting for lenght or for pop
@@ -157,9 +200,6 @@ if __name__ == '__main__':
                                                                                                 plot_stats=True,
                                                                                                 onPop=onPop)
 
-        # print('max value in similarty slim', str(recommender.recommender_list[0].W_sparse.max()))
-        # print('min value in similarity slim: ', str(recommender.recommender_list[0].W_sparse.min()))
-        # print('Shape SLIM similarity: ', str(recommender.recommender_list[0].W_sparse.shape))
         print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
                                                     results_run_string))
         logFile.write("Algorithm: {}, results: \n{}\n".format(recommender.__class__, results_run_string))

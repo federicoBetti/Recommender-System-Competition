@@ -35,3 +35,7 @@ On recommender <class 'KNN.UserKNNCFRecommender.UserKNNCFRecommender'> Exception
 On recommender <class 'GraphBased.RP3betaRecommender.RP3betaRecommender'> Exception module 'numpy' has no attribute 'linespace'
 On recommender <class 'MatrixFactorization.Cython.MatrixFactorization_Cython.MatrixFactorization_BPR_Cython'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
 On recommender <class 'SLIM_ElasticNet.SLIMElasticNetRecommender.SLIMElasticNetRecommender'> Exception AbstractClassSearch: evaluator_validation must be provided
+On recommender <class 'KNN.ItemKNNCFPageRankRecommender.ItemKNNCFPageRankRecommender'> Exception name 'MF_MSE_PyTorch' is not defined
+On recommender <class 'SLIM_ElasticNet.SLIMElasticNetRecommender.MultiThreadSLIM_ElasticNet'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'SLIM_ElasticNet.SLIMElasticNetRecommender.MultiThreadSLIM_ElasticNet'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'SLIM_ElasticNet.SLIMElasticNetRecommender.MultiThreadSLIM_ElasticNet'> Exception Input contains NaN, infinity or a value too large for dtype('float64').

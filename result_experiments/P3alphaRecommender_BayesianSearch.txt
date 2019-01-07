@@ -213,3 +213,67 @@ BayesianSearch: Config is suboptimal. Config: {'topK': 691, 'alpha': 2.0, 'norma
 BayesianSearch: Config is suboptimal. Config: {'topK': 406, 'alpha': 2.0, 'normalize_similarity': True} - MAP results: 0.08994201428473671 - time: 2018-12-23 14:07:47.652316
 BayesianSearch: Config is suboptimal. Config: {'topK': 41, 'alpha': 0.0, 'normalize_similarity': True} - MAP results: 0.09837712418467706 - time: 2018-12-23 14:08:35.279612
 BayesianSearch: Best config is: Config {'topK': 61, 'alpha': 0.5203791059230995, 'normalize_similarity': True}, MAP value is 0.1013
+
+
+CON IL NUOVO TRAIN/TEST
+BayesianSearch: New best config found. Config: {'topK': 341, 'alpha': 0.243300235809216, 'normalize_similarity': True} - MAP results: 0.07574289611678 - time: 2019-01-07 17:07:36.664683
+BayesianSearch: Config is suboptimal. Config: {'topK': 41, 'alpha': 1.419572175609437, 'normalize_similarity': True} - MAP results: 0.0681305008818339 - time: 2019-01-07 17:08:31.711847
+BayesianSearch: Config is suboptimal. Config: {'topK': 66, 'alpha': 1.9303128077381206, 'normalize_similarity': True} - MAP results: 0.05787243080750833 - time: 2019-01-07 17:09:32.735073
+BayesianSearch: Config is suboptimal. Config: {'topK': 696, 'alpha': 0.17665818205482453, 'normalize_similarity': True} - MAP results: 0.07165214551839237 - time: 2019-01-07 17:10:48.733441
+BayesianSearch: New best config found. Config: {'topK': 306, 'alpha': 0.7197053493295091, 'normalize_similarity': True} - MAP results: 0.07735896556122444 - time: 2019-01-07 17:11:56.491548
+BayesianSearch: Config is suboptimal. Config: {'topK': 761, 'alpha': 0.6846412718428143, 'normalize_similarity': False} - MAP results: 0.07576005538233785 - time: 2019-01-07 17:13:12.477432
+BayesianSearch: Config is suboptimal. Config: {'topK': 136, 'alpha': 0.25973529214817037, 'normalize_similarity': False} - MAP results: 0.07094626566830407 - time: 2019-01-07 17:14:14.105948
+BayesianSearch: Config is suboptimal. Config: {'topK': 216, 'alpha': 1.651222809277623, 'normalize_similarity': True} - MAP results: 0.06841367266628838 - time: 2019-01-07 17:15:18.081774
+BayesianSearch: Config is suboptimal. Config: {'topK': 1, 'alpha': 0.02544651714056534, 'normalize_similarity': False} - MAP results: 0.033206018628747655 - time: 2019-01-07 17:15:37.161790
+BayesianSearch: Config is suboptimal. Config: {'topK': 536, 'alpha': 0.0, 'normalize_similarity': True} - MAP results: 0.07182499275636146 - time: 2019-01-07 17:15:54.823626
+BayesianSearch: Config is suboptimal. Config: {'topK': 796, 'alpha': 0.0, 'normalize_similarity': True} - MAP results: 0.070061877519526 - time: 2019-01-07 17:16:16.793904
+BayesianSearch: Config is suboptimal. Config: {'topK': 616, 'alpha': 2.0, 'normalize_similarity': True} - MAP results: 0.06036344606638947 - time: 2019-01-07 17:16:35.937350
+BayesianSearch: Config is suboptimal. Config: {'topK': 261, 'alpha': 3.6968072704089765e-08, 'normalize_similarity': True} - MAP results: 0.07496432081443662 - time: 2019-01-07 17:16:51.172928
+BayesianSearch: Config is suboptimal. Config: {'topK': 461, 'alpha': 1.9999999994574167, 'normalize_similarity': True} - MAP results: 0.060722712348828416 - time: 2019-01-07 17:17:07.741572
+BayesianSearch: Config is suboptimal. Config: {'topK': 796, 'alpha': 2.0, 'normalize_similarity': False} - MAP results: 0.0348071022455278 - time: 2019-01-07 17:17:41.602504
+BayesianSearch: New best config found. Config: {'topK': 56, 'alpha': 0.0, 'normalize_similarity': True} - MAP results: 0.08016123140274635 - time: 2019-01-07 17:17:55.097262
+BayesianSearch: Config is suboptimal. Config: {'topK': 741, 'alpha': 0.020496030029166556, 'normalize_similarity': True} - MAP results: 0.07039703806059429 - time: 2019-01-07 17:18:11.106037
+BayesianSearch: Config is suboptimal. Config: {'topK': 611, 'alpha': 0.023187968750139953, 'normalize_similarity': False} - MAP results: 0.06159884005731914 - time: 2019-01-07 17:18:33.455396
+BayesianSearch: Config is suboptimal. Config: {'topK': 531, 'alpha': 1.9999999996832176, 'normalize_similarity': False} - MAP results: 0.033993284942680696 - time: 2019-01-07 17:18:57.922870
+BayesianSearch: Config is suboptimal. Config: {'topK': 421, 'alpha': 0.0, 'normalize_similarity': True} - MAP results: 0.07305869535777249 - time: 2019-01-07 17:19:18.996180
+BayesianSearch: Config is suboptimal. Config: {'topK': 171, 'alpha': 0.004190175656951533, 'normalize_similarity': True} - MAP results: 0.07706857939657327 - time: 2019-01-07 17:19:38.180874
+BayesianSearch: Config is suboptimal. Config: {'topK': 311, 'alpha': 1.975171491906461, 'normalize_similarity': True} - MAP results: 0.06180986120559335 - time: 2019-01-07 17:19:59.032014
+BayesianSearch: Config is suboptimal. Config: {'topK': 486, 'alpha': 0.007129904171019996, 'normalize_similarity': True} - MAP results: 0.0726206359914334 - time: 2019-01-07 17:20:20.251681
+BayesianSearch: Config is suboptimal. Config: {'topK': 211, 'alpha': 0.0, 'normalize_similarity': False} - MAP results: 0.06308029727261255 - time: 2019-01-07 17:20:38.250758
+BayesianSearch: Config is suboptimal. Config: {'topK': 656, 'alpha': 0.045390438812353384, 'normalize_similarity': True} - MAP results: 0.07141923359158457 - time: 2019-01-07 17:20:59.645388
+BayesianSearch: Config is suboptimal. Config: {'topK': 771, 'alpha': 0.015008768967576636, 'normalize_similarity': False} - MAP results: 0.06115343968883826 - time: 2019-01-07 17:21:23.223848
+BayesianSearch: Config is suboptimal. Config: {'topK': 691, 'alpha': 1.99809083324995, 'normalize_similarity': True} - MAP results: 0.06034967083963211 - time: 2019-01-07 17:21:47.761409
+BayesianSearch: Config is suboptimal. Config: {'topK': 776, 'alpha': 1.9940041947976308, 'normalize_similarity': True} - MAP results: 0.060344318893298 - time: 2019-01-07 17:22:16.259769
+BayesianSearch: Config is suboptimal. Config: {'topK': 381, 'alpha': 2.0, 'normalize_similarity': False} - MAP results: 0.03305306254724104 - time: 2019-01-07 17:22:38.478810
+BayesianSearch: Config is suboptimal. Config: {'topK': 106, 'alpha': 0.0, 'normalize_similarity': True} - MAP results: 0.07939063296800175 - time: 2019-01-07 17:23:03.190547
+BayesianSearch: Config is suboptimal. Config: {'topK': 451, 'alpha': 0.0, 'normalize_similarity': False} - MAP results: 0.06161077549445711 - time: 2019-01-07 17:23:29.961360
+BayesianSearch: Config is suboptimal. Config: {'topK': 141, 'alpha': 2.0, 'normalize_similarity': True} - MAP results: 0.059596799729150836 - time: 2019-01-07 17:24:00.003995
+BayesianSearch: Config is suboptimal. Config: {'topK': 581, 'alpha': 0.036312053674689926, 'normalize_similarity': True} - MAP results: 0.0715858482772735 - time: 2019-01-07 17:24:26.318610
+BayesianSearch: Config is suboptimal. Config: {'topK': 731, 'alpha': 1.9876864735701454, 'normalize_similarity': False} - MAP results: 0.03495234531683039 - time: 2019-01-07 17:24:54.028262
+BayesianSearch: Config is suboptimal. Config: {'topK': 266, 'alpha': 1.958005278223405, 'normalize_similarity': False} - MAP results: 0.032403557083018376 - time: 2019-01-07 17:25:18.746608
+BayesianSearch: Config is suboptimal. Config: {'topK': 41, 'alpha': 0.0, 'normalize_similarity': False} - MAP results: 0.06646417671327783 - time: 2019-01-07 17:25:44.047709
+BayesianSearch: Config is suboptimal. Config: {'topK': 306, 'alpha': 0.0, 'normalize_similarity': True} - MAP results: 0.07451469187767676 - time: 2019-01-07 17:26:22.131894
+BayesianSearch: Config is suboptimal. Config: {'topK': 326, 'alpha': 0.008975601115325249, 'normalize_similarity': False} - MAP results: 0.06314149757495581 - time: 2019-01-07 17:27:03.651776
+BayesianSearch: Best config is: Config {'topK': 56, 'alpha': 0.0, 'normalize_similarity': True}, MAP value is 0.0802
+BayesianSearch: New best config found. Config: {'topK': 476, 'alpha': 0.07060426745093817, 'normalize_similarity': False} - MAP results: 0.06312182785336351 - time: 2019-01-07 17:44:36.245143
+BayesianSearch: Config is suboptimal. Config: {'topK': 11, 'alpha': 1.3656747898284303, 'normalize_similarity': False} - MAP results: 0.019634864040060467 - time: 2019-01-07 17:44:51.575538
+BayesianSearch: New best config found. Config: {'topK': 466, 'alpha': 0.9397674058072885, 'normalize_similarity': False} - MAP results: 0.07596268375220452 - time: 2019-01-07 17:45:11.448542
+BayesianSearch: Config is suboptimal. Config: {'topK': 726, 'alpha': 1.7517752348204458, 'normalize_similarity': True} - MAP results: 0.06445932133408894 - time: 2019-01-07 17:45:32.242148
+BayesianSearch: Config is suboptimal. Config: {'topK': 306, 'alpha': 1.9603870878726388, 'normalize_similarity': False} - MAP results: 0.033098848812673214 - time: 2019-01-07 17:45:51.990930
+BayesianSearch: Config is suboptimal. Config: {'topK': 131, 'alpha': 1.7452373277793765, 'normalize_similarity': True} - MAP results: 0.06550182602670672 - time: 2019-01-07 17:46:09.468011
+BayesianSearch: Config is suboptimal. Config: {'topK': 776, 'alpha': 1.2583283797261402, 'normalize_similarity': True} - MAP results: 0.07171121453766664 - time: 2019-01-07 17:46:28.892160
+BayesianSearch: Config is suboptimal. Config: {'topK': 531, 'alpha': 0.5791057710275358, 'normalize_similarity': False} - MAP results: 0.07486399774817325 - time: 2019-01-07 17:46:49.770141
+BayesianSearch: Config is suboptimal. Config: {'topK': 11, 'alpha': 1.6605017700707654, 'normalize_similarity': True} - MAP results: 0.04949400444066496 - time: 2019-01-07 17:47:04.784471
+BayesianSearch: Config is suboptimal. Config: {'topK': 116, 'alpha': 0.9302251647408122, 'normalize_similarity': False} - MAP results: 0.0692392179547744 - time: 2019-01-07 17:47:22.137194
+BayesianSearch: New best config found. Config: {'topK': 191, 'alpha': 0.23816834780830054, 'normalize_similarity': True} - MAP results: 0.07829132656210623 - time: 2019-01-07 17:47:38.475222
+BayesianSearch: Config is suboptimal. Config: {'topK': 766, 'alpha': 0.6181434482758541, 'normalize_similarity': True} - MAP results: 0.07330466055681523 - time: 2019-01-07 17:47:59.374570
+BayesianSearch: Config is suboptimal. Config: {'topK': 281, 'alpha': 1.1619703955333636, 'normalize_similarity': False} - MAP results: 0.06349677826593583 - time: 2019-01-07 17:48:25.233628
+BayesianSearch: Config is suboptimal. Config: {'topK': 781, 'alpha': 0.15465714323333435, 'normalize_similarity': True} - MAP results: 0.07109163622763892 - time: 2019-01-07 17:48:53.747601
+BayesianSearch: Config is suboptimal. Config: {'topK': 421, 'alpha': 1.5325318208667325, 'normalize_similarity': True} - MAP results: 0.06973274592151646 - time: 2019-01-07 17:49:19.084764
+BayesianSearch: New best config found. Config: {'topK': 41, 'alpha': 0.7665973537773347, 'normalize_similarity': True} - MAP results: 0.08068624037855862 - time: 2019-01-07 17:49:39.430146
+BayesianSearch: Config is suboptimal. Config: {'topK': 771, 'alpha': 0.7718091582651956, 'normalize_similarity': False} - MAP results: 0.07588672023809508 - time: 2019-01-07 17:50:04.059512
+BayesianSearch: Config is suboptimal. Config: {'topK': 376, 'alpha': 0.5485886610149633, 'normalize_similarity': False} - MAP results: 0.07528688372385986 - time: 2019-01-07 17:50:21.968250
+BayesianSearch: Config is suboptimal. Config: {'topK': 641, 'alpha': 1.4600283496776623, 'normalize_similarity': False} - MAP results: 0.052945648022171804 - time: 2019-01-07 17:50:39.002122
+BayesianSearch: Config is suboptimal. Config: {'topK': 346, 'alpha': 1.710536373726619, 'normalize_similarity': True} - MAP results: 0.06702748915028967 - time: 2019-01-07 17:50:54.239314
+BayesianSearch: Config is suboptimal. Config: {'topK': 241, 'alpha': 0.0, 'normalize_similarity': True} - MAP results: 0.07546503039178636 - time: 2019-01-07 17:51:12.800155
+BayesianSearch: Config is suboptimal. Config: {'topK': 571, 'alpha': 1.981974926081092, 'normalize_similarity': True} - MAP results: 0.06091830790186441 - time: 2019-01-07 17:51:33.066163

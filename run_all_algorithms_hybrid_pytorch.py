@@ -1,7 +1,7 @@
 import sys
 
 from Dataset.RS_Data_Loader import RS_Data_Loader
-from KNN.HybridPytorch import HybridPytorch
+from KNN.HybridPytorch import HybridPytorch_SLIM
 from KNN.HybridSimilaritiesRecommender import HybridSimilaritiesRecommender
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     filename = "hybrid_one_interval.csv"
 
-    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm, distr_split=False)
+    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm, distr_split=True)
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()
@@ -87,16 +87,8 @@ if __name__ == '__main__':
 
     logFile = open(output_root_path + "result_all_algorithms.txt", "a")
 
-    transfer_learning = False
-    if transfer_learning:
-        recommender_IB = ItemKNNCFRecommender(URM_train)
-        recommender_IB.fit(200, 15)
-        transfer_matrix = recommender_IB.W_sparse
-    else:
-        transfer_matrix = None
-
     try:
-        recommender_class = HybridPytorch
+        recommender_class = HybridPytorch_SLIM
         print("Algorithm: {}".format(recommender_class))
 
         d_weights = []
@@ -145,6 +137,7 @@ if __name__ == '__main__':
 
             print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
                                                         results_run_string))
+            recommender.training = False
         logFile.write("Algorithm: {}, results: \n{}\n".format(recommender.__class__, results_run_string))
         logFile.flush()
 

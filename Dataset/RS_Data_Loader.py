@@ -170,35 +170,52 @@ class RS_Data_Loader(object):
                         os.path.join("IntermediateComputations", "URM_test_keep_distrib.npz"))
                 except FileNotFoundError:
                     data_grouped = self.train_sequential.groupby(self.train_sequential.playlist_id).track_id.apply(list)
+                    target_plays = self.target_playlist.playlist_id
+                    # in datagrouped è una series con la playlist e la lista delle canzoni nella playlist
+
+                    # questi sono due DF vuoti all'inizio
                     train_keep_dist = pd.DataFrame(columns=["playlist_id", "track_id"])
                     test_keep_dist = pd.DataFrame(columns=["playlist_id", "track_id"])
 
                     for i in data_grouped.keys():
-                        line = data_grouped[i]
-                        len20 = int(len(line) * .8)
-                        train_keep_dist = add_dataframe(train_keep_dist, i, line[:len20])
-                        test_keep_dist = add_dataframe(test_keep_dist, i, line[len20:])
+                        if i in target_plays:
+                            #per ogni playlist nelle squential
+                            line = data_grouped[i]
+                            #prendo l'80% della lunghezza
+                            len20 = int(len(line) * .8)
+                            # le prime 80% canzoni le metto nl dataframe train e le altre nel test
+                            train_keep_dist = add_dataframe(train_keep_dist, i, line[:len20])
+                            test_keep_dist = add_dataframe(test_keep_dist, i, line[len20:])
 
                     sequential_playlists = data_grouped.keys()
+                    # qua ci sono tutte le playlist con la rispettiva lista di canzoni
                     data_gr_all = self.train.groupby(self.train.playlist_id).track_id.apply(list)
 
                     to_add_train, to_add_test = [], []
                     to_add_train_ind, to_add_test_ind = [], []
                     for i in data_gr_all.keys():
-                        if i not in sequential_playlists:
+                        # per ogni canzone
+                        if i not in sequential_playlists and i in target_plays:
+                            # se non è nelle sequential
                             line = data_gr_all[i]
                             len20 = int(len(line) * .8)
+                            # prendo gli indici dell'80 delle canzoni
                             indexes = random.sample(range(0, len(line)), len20)
                             for ind, el in enumerate(line):
+                                # per ogni canzone nella playlist
                                 if ind in indexes:
+                                    # se è negli indici che ho selezionato a random prima la metto nella lista da aggiungere al train
                                     to_add_train_ind.append(i)
                                     to_add_train.append(el)
                                 else:
+                                    # altrimenti al test
                                     to_add_test_ind.append(i)
                                     to_add_test.append(el)
+                    # poi aggiorni i rispettivi df con le canzoni nella lista
                     train_keep_dist = add_dataframe(train_keep_dist, to_add_train_ind, to_add_train)
                     test_keep_dist = add_dataframe(test_keep_dist, to_add_test_ind, to_add_test)
 
+                    # qua dai df con playlist_id track_id creo la matrice csr (non usaimo validation and test)
                     self.URM_train = create_URM_matrix(train_keep_dist)
                     self.URM_test = create_URM_matrix(test_keep_dist)
                     self.URM_validation = create_URM_matrix(test_keep_dist)

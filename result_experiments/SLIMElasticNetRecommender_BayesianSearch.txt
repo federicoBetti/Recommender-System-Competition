@@ -60,3 +60,29 @@ BayesianSearch: New best config found. Config: {'topK': 370, 'l1_ratio': 1e-05} 
 BayesianSearch: Config is suboptimal. Config: {'topK': 390, 'l1_ratio': 0.0001} - MAP results: 0.06535684404859474 - time: 2018-12-23 19:26:18.807912
 BayesianSearch: Config is suboptimal. Config: {'topK': 10, 'l1_ratio': 0.01} - MAP results: 0.00010558906017132912 - time: 2018-12-23 19:33:16.761515
 BayesianSearch: New best config found. Config: {'topK': 370, 'l1_ratio': 0.01} - MAP results: 6.0686921207071774e-05 - time: 2019-01-04 10:11:53.820565
+
+from kernel: topK: 100, l1_ratio: 1e-05, MAP: 0.07621263405636987BayesianSearch: Testing config: {'topK': 460, 'alpha': 1.5796872565738607, 'l1_ratio': 0.01} - Exception fit() got an unexpected keyword argument 'alpha'
+BayesianSearch: Testing config: {'topK': 190, 'alpha': 1.7262430213577957, 'l1_ratio': 1e-05} - Exception fit() got an unexpected keyword argument 'alpha'
+BayesianSearch: Testing config: {'topK': 220, 'alpha': 0.5995126422629584, 'l1_ratio': 1e-06} - Exception fit() got an unexpected keyword argument 'alpha'
+BayesianSearch: Testing config: {'topK': 130, 'alpha': 1.6436128429326906, 'l1_ratio': 0.001} - Exception fit() got an unexpected keyword argument 'alpha'
+BayesianSearch: Testing config: {'topK': 160, 'alpha': 0.17031943994649112, 'l1_ratio': 0.001} - Exception fit() got an unexpected keyword argument 'alpha'
+BayesianSearch: Testing config: {'topK': 70, 'alpha': 1.277813868108556, 'l1_ratio': 0.001} - Exception fit() got an unexpected keyword argument 'alpha'
+BayesianSearch: Testing config: {'topK': 220, 'alpha': 1.8535430235937382, 'l1_ratio': 0.001} - Exception fit() got an unexpected keyword argument 'alpha'
+BayesianSearch: Testing config: {'topK': 430, 'alpha': 1.4347535978357446, 'l1_ratio': 1e-06} - Exception fit() got an unexpected keyword argument 'alpha'
+BayesianSearch: Testing config: {'topK': 280, 'alpha': 1.0326022012111695, 'l1_ratio': 0.001} - Exception fit() got an unexpected keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 460, 'alpha': 1.1526753631131426, 'l1_ratio': 0.0001} - Exception fit() got an unexpected keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 160, 'alpha': 0.04816302500601255, 'l1_ratio': 0.0001} - Exception fit() got an unexpected keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 310, 'alpha': 0.4205010196404888, 'l1_ratio': 0.1} - Exception fit() got an unexpected keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 160, 'alpha': 0.18228234759499395, 'l1_ratio': 0.001} - Exception fit() got an unexpected keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 70, 'alpha': 1.9242762218362037, 'l1_ratio': 1e-05} - Exception fit() got an unexpected keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 10, 'alpha': 1.3104793131497912, 'l1_ratio': 0.0001} - Exception fit() got an unexpected keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 220, 'alpha': 0.936624458111269, 'l1_ratio': 0.0001} - Exception fit() got an unexpected keyword argument 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 460, 'alpha': 0.7185896339955091, 'l1_ratio': 0.001} - Exception 'MultiThreadSLIM_ElasticNet' object has no attribute 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 280, 'alpha': 1.1093692861907314, 'l1_ratio': 0.001} - Exception 'MultiThreadSLIM_ElasticNet' object has no attribute 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 310, 'alpha': 1.5805942450290111, 'l1_ratio': 0.0001} - Exception 'MultiThreadSLIM_ElasticNet' object has no attribute 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 460, 'alpha': 0.6246675431804816, 'l1_ratio': 0.001} - Exception 'MultiThreadSLIM_ElasticNet' object has no attribute 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 130, 'alpha': 0.5490419670767968, 'l1_ratio': 0.01} - Exception 'MultiThreadSLIM_ElasticNet' object has no attribute 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 280, 'alpha': 0.37020811781508445, 'l1_ratio': 0.01} - Exception 'MultiThreadSLIM_ElasticNet' object has no attribute 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 220, 'alpha': 1.2399680121461494, 'l1_ratio': 0.001} - Exception 'MultiThreadSLIM_ElasticNet' object has no attribute 'l1_ratio'
+BayesianSearch: Testing config: {'topK': 460, 'alpha': 0.19320533217319147, 'l1_ratio': 1e-05} - Exception 'MultiThreadSLIM_ElasticNet' object has no attribute 'l1_ratio'
+BayesianSearch: New best config found. Config: {'topK': 400, 'l1_ratio': 0.001} - MAP results: 0.0038356841458805795 - time: 2019-01-07 17:33:42.362761

@@ -175,6 +175,7 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, SimilarityMatrixReco
         )
 
     def _partial_fit(self, currentItem, X, topK):
+        t = time.time()
         model = ElasticNet(alpha=self.alpha,
                            l1_ratio=self.l1_ratio,
                            positive=self.positive_only,
@@ -214,6 +215,7 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, SimilarityMatrixReco
         # rows = np.arange(X.shape[1])[nnz_idx]
         # cols = np.ones(nnz_idx.sum()) * currentItem
         #
+        print("Done user {} in time: {}".format(currentItem, time.time() - t))
         return values, rows, cols
 
     def fit(self, l1_ratio=0.1,

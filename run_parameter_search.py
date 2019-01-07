@@ -613,6 +613,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                      DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                                      DictionaryKeys.FIT_KEYWORD_ARGS: dict(),
                                      DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
+            n_cases = 50
 
         ##########################################################################################################
 
@@ -755,6 +756,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
             hyperparamethers_range_dictionary = {}
             hyperparamethers_range_dictionary["topK"] = list(range(10, 500, 30))
             hyperparamethers_range_dictionary["l1_ratio"] = [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+            hyperparamethers_range_dictionary["alpha"] = range(0, 2)
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
@@ -782,7 +784,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                                  n_cases=n_cases,
                                                  output_root_path=output_root_path_rec_name,
                                                  metric=metric_to_optimize,
-                                                 # init_points=20
+                                                 init_points=20
                                                  )
 
 
@@ -846,8 +848,8 @@ def read_data_split_and_search():
         # TopPop,
         # ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
-        # P3alphaRecommender,
-        # # RP3betaRecommender,
+        P3alphaRecommender,
+        # RP3betaRecommender,
         # ItemKNNCFPageRankRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
@@ -858,7 +860,7 @@ def read_data_split_and_search():
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
-        MultiThreadSLIM_ElasticNet,
+        # MultiThreadSLIM_ElasticNet,
         # HybridRecommender
     ]
 

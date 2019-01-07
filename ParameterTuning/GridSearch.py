@@ -8,12 +8,12 @@ Created on 23/11/17
 
 from functools import partial
 
-from ParameterTuning.AbstractClassSearch import writeLog
+from ParameterTuning.AbstractClassSearch import writeLog, AbstractClassSearch
 
 from ParameterTuning.RandomSearch import RandomSearch
 
 
-class GridSearch(RandomSearch):
+class GridSearch(AbstractClassSearch):
     ALGORITHM_NAME = "GridSearch"
 
     def __init__(self, recommender_class, evaluation_function_validation=None):
@@ -32,7 +32,7 @@ class GridSearch(RandomSearch):
 
         self.dictionary_input = dictionary_input.copy()
         self.output_root_path = output_root_path
-        self.logFile = open(self.output_root_path + "_BayesianSearch.txt", "a")
+        self.logFile = open(self.output_root_path + "_GridSearch.txt", "a")
         self.metric = metric
         self.model_counter = 0
 

@@ -170,7 +170,7 @@ class RS_Data_Loader(object):
                         os.path.join("IntermediateComputations", "URM_test_keep_distrib.npz"))
                 except FileNotFoundError:
                     data_grouped = self.train_sequential.groupby(self.train_sequential.playlist_id).track_id.apply(list)
-                    target_plays = self.target_playlist.playlist_id
+                    target_plays = list(self.target_playlist.playlist_id)
                     # in datagrouped è una series con la playlist e la lista delle canzoni nella playlist
 
                     # questi sono due DF vuoti all'inizio
@@ -186,6 +186,10 @@ class RS_Data_Loader(object):
                             # le prime 80% canzoni le metto nl dataframe train e le altre nel test
                             train_keep_dist = add_dataframe(train_keep_dist, i, line[:len20])
                             test_keep_dist = add_dataframe(test_keep_dist, i, line[len20:])
+                        else:
+                            line = data_grouped[i]
+                            train_keep_dist = add_dataframe(train_keep_dist, i, line)
+
 
                     sequential_playlists = data_grouped.keys()
                     # qua ci sono tutte le playlist con la rispettiva lista di canzoni
@@ -195,22 +199,29 @@ class RS_Data_Loader(object):
                     to_add_train_ind, to_add_test_ind = [], []
                     for i in data_gr_all.keys():
                         # per ogni canzone
-                        if i not in sequential_playlists and i in target_plays:
-                            # se non è nelle sequential
-                            line = data_gr_all[i]
-                            len20 = int(len(line) * .8)
-                            # prendo gli indici dell'80 delle canzoni
-                            indexes = random.sample(range(0, len(line)), len20)
-                            for ind, el in enumerate(line):
-                                # per ogni canzone nella playlist
-                                if ind in indexes:
-                                    # se è negli indici che ho selezionato a random prima la metto nella lista da aggiungere al train
+                        if i not in sequential_playlists:
+                            if i in target_plays:
+                                # se non è nelle sequential
+                                line = data_gr_all[i]
+                                len20 = int(len(line) * .8)
+                                # prendo gli indici dell'80 delle canzoni
+                                indexes = random.sample(range(0, len(line)), len20)
+                                for ind, el in enumerate(line):
+                                    # per ogni canzone nella playlist
+                                    if ind in indexes:
+                                        # se è negli indici che ho selezionato a random prima la metto nella lista da aggiungere al train
+                                        to_add_train_ind.append(i)
+                                        to_add_train.append(el)
+                                    else:
+                                        # altrimenti al test
+                                        to_add_test_ind.append(i)
+                                        to_add_test.append(el)
+                            else:
+                                line = data_gr_all[i]
+                                for ind, el in enumerate(line):
                                     to_add_train_ind.append(i)
                                     to_add_train.append(el)
-                                else:
-                                    # altrimenti al test
-                                    to_add_test_ind.append(i)
-                                    to_add_test.append(el)
+
                     # poi aggiorni i rispettivi df con le canzoni nella lista
                     train_keep_dist = add_dataframe(train_keep_dist, to_add_train_ind, to_add_train)
                     test_keep_dist = add_dataframe(test_keep_dist, to_add_test_ind, to_add_test)
@@ -219,7 +230,8 @@ class RS_Data_Loader(object):
                     self.URM_train = create_URM_matrix(train_keep_dist)
                     self.URM_test = create_URM_matrix(test_keep_dist)
                     self.URM_validation = create_URM_matrix(test_keep_dist)
-
+                    print("Urm Train: {}".format(self.URM_train))
+                    print("Urm Test: {}".format(self.URM_test))
                     sparse.save_npz(os.path.join("IntermediateComputations", "URM_train_keep_distrib.npz"),
                                     self.URM_train)
                     sparse.save_npz(os.path.join("IntermediateComputations", "URM_test_keep_distrib.npz"),

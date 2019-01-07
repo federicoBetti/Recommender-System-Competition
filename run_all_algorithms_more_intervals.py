@@ -35,7 +35,7 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     delete_old_computations = False
     slim_after_hybrid = False
 
@@ -177,10 +177,10 @@ if __name__ == '__main__':
             "shrink": [180, 196, 6, 1, 2, -1, -1, -1] + [180, 196, 6, 1, 2, -1, -1, -1],
             "pop": [280],
             "weights": [1] * 16,
-            "force_compute_sim": not evaluate_algorithm,
+            "force_compute_sim": True or not evaluate_algorithm,
             # "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
-            "epochs": 1,
+            "epochs": 50,
             "lambda_i": [0.06928490242552432, 0.06928490242552432],
             "lambda_j": [0.9408725374123923, 0.9408725374123923],
             "num_factors": [395, 391, 95],

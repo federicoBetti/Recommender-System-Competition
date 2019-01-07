@@ -857,6 +857,8 @@ class SequentialEvaluator(Evaluator):
         # Start from -block_size to ensure it to be 0 at the first block
         user_batch_start = 0
         user_batch_end = 0
+
+
         while user_batch_start < len(self.usersToEvaluate):
             user_batch_end = user_batch_start + block_size
             user_batch_end = min(user_batch_end, len(usersToEvaluate))

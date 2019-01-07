@@ -1,19 +1,18 @@
+import datetime
+import os
 import sys
-
-import traceback, os
-from enum import Enum
-from random import shuffle
-
-import gc
-import pandas as pd
-import numpy as np
 import time
-from scipy.sparse import csr_matrix, csc_matrix
-from sklearn.linear_model import ElasticNet
-import itertools
+import traceback
+from enum import Enum
+from functools import partial
 
-from sklearn.preprocessing import normalize
-from scipy import sparse as sps
+import numpy as np
+import pandas as pd
+from scipy.sparse import csr_matrix
+from sklearn.linear_model import ElasticNet
+
+# from bayes_opt import BayesianOptimization
+from ParameterTuning.BayesianOptimization_master.bayes_opt.bayesian_optimization import BayesianOptimization
 
 '''
 Elastic Net
@@ -301,176 +300,49 @@ class SimilarityMatrixRecommender(object):
             return self.URM_train.T.dot(self.W[user_id])
 
 
-def similarityMatrixTopK(item_weights, forceSparseOutput=True, k=100, verbose=False, inplace=True):
+class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
     """
-    The function selects the TopK most similar elements, column-wise
-
-    :param item_weights:
-    :param forceSparseOutput:
-    :param k:
-    :param verbose:
-    :param inplace: Default True, WARNING matrix will be modified
-    :return:
+    Train a Sparse Linear Methods (SLIM) item similarity model.
+    NOTE: ElasticNet solver is parallel, a single intance of SLIM_ElasticNet will
+          make use of half the cores available
+    See:
+        Efficient Top-N Recommendation by Linear Regression,
+        M. Levy and K. Jack, LSRS workshop at RecSys 2013.
+        https://www.slideshare.net/MarkLevy/efficient-slides
+        SLIM: Sparse linear methods for top-n recommender systems,
+        X. Ning and G. Karypis, ICDM 2011.
+        http://glaros.dtc.umn.edu/gkhome/fetch/papers/SLIM2011icdm.pdf
     """
 
-    assert (item_weights.shape[0] == item_weights.shape[1]), "selectTopK: ItemWeights is not a square matrix"
-
-    start_time = time.time()
-
-    if verbose:
-        print("Generating topK matrix")
-
-    nitems = item_weights.shape[1]
-    k = min(k, nitems)
-
-    # for each column, keep only the top-k scored items
-    sparse_weights = not isinstance(item_weights, np.ndarray)
-
-    if not sparse_weights:
-
-        idx_sorted = np.argsort(item_weights, axis=0)  # sort data inside each column
-
-        if inplace:
-            W = item_weights
-        else:
-            W = item_weights.copy()
-
-        # index of the items that don't belong to the top-k similar items of each column
-        not_top_k = idx_sorted[:-k, :]
-        # use numpy fancy indexing to zero-out the values in sim without using a for loop
-        W[not_top_k, np.arange(nitems)] = 0.0
-
-        if forceSparseOutput:
-            W_sparse = csr_matrix(W, shape=(nitems, nitems))
-
-            if verbose:
-                print("Sparse TopK matrix generated in {:.2f} seconds".format(time.time() - start_time))
-
-            return W_sparse
-
-        if verbose:
-            print("Dense TopK matrix generated in {:.2f} seconds".format(time.time() - start_time))
-
-        return W
-
-    else:
-        # iterate over each column and keep only the top-k similar items
-        data, rows_indices, cols_indptr = [], [], []
-
-        for item_idx in range(nitems):
-            cols_indptr.append(len(data))
-
-            start_position = item_weights.indptr[item_idx]
-            end_position = item_weights.indptr[item_idx + 1]
-
-            column_data = item_weights.data[start_position:end_position]
-            column_row_index = item_weights.indices[start_position:end_position]
-
-            non_zero_data = column_data != 0
-
-            idx_sorted = np.argsort(column_data[non_zero_data])  # sort by column
-            top_k_idx = idx_sorted[-k:]
-
-            data.extend(column_data[non_zero_data][top_k_idx])
-            rows_indices.extend(column_row_index[non_zero_data][top_k_idx])
-
-        cols_indptr.append(len(data))
-
-        # During testing CSR is faster
-        W_sparse = csc_matrix((data, rows_indices, cols_indptr), shape=(nitems, nitems), dtype=np.float32)
-        W_sparse = W_sparse.tocsr()
-
-        if verbose:
-            print("Sparse TopK matrix generated in {:.2f} seconds".format(time.time() - start_time))
-
-        return W_sparse
-
-
-def check_matrix(X, format='csc', dtype=np.float32):
-    if format == 'csc' and not isinstance(X, sps.csc_matrix):
-        return X.tocsc().astype(dtype)
-    elif format == 'csr' and not isinstance(X, sps.csr_matrix):
-        return X.tocsr().astype(dtype)
-    elif format == 'coo' and not isinstance(X, sps.coo_matrix):
-        return X.tocoo().astype(dtype)
-    elif format == 'dok' and not isinstance(X, sps.dok_matrix):
-        return X.todok().astype(dtype)
-    elif format == 'bsr' and not isinstance(X, sps.bsr_matrix):
-        return X.tobsr().astype(dtype)
-    elif format == 'dia' and not isinstance(X, sps.dia_matrix):
-        return X.todia().astype(dtype)
-    elif format == 'lil' and not isinstance(X, sps.lil_matrix):
-        return X.tolil().astype(dtype)
-    else:
-        return X.astype(dtype)
-
-
-class RP3betaRecommender(SimilarityMatrixRecommender, Recommender):
-    """ RP3beta recommender """
-
-    RECOMMENDER_NAME = "RP3betaRecommender"
+    RECOMMENDER_NAME = "SLIMElasticNetRecommender"
 
     def __init__(self, URM_train):
-        super(RP3betaRecommender, self).__init__()
 
-        self.URM_train = check_matrix(URM_train, format='csr', dtype=np.float32)
-        self.sparse_weights = True
+        super(SLIMElasticNetRecommender, self).__init__()
 
-    def __str__(self):
-        return "RP3beta(alpha={}, beta={}, min_rating={}, topk={}, implicit={}, normalize_similarity={})".format(
-            self.alpha,
-            self.beta, self.min_rating, self.topK,
-            self.implicit, self.normalize_similarity)
+        self.URM_train = URM_train
 
-    def fit(self, alpha=1., beta=0.6, min_rating=0, topK=100, implicit=True, normalize_similarity=True,
-            force_compute_sim=True):
+    def fit(self, l1_ratio=0.1, positive_only=True, topK=100, force_compute_sim=True):
 
-        self.alpha = alpha
-        self.beta = beta
-        self.min_rating = min_rating
+        assert 0 <= l1_ratio <= 1, "SLIM_ElasticNet: l1_ratio must be between 0 and 1, provided value was {}".format(
+            l1_ratio)
+
+        self.l1_ratio = l1_ratio
+        self.positive_only = positive_only
         self.topK = topK
-        self.implicit = implicit
-        self.normalize_similarity = normalize_similarity
 
-        # if X.dtype != np.float32:
-        #     print("RP3beta fit: For memory usage reasons, we suggest to use np.float32 as dtype for the dataset")
+        # initialize the ElasticNet model
+        self.model = ElasticNet(alpha=1.0,
+                                l1_ratio=self.l1_ratio,
+                                positive=self.positive_only,
+                                fit_intercept=False,
+                                copy_X=False,
+                                precompute=True,
+                                selection='random',
+                                max_iter=80,
+                                tol=1e-4)
 
-        if self.min_rating > 0:
-            self.URM_train.data[self.URM_train.data < self.min_rating] = 0
-            self.URM_train.eliminate_zeros()
-            if self.implicit:
-                self.URM_train.data = np.ones(self.URM_train.data.size, dtype=np.float32)
-
-        # Pui is the row-normalized urm
-        Pui = normalize(self.URM_train, norm='l1', axis=1)
-
-        # Piu is the column-normalized, "boolean" urm transposed
-        X_bool = self.URM_train.transpose(copy=True)
-        X_bool.data = np.ones(X_bool.data.size, np.float32)
-
-        # Taking the degree of each item to penalize top popular
-        # Some rows might be zero, make sure their degree remains zero
-        X_bool_sum = np.array(X_bool.sum(axis=1)).ravel()
-
-        degree = np.zeros(self.URM_train.shape[1])
-
-        nonZeroMask = X_bool_sum != 0.0
-
-        degree[nonZeroMask] = np.power(X_bool_sum[nonZeroMask], -self.beta)
-
-        # ATTENTION: axis is still 1 because i transposed before the normalization
-        Piu = normalize(X_bool, norm='l1', axis=1)
-        del (X_bool)
-
-        # Alfa power
-        if self.alpha != 1.:
-            Pui = Pui.power(self.alpha)
-            Piu = Piu.power(self.alpha)
-
-        # Final matrix is computed as Pui * Piu * Pui
-        # Multiplication unpacked for memory usage reasons
-        block_dim = 200
-        d_t = Piu
+        n_items = URM_train.shape[1]
 
         # Use array as it reduces memory requirements compared to lists
         dataBlock = 10000000
@@ -484,59 +356,375 @@ class RP3betaRecommender(SimilarityMatrixRecommender, Recommender):
         start_time = time.time()
         start_time_printBatch = start_time
 
-        for current_block_start_row in range(0, Pui.shape[1], block_dim):
+        # fit each item's factors sequentially (not in parallel)
+        for currentItem in range(n_items):
 
-            if current_block_start_row + block_dim > Pui.shape[1]:
-                block_dim = Pui.shape[1] - current_block_start_row
+            # get the target column
+            y = URM_train[:, currentItem].toarray()
 
-            similarity_block = d_t[current_block_start_row:current_block_start_row + block_dim, :] * Pui
-            similarity_block = similarity_block.toarray()
+            # set the j-th column of X to zero
+            start_pos = URM_train.indptr[currentItem]
+            end_pos = URM_train.indptr[currentItem + 1]
 
-            for row_in_block in range(block_dim):
-                row_data = np.multiply(similarity_block[row_in_block, :], degree)
-                row_data[current_block_start_row + row_in_block] = 0
+            current_item_data_backup = URM_train.data[start_pos: end_pos].copy()
+            URM_train.data[start_pos: end_pos] = 0.0
 
-                best = row_data.argsort()[::-1][:self.topK]
+            # fit one ElasticNet model per column
+            self.model.fit(URM_train, y)
 
-                notZerosMask = row_data[best] != 0.0
+            # self.model.coef_ contains the coefficient of the ElasticNet model
+            # let's keep only the non-zero values
 
-                values_to_add = row_data[best][notZerosMask]
-                cols_to_add = best[notZerosMask]
+            # Select topK values
+            # Sorting is done in three steps. Faster then plain np.argsort for higher number of items
+            # - Partition the data to extract the set of relevant items
+            # - Sort only the relevant items
+            # - Get the original item index
 
-                for index in range(len(values_to_add)):
+            # nonzero_model_coef_index = self.model.coef_.nonzero()[0]
+            # nonzero_model_coef_value = self.model.coef_[nonzero_model_coef_index]
 
-                    if numCells == len(rows):
-                        rows = np.concatenate((rows, np.zeros(dataBlock, dtype=np.int32)))
-                        cols = np.concatenate((cols, np.zeros(dataBlock, dtype=np.int32)))
-                        values = np.concatenate((values, np.zeros(dataBlock, dtype=np.float32)))
+            nonzero_model_coef_index = self.model.sparse_coef_.indices
+            nonzero_model_coef_value = self.model.sparse_coef_.data
 
-                    rows[numCells] = current_block_start_row + row_in_block
-                    cols[numCells] = cols_to_add[index]
-                    values[numCells] = values_to_add[index]
+            local_topK = min(len(nonzero_model_coef_value) - 1, self.topK)
 
-                    numCells += 1
+            relevant_items_partition = (-nonzero_model_coef_value).argpartition(local_topK)[0:local_topK]
+            relevant_items_partition_sorting = np.argsort(-nonzero_model_coef_value[relevant_items_partition])
+            ranking = relevant_items_partition[relevant_items_partition_sorting]
 
-            if time.time() - start_time_printBatch > 60:
-                print("Processed {} ( {:.2f}% ) in {:.2f} minutes. Rows per second: {:.0f}".format(
-                    current_block_start_row,
-                    100.0 * float(current_block_start_row) / Pui.shape[1],
+            for index in range(len(ranking)):
+
+                if numCells == len(rows):
+                    rows = np.concatenate((rows, np.zeros(dataBlock, dtype=np.int32)))
+                    cols = np.concatenate((cols, np.zeros(dataBlock, dtype=np.int32)))
+                    values = np.concatenate((values, np.zeros(dataBlock, dtype=np.float32)))
+
+                rows[numCells] = nonzero_model_coef_index[ranking[index]]
+                cols[numCells] = currentItem
+                values[numCells] = nonzero_model_coef_value[ranking[index]]
+
+                numCells += 1
+
+            # finally, replace the original values of the j-th column
+            URM_train.data[start_pos:end_pos] = current_item_data_backup
+
+            if time.time() - start_time_printBatch > 30 or currentItem == n_items - 1:
+                print("Processed {} ( {:.2f}% ) in {:.2f} minutes. Items per second: {:.0f}".format(
+                    currentItem + 1,
+                    100.0 * float(currentItem + 1) / n_items,
                     (time.time() - start_time) / 60,
-                    float(current_block_start_row) / (time.time() - start_time)))
-
+                    float(currentItem) / (time.time() - start_time)))
                 sys.stdout.flush()
                 sys.stderr.flush()
 
                 start_time_printBatch = time.time()
 
-        self.W = csr_matrix((values[:numCells], (rows[:numCells], cols[:numCells])),
-                            shape=(Pui.shape[1], Pui.shape[1]))
+        # generate the sparse weight matrix
+        self.W_sparse = csr_matrix((values[:numCells], (rows[:numCells], cols[:numCells])),
+                                   shape=(n_items, n_items), dtype=np.float32)
 
-        if self.normalize_similarity:
-            self.W = normalize(self.W, norm='l1', axis=1)
 
-        if self.topK != False:
-            self.W_sparse = similarityMatrixTopK(self.W, forceSparseOutput=True, k=self.topK)
-            self.sparse_weights = True
+'''
+For Bayesian Search
+'''
+
+
+class DictionaryKeys(Enum):
+    CONSTRUCTOR_POSITIONAL_ARGS = 'constructor_positional_args'
+    CONSTRUCTOR_KEYWORD_ARGS = 'constructor_keyword_args'
+    FIT_POSITIONAL_ARGS = 'fit_positional_args'
+    FIT_KEYWORD_ARGS = 'fit_keyword_args'
+    FIT_RANGE_KEYWORD_ARGS = 'fit_range_keyword_args'
+    LOG_LABEL = 'log_label'
+
+
+def from_fit_params_to_saved_params_function_default(recommender, paramether_dictionary):
+    paramether_dictionary = paramether_dictionary.copy()
+
+    # Attributes that might be determined through early stopping
+    # Name in param_dictionary: name in object
+    attributes_to_clone = {"epochs": 'epochs_best', "max_epochs": 'epochs_best'}
+
+    for external_attribute_name in attributes_to_clone:
+
+        recommender_attribute_name = attributes_to_clone[external_attribute_name]
+
+        if hasattr(recommender, recommender_attribute_name):
+            paramether_dictionary[external_attribute_name] = getattr(recommender, recommender_attribute_name)
+
+    return paramether_dictionary
+
+
+class EvaluatorWrapper(object):
+    def __init__(self, evaluator_object):
+        self.evaluator_object = evaluator_object
+
+    def evaluateRecommender(self, recommender_object, paramether_dictionary=None):
+        return self.evaluator_object.evaluateRecommender(recommender_object)
+
+
+class AbstractClassSearch(object):
+    ALGORITHM_NAME = "AbstractClassSearch"
+
+    def __init__(self, recommender_class,
+                 evaluator_validation=None, evaluator_test=None,
+                 from_fit_params_to_saved_params_function=None):
+
+        super(AbstractClassSearch, self).__init__()
+
+        self.recommender_class = recommender_class
+
+        self.results_test_best = {}
+        self.paramether_dictionary_best = {}
+
+        if evaluator_validation is None:
+            raise ValueError("AbstractClassSearch: evaluator_validation must be provided")
+        else:
+            self.evaluator_validation = evaluator_validation
+
+        if evaluator_test is None:
+            self.evaluator_test = None
+        else:
+            self.evaluator_test = evaluator_test
+
+        if from_fit_params_to_saved_params_function is None:
+            self.from_fit_params_to_saved_params_function = from_fit_params_to_saved_params_function_default
+        else:
+            self.from_fit_params_to_saved_params_function = from_fit_params_to_saved_params_function
+
+    def search(self, dictionary_input, metric="map", logFile=None, parallelPoolSize=2, parallelize=True):
+        raise NotImplementedError("Function search not implementated for this class")
+
+    def evaluate_on_test(self):
+
+        # Create an object of the same class of the imput
+        # Passing the paramether as a dictionary
+        recommender = self.recommender_class(*self.dictionary_input[DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS],
+                                             **self.dictionary_input[DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS])
+
+        # if self.save_model != "no":
+        #     recommender.loadModel(self.output_root_path, file_name="_best_model")
+        #
+        # else:
+        #     recommender.fit(*self.dictionary_input[DictionaryKeys.FIT_POSITIONAL_ARGS],
+        #                     **self.dictionary_input[DictionaryKeys.FIT_KEYWORD_ARGS],
+        #                     **self.best_solution_parameters)
+
+        # I must do that with hybrid because since I haven't saved the model due to lot of inner recommender,
+        # I can neither load it here, so I must fit it again
+        recommender.fit(*self.dictionary_input[DictionaryKeys.FIT_POSITIONAL_ARGS],
+                        **self.dictionary_input[DictionaryKeys.FIT_KEYWORD_ARGS],
+                        **self.best_solution_parameters)
+
+        result_dict, result_string, _ = self.evaluator_test.evaluateRecommender(recommender,
+                                                                                self.best_solution_parameters)
+        result_dict = result_dict[list(result_dict.keys())[0]]
+
+        return result_dict
+
+
+class BayesianSearch(AbstractClassSearch):
+    ALGORITHM_NAME = "BayesianSearch"
+
+    """
+    This class applies Bayesian parameter tuning using this package:
+    https://github.com/fmfn/BayesianOptimization
+
+    pip install bayesian-optimization
+    """
+
+    def __init__(self, recommender_class, evaluator_validation=None, evaluator_test=None):
+
+        super(BayesianSearch, self).__init__(recommender_class,
+                                             evaluator_validation=evaluator_validation, evaluator_test=evaluator_test)
+
+    def search(self, dictionary, metric="MAP", init_points=8, n_cases=20, output_root_path=None, parallelPoolSize=2,
+               parallelize=True,
+               save_model="best"):
+        '''
+
+        :param dictionary:
+        :param metric: metric to optimize
+        :param init_points: number of initial points to test before going down in the closes minimum
+        :param n_cases: number of cases starting from the best init_point to find the minimum
+        :param output_root_path:
+        :param parallelPoolSize:
+        :param parallelize:
+        :param save_model:
+        :return:
+        '''
+
+        # Associate the params that will be returned by BayesianOpt object to those you want to save
+        # E.g. with early stopping you know which is the optimal number of epochs only afterwards
+        # but you might want to save it as well
+        self.from_fit_params_to_saved_params = {}
+
+        self.dictionary_input = dictionary.copy()
+
+        # in this variable hyperparamethers_range_dictionary there is the dictionary with all params to test
+        hyperparamethers_range_dictionary = dictionary[DictionaryKeys.FIT_RANGE_KEYWORD_ARGS].copy()
+
+        self.output_root_path = output_root_path
+        if self.output_root_path is not None:
+            self.logFile = self.output_root_path + "_BayesianSearch.txt"
+        self.save_model = save_model
+        self.model_counter = 0
+
+        self.categorical_mapper_dict_case_to_index = {}
+        self.categorical_mapper_dict_index_to_case = {}
+
+        # Transform range element in a list of two elements: min, max
+        for key in hyperparamethers_range_dictionary.keys():
+
+            # Get the extremes for every range
+            current_range = hyperparamethers_range_dictionary[key]
+
+            if type(current_range) is range:
+                min_val = current_range.start
+                max_val = current_range.stop
+
+            elif type(current_range) is list:
+
+                categorical_mapper_dict_case_to_index_current = {}
+                categorical_mapper_dict_index_to_case_current = {}
+
+                for current_single_case in current_range:
+                    num_vaues = len(categorical_mapper_dict_case_to_index_current)
+                    categorical_mapper_dict_case_to_index_current[current_single_case] = num_vaues
+                    categorical_mapper_dict_index_to_case_current[num_vaues] = current_single_case
+
+                num_vaues = len(categorical_mapper_dict_case_to_index_current)
+
+                min_val = 0
+                max_val = num_vaues - 1
+
+                self.categorical_mapper_dict_case_to_index[key] = categorical_mapper_dict_case_to_index_current.copy()
+                self.categorical_mapper_dict_index_to_case[key] = categorical_mapper_dict_index_to_case_current.copy()
+
+            else:
+                raise TypeError(
+                    "BayesianSearch: for every parameter a range may be specified either by a 'range' object or by a list."
+                    "Provided object type for parameter '{}' was '{}'".format(key, type(current_range)))
+
+            hyperparamethers_range_dictionary[key] = [min_val, max_val]
+
+        self.runSingleCase_partial = partial(self.runSingleCase,
+                                             dictionary=dictionary,
+                                             metric=metric)
+
+        self.bayesian_optimizer = BayesianOptimization(self.runSingleCase_partial, hyperparamethers_range_dictionary)
+
+        self.best_solution_val = None
+        self.best_solution_parameters = None
+        # self.best_solution_object = None
+
+        print("Starting the Maximize function!")
+        self.bayesian_optimizer.maximize(init_points=init_points, n_iter=n_cases, kappa=2)
+
+        best_solution = self.bayesian_optimizer.res['max']
+
+        self.best_solution_val = best_solution["max_val"]
+        self.best_solution_parameters = best_solution["max_params"].copy()
+        self.best_solution_parameters = self.parameter_bayesian_to_token(self.best_solution_parameters)
+        self.best_solution_parameters = self.from_fit_params_to_saved_params[
+            frozenset(self.best_solution_parameters.items())]
+
+        print("BayesianSearch: Best config is: Config {}, {} value is {:.4f}\n".format(
+            self.best_solution_parameters, metric, self.best_solution_val))
+
+        return self.best_solution_parameters.copy()
+
+    def parameter_bayesian_to_token(self, paramether_dictionary):
+        """
+        The function takes the random values from BayesianSearch and transforms them in the corresponding categorical
+        tokens
+        :param paramether_dictionary:
+        :return:
+        """
+
+        # Convert categorical values
+        for key in paramether_dictionary.keys():
+
+            if key in self.categorical_mapper_dict_index_to_case:
+                float_value = paramether_dictionary[key]
+                index = int(round(float_value, 0))
+
+                categorical = self.categorical_mapper_dict_index_to_case[key][index]
+
+                paramether_dictionary[key] = categorical
+
+        return paramether_dictionary
+
+    def runSingleCase(self, dictionary, metric, **paramether_dictionary_input):
+
+        paramether_dictionary = self.parameter_bayesian_to_token(paramether_dictionary_input)
+
+        return self.runSingleCase_param_parsed(dictionary, metric, paramether_dictionary)
+
+    def runSingleCase_param_parsed(self, dictionary, metric, paramether_dictionary):
+
+        if time.time() - start_time > 60 * 60 * 5:
+            return -np.inf
+
+        try:
+
+            # Create an object of the same class of the imput
+            # Passing the paramether as a dictionary
+            recommender = self.recommender_class(*dictionary[DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS],
+                                                 **dictionary[DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS])
+
+            print("BayesianSearch: Testing config: {}".format(paramether_dictionary))
+
+            recommender.fit(*dictionary[DictionaryKeys.FIT_POSITIONAL_ARGS],
+                            **dictionary[DictionaryKeys.FIT_KEYWORD_ARGS],
+                            **paramether_dictionary)
+
+            # return recommender.evaluateRecommendations(self.URM_validation, at=5, mode="sequential")
+            result_dict, _, _ = self.evaluator_validation.evaluateRecommender(recommender, paramether_dictionary)
+            result_dict = result_dict[list(result_dict.keys())[0]]
+
+            paramether_dictionary_to_save = self.from_fit_params_to_saved_params_function(recommender,
+                                                                                          paramether_dictionary)
+
+            self.from_fit_params_to_saved_params[
+                frozenset(paramether_dictionary.items())] = paramether_dictionary_to_save
+
+            self.model_counter += 1
+
+            if self.best_solution_val is None or self.best_solution_val < result_dict[metric]:
+
+                self.write_log(
+                    "BayesianSearch: New best config found. Config: {} - MAP results: {} - time: {}\n".format(
+                        paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()))
+                print(
+                    "BayesianSearch: New best config found. Config: {} - MAP results: {} - time: {}\n".format(
+                        paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()))
+
+                self.best_solution_val = result_dict[metric]
+
+                if self.evaluator_test is not None:
+                    self.evaluate_on_test()
+
+            else:
+                self.write_log("BayesianSearch: Config is suboptimal. Config: {} - MAP results: {} - time: {}\n".format(
+                    paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()))
+
+                print("BayesianSearch: Config is suboptimal. Config: {} - MAP results: {} - time: {}\n".format(
+                    paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()))
+            del recommender
+            return result_dict[metric]
+
+
+        except Exception as e:
+            print("BayesianSearch: Testing config: {} - Exception {}\n".format(paramether_dictionary, str(e)))
+            traceback.print_exc()
+
+            return - np.inf
+
+    def write_log(self, string):
+        with open(self.logFile, 'a') as the_file:
+            the_file.write(string + '\n')
 
 
 '''
@@ -670,8 +858,7 @@ class EvaluatorMetrics(Enum):
     SHANNON_ENTROPY = "SHANNON_ENTROPY"
 
 
-def create_empty_metrics_dict(n_items, n_users, URM_train, ignore_items, ignore_users, cutoff,
-                              diversity_similarity_object):
+def create_empty_metrics_dict():
     empty_dict = {}
 
     # from Base.Evaluation.ResultMetric import ResultMetric
@@ -811,12 +998,7 @@ class SequentialEvaluator(Evaluator):
         results_dict = {}
 
         for cutoff in self.cutoff_list:
-            results_dict[cutoff] = create_empty_metrics_dict(self.n_items, self.n_users,
-                                                             recommender_object.get_URM_train(),
-                                                             self.ignore_items_ID,
-                                                             self.ignore_users_ID,
-                                                             cutoff,
-                                                             self.diversity_object)
+            results_dict[cutoff] = create_empty_metrics_dict()
 
         n_users_evaluated = 0
 
@@ -1004,6 +1186,7 @@ class RS_Data_Loader(object):
         return csr_matrix(([1] * row, (range(row), [0] * row)), shape=(row, col))
 
 
+start_time = time.time()
 if __name__ == '__main__':
     evaluate_algorithm = True
     delete_old_computations = False
@@ -1022,38 +1205,30 @@ if __name__ == '__main__':
     URM_test = dataReader.get_URM_test()
 
     evaluator = SequentialEvaluator(URM_test, URM_train, exclude_seen=True)
+    evaluator_validation_wrapper = EvaluatorWrapper(evaluator)
 
-    recommender_class = RP3betaRecommender
+    recommender_class = SLIMElasticNetRecommender
 
     # On pop it used to choose if have dynamic weights for
     recommender = recommender_class(URM_train)
 
-    topK_list = list(range(1, 800, 10))
-    alpha_list = list(np.linspace(0.001, 2.0, 500))  # range(0, 2)
-    beta_list = list(np.linspace(0.001, 2.0, 500))
+    n_cases = 30
+    metric_to_optimize = 'MAP'
 
-    total_permutations = [x for x in list(itertools.product(topK_list, alpha_list, beta_list))]
-    shuffle(total_permutations)
+    parameterSearch = BayesianSearch(recommender_class, evaluator_validation_wrapper)
+    hyperparamethers_range_dictionary = {}
+    hyperparamethers_range_dictionary["topK"] = list(range(10, 500, 30))
+    hyperparamethers_range_dictionary["l1_ratio"] = [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
 
-    iter = 0
-    start_time = time.time()
-    for topK, alpha, beta in total_permutations:
-        if time.time() - start_time > 60 * 60 * 5:
-            # after 5 hours stop it!
-            continue
-
-        if iter > 30:
-            continue
-
-        recommender.fit(**{
-            "topK": topK,
-            'alpha': alpha,
-            'beta': beta})
-
-        results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender)
-
-        print("Rp3beta params topK: {}, alpha: {}, beta: {}, MAP: {}".format(topK, alpha, beta,
-                                                                             results_run[10]['MAP']))
-
-        gc.collect()
-        iter += 1
+    recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
+                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
+                             DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
+                             DictionaryKeys.FIT_KEYWORD_ARGS: dict(),
+                             DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
+    best_parameters = parameterSearch.search(recommenderDictionary,
+                                             n_cases=n_cases,
+                                             metric=metric_to_optimize,  # do not put output path
+                                             output_root_path="ElasticNet",
+                                             init_points=15
+                                             )
+    print(best_parameters)

@@ -39,9 +39,9 @@ if __name__ == '__main__':
     # else:
     #     print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
 
-    filename = "hybrid_one_interval.csv"
+    filename = "hybrid_with similarities.csv"
 
-    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
+    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm, distr_split=False)
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()
@@ -123,7 +123,7 @@ if __name__ == '__main__':
             "weights": [0.5553160795197877, 0.7757009882288872, 0.5982445930826743, 0.5982445930826743,
                         0.9945089580422436, 0.19198495537212745],
             "final_weights": [1, 1],
-            "force_compute_sim": not evaluate_algorithm,
+            "force_compute_sim": True, #not evaluate_algorithm,
             "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
             "epochs": 50,
@@ -141,25 +141,26 @@ if __name__ == '__main__':
 
         print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
                                                     results_run_string))
-        # Testing to use this similarity computed as starting point for a SLIM improvement
-        transfer_matrix = recommender.W_sparse20
-        evaluator_validation_earlystopping = SequentialEvaluator(URM_validation, URM_train, cutoff_list=[10])
-        SLIM_recommender = SLIM_BPR_Cython(URM_train, URM_validation=URM_validation)
-        SLIM_recommender.fit(old_similarity_matrix=transfer_matrix, epochs=200,
-                             force_compute_sim=True, topK=66,
-                             lambda_i=0.06928490242552432,
-                             lambda_j=0.9408725374123923,
-                             validation_every_n=20, stop_on_validation=False,
-                             evaluator_object=evaluator_validation_earlystopping,
-                             lower_validatons_allowed=0
-                             )
-
-        print("Starting Evaluations...")
-        # to indicate if plotting for lenght or for pop
-
-        results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(SLIM_BPR_Cython,
-                                                                                                plot_stats=True,
-                                                                                                onPop=onPop)
+        # cioa()
+        # # Testing to use this similarity computed as starting point for a SLIM improvement
+        # transfer_matrix = recommender.W_sparse20
+        # evaluator_validation_earlystopping = SequentialEvaluator(URM_validation, URM_train, cutoff_list=[10])
+        # SLIM_recommender = SLIM_BPR_Cython(URM_train, URM_validation=URM_validation)
+        # SLIM_recommender.fit(old_similarity_matrix=transfer_matrix, epochs=200,
+        #                      force_compute_sim=True, topK=66,
+        #                      lambda_i=0.06928490242552432,
+        #                      lambda_j=0.9408725374123923,
+        #                      validation_every_n=20, stop_on_validation=False,
+        #                      evaluator_object=evaluator_validation_earlystopping,
+        #                      lower_validatons_allowed=0
+        #                      )
+        #
+        # print("Starting Evaluations...")
+        # # to indicate if plotting for lenght or for pop
+        #
+        # results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(SLIM_BPR_Cython,
+        #                                                                                         plot_stats=True,
+        #                                                                                         onPop=onPop)
 
         print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
                                                     results_run_string))

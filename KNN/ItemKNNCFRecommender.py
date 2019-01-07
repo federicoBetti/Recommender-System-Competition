@@ -33,11 +33,20 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
         self.sparse_weights = sparse_weights
 
         self.W_sparse = None
+        self.topK = None
+        self.shrink = None
+        self.tfidf = None
 
-    def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True, tfidf=True, **similarity_args):
+    def __str__(self):
+        return "Item Collaborative Filterng (tokK={}, shrink={}, tfidf={}, normalize={}".format(
+            self.topK, self.shrink, self.tfidf, self.normalize)
+
+    def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True, tfidf=True,
+            **similarity_args):
 
         self.topK = topK
         self.shrink = shrink
+        self.tfidf = tfidf
 
         if not force_compute_sim:
             found = True
@@ -58,7 +67,8 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
         else:
             sim_matrix_pre = self.URM_train
 
-        similarity = Compute_Similarity(sim_matrix_pre, shrink=shrink, topK=topK, normalize=normalize, similarity = similarity, **similarity_args)
+        similarity = Compute_Similarity(sim_matrix_pre, shrink=shrink, topK=topK, normalize=normalize,
+                                        similarity=similarity, **similarity_args)
         print('Similarity item based CF computed')
 
         if self.sparse_weights:
@@ -69,4 +79,3 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
         else:
             self.W = similarity.compute_similarity()
             self.W = self.W.toarray()
-

@@ -36,10 +36,15 @@ class UserKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
 
         self.W_sparse = None
 
+    def __str__(self):
+        return "User Collaborative Filterng (tokK={}, shrink={}, tfidf={}, normalize={}".format(
+            self.topK, self.shrink, self.tfidf, self.normalize)
+
     def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True, tfidf=True, **similarity_args):
 
         self.topK = topK
         self.shrink = shrink
+        self.tfidf = tfidf
 
         if not force_compute_sim:
             found = True

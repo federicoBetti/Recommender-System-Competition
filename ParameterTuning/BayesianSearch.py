@@ -72,7 +72,8 @@ class BayesianSearch(AbstractClassSearch):
         hyperparamethers_range_dictionary = dictionary[DictionaryKeys.FIT_RANGE_KEYWORD_ARGS].copy()
 
         self.output_root_path = output_root_path
-        self.logFile = open(self.output_root_path + "_BayesianSearch.txt", "a")
+        if self.output_root_path is not None:
+            self.logFile = open(self.output_root_path + "_BayesianSearch.txt", "a")
         self.save_model = save_model
         self.model_counter = 0
 
@@ -135,8 +136,9 @@ class BayesianSearch(AbstractClassSearch):
         self.best_solution_parameters = self.from_fit_params_to_saved_params[
             frozenset(self.best_solution_parameters.items())]
 
-        writeLog("BayesianSearch: Best config is: Config {}, {} value is {:.4f}\n".format(
-            self.best_solution_parameters, metric, self.best_solution_val), self.logFile)
+        if self.output_root_path is not None:
+            writeLog("BayesianSearch: Best config is: Config {}, {} value is {:.4f}\n".format(
+                self.best_solution_parameters, metric, self.best_solution_val), self.logFile)
 
         #
         #
@@ -237,8 +239,9 @@ class BayesianSearch(AbstractClassSearch):
 
             if self.best_solution_val is None or self.best_solution_val < result_dict[metric]:
 
-                writeLog("BayesianSearch: New best config found. Config: {} - MAP results: {} - time: {}\n".format(
-                    paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()), self.logFile)
+                if self.output_root_path is not None:
+                    writeLog("BayesianSearch: New best config found. Config: {} - MAP results: {} - time: {}\n".format(
+                        paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()), self.logFile)
 
                 '''REMOVED IN ORDER NOT TO SAVE MODEL PARAMETERS (problem with hybrid and for us useless because
                 we'll train with all the train at the end, just memory usage) '''
@@ -262,16 +265,17 @@ class BayesianSearch(AbstractClassSearch):
                     self.evaluate_on_test()
 
             else:
-                writeLog("BayesianSearch: Config is suboptimal. Config: {} - MAP results: {} - time: {}\n".format(
-                    paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()), self.logFile)
+                if self.output_root_path is not None:
+                    writeLog("BayesianSearch: Config is suboptimal. Config: {} - MAP results: {} - time: {}\n".format(
+                        paramether_dictionary_to_save, result_dict[metric], datetime.datetime.now()), self.logFile)
             del recommender
             return result_dict[metric]
 
 
         except Exception as e:
-
-            writeLog("BayesianSearch: Testing config: {} - Exception {}\n".format(paramether_dictionary, str(e)),
-                     self.logFile)
+            if self.output_root_path is not None:
+                writeLog("BayesianSearch: Testing config: {} - Exception {}\n".format(paramether_dictionary, str(e)),
+                         self.logFile)
             traceback.print_exc()
 
             return - np.inf

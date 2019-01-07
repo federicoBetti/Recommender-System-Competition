@@ -96,3 +96,4 @@ BayesianSearch: Config is suboptimal. Config: {'topK': 380, 'shrink': 2, 'simila
 BayesianSearch: Config is suboptimal. Config: {'topK': 630, 'shrink': 20, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 0} - MAP results: 0.052446225632963354 - time: 2018-12-14 12:26:09.910259
 BayesianSearch: New best config found. Config: {'topK': 10, 'shrink': 180, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 0} - MAP results: 0.05286671777889979 - time: 2018-12-14 12:26:43.658862
 BayesianSearch: Best config is: Config {'topK': 10, 'shrink': 180, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 0}, MAP value is 0.0529
+BayesianSearch: New best config found. Config: {'topK': 170, 'shrink': 5, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 2} - MAP results: 0.049761977900139975 - time: 2018-12-28 16:51:28.454353

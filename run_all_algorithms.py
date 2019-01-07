@@ -5,6 +5,7 @@ from scipy import sparse
 
 from Dataset.RS_Data_Loader import RS_Data_Loader
 from KNN.HybridRecommenderXGBoost import HybridRecommenderXGBoost
+from KNN.ItemKNNCFPageRankRecommender import ItemKNNCFPageRankRecommender
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 
@@ -26,8 +27,8 @@ import Support_functions.get_evaluate_data as ged
 from GraphBased.RP3betaRecommender import RP3betaRecommender
 from GraphBased.P3alphaRecommender import P3alphaRecommender
 import xgboost as xgb
-from data.Movielens_10M.Movielens10MReader import Movielens10MReader
-
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
 import traceback, os
 
 import Support_functions.manage_data as md
@@ -37,7 +38,6 @@ if __name__ == '__main__':
     evaluate_algorithm = True
     delete_old_computations = False
     slim_after_hybrid = False
-    XGB_model_ready = False
 
     # delete_previous_intermediate_computations()
     # if not evaluate_algorithm:
@@ -50,6 +50,7 @@ if __name__ == '__main__':
     dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
 
     URM_train = dataReader.get_URM_train()
+    URM_PageRank_train = dataReader.get_page_rank_URM()
     URM_validation = dataReader.get_URM_validation()
     URM_test = dataReader.get_URM_test()
     ICM = dataReader.get_ICM()
@@ -67,6 +68,7 @@ if __name__ == '__main__':
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
+        ItemKNNCFPageRankRecommender,
         # UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
@@ -84,16 +86,17 @@ if __name__ == '__main__':
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
+        ItemKNNCFPageRankRecommender,
         # UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        # P3alphaRecommender,
+        P3alphaRecommender,
         RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
-        PureSVDRecommender
+        # PureSVDRecommender
     ]
 
     # UserCBF, ItemCF, UserCF, P3alpha, RP3b, SLIM, PurSVD
@@ -101,24 +104,24 @@ if __name__ == '__main__':
         # Random,
         # TopPop,
         # ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        P3alphaRecommender,
-        RP3betaRecommender,
+        # UserKNNCBRecommender,
+        # ItemKNNCFRecommender,
+        # UserKNNCFRecommender,
+        # P3alphaRecommender,
+        # RP3betaRecommender,
         # # MatrixFactorization_BPR_Cython,
         # # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
+        # SLIM_BPR_Cython,
         # # SLIMElasticNetRecommender
-        PureSVDRecommender
+        # PureSVDRecommender
     ]
 
     # For hybrid with weighted estimated rating
     d_weights = [
-        [0.6708034395599534, 0.4180455311930482, 0.013121631586130333, 0.9606783176615321, 0.9192576193987754,
-         0.517220112773677] + [0] * len(recommender_list2) + [0] * len(recommender_list3),
+        [0.6708034395599534, 0.4180455311930482, 4180455311930482, 0.013121631586130333, 0.9606783176615321,
+         0.9192576193987754] + [0] * len(recommender_list2) + [0] * len(recommender_list3),
         [0] * len(recommender_list1) + [0.03206429006541767, 0.022068399812202766, 0.5048937312439359,
-                                        0.5777889378285606, 0.002469536740713263]
+                                        0.5777889378285606, 0.002469536740713263, 2959761085665614]
         + [0] * len(recommender_list3),
         [0] * len(recommender_list1) + [0] * len(recommender_list2) + [0.2959761085665614, 0.08296490886624563,
                                                                        0.72672714096492, 0.04856215067017522,
@@ -159,7 +162,7 @@ if __name__ == '__main__':
         transfer_matrix = None
 
     try:
-        recommender_class = HybridRecommenderXGBoost
+        recommender_class = HybridRecommender
         print("Algorithm: {}".format(recommender_class))
 
         '''
@@ -208,34 +211,13 @@ if __name__ == '__main__':
         '''
         Our optimal run
         '''
-        recommender_list = recommender_list1 + recommender_list2 + recommender_list3
+        recommender_list = recommender_list1 + recommender_list2# + recommender_list3
         onPop = True
 
-        # XGBoost
-        model = None
-        # try:
-        if XGB_model_ready:
-            X_train = np.load("Dataset/XGBoostTraining.npy")
-            y_train = np.load("Dataset/XGBoostLabels.npy")
-            print("XGBoost training...")
-            dtrain = xgb.DMatrix(X_train, label=y_train)
-
-            param = {
-                'max_depth': 5,  # the maximum depth of each tree
-                'eta': 0.3,  # the training step for each iteration
-                'silent': 1,  # logging mode - quiet
-                'objective': 'multi:softprob',  # error evaluation for multiclass training
-                'num_class': y_train.shape[0]}  # the number of classes that exist in this datset
-            num_round = 20  # the number of training iterations
-
-            model = xgb.train(param, dtrain, num_round)
-            # except:
-            XGB_model_ready = False
 
         # On pop it used to choose if have dynamic weights for
-        recommender = recommender_class(URM_train, ICM, recommender_list, XGB_model_ready=XGB_model_ready,
-                                        XGBoost_model=model,
-                                        dynamic=True,
+        recommender = recommender_class(URM_train, ICM, recommender_list, URM_PageRank_train=URM_PageRank_train,
+                                        dynamic=False,
                                         d_weights=d_weights, UCM_train=UCM_tfidf,
                                         URM_validation=URM_validation, onPop=onPop)
 
@@ -292,12 +274,12 @@ if __name__ == '__main__':
         # found.Config: {'top1': 50, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP
 
         recommender.fit(**{
-            "topK": [15, 595, 105, 15, 20] + [21, 220, 160, 70, -1] + [250, 180, 240, 151, 91, 311, -1],
-            "shrink": [210, 1, 30, -1, -1] + [75, 1, 150, -1, -1] + [55, 2, 19, -1, -1, -1, -1],
-            "pop": [130, 346],
-            "weights": d_weights,
-            "force_compute_sim": True,
-            "feature_weighting_index": 0,
+            "topK": [15, 595, 400, 105, 15, 20],#+ [21, 220, 300, 160, 70, -1],# + [250, 180, 240, 151, 91, 311, -1],
+            "shrink": [210, 1, 1, 30, -1, -1],# + [75, 1, 1, 150, -1, -1],# + [55, 2, 19, -1, -1, -1, -1],
+            "pop": [350],
+            "weights": [1] * 12,
+            "force_compute_sim": False,
+            # "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
             "epochs": 1, "lambda_i": [0.10467537896611145],
             "lambda_j": [0.004454204678491891],  # SOLO ULTIMO HA SLIM
@@ -314,7 +296,7 @@ if __name__ == '__main__':
         # to indicate if plotting for lenght or for pop
 
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
-                                                                                                plot_stats=False,
+                                                                                                plot_stats=True,
                                                                                                 onPop=onPop)
 
         print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
@@ -322,12 +304,6 @@ if __name__ == '__main__':
         logFile.write("Algorithm: {}, results: \n{}\n".format(recommender.__class__, results_run_string))
         logFile.flush()
 
-        if not XGB_model_ready:
-            with open(os.path.join("Dataset", "XGBoostTraining.pkl"), 'wb') as handle:
-                pickle.dump(recommender.trainXGBoost, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-            with open(os.path.join("Dataset", "XGBoostLabels.pkl"), 'wb') as handle:
-                pickle.dump(recommender.user_id_XGBoost, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
         if not evaluate_algorithm:
             target_playlist = dataReader.get_target_playlist()

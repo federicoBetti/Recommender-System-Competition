@@ -339,7 +339,8 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
 
         if self.xgb_model_ready:
             print("QUI")
-            preds = self.xgbModel.predict(newTrainXGBoost)
+            preds = self.xgbModel.predict_proba(newTrainXGBoost)
+            # preds = self.xgbModel.predict(newTrainXGBoost)
             ranking = []
             ordered_tracks = []
             current_user_id = 0
@@ -359,6 +360,9 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
             if self.first_time:
                 self.first_time = False
                 self.trainXGBoost = sparse.lil_matrix(newTrainXGBoost, dtype=int)
+                x = self.trainXGBoost
+                y = self.user_id_XGBoost
+                print()
 
             elif not self.first_time:
                 self.trainXGBoost = sparse.vstack([self.trainXGBoost, newTrainXGBoost], dtype=int)

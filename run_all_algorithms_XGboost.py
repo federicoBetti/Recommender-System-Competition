@@ -16,7 +16,8 @@ from MatrixFactorization.PureSVD import PureSVDRecommender
 from Base.NonPersonalizedRecommender import TopPop, Random
 
 import numpy as np
-
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
 from KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from KNN.HybridRecommenderTopNapproach import HybridRecommenderTopNapproach
 from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
@@ -27,6 +28,8 @@ import Support_functions.get_evaluate_data as ged
 from GraphBased.RP3betaRecommender import RP3betaRecommender
 from GraphBased.P3alphaRecommender import P3alphaRecommender
 import xgboost as xgb
+from Base.Evaluation.Evaluator import SequentialEvaluator
+
 from data.Movielens_10M.Movielens10MReader import Movielens10MReader
 
 import traceback, os
@@ -97,7 +100,6 @@ if __name__ == '__main__':
     # Dynamics for Hybrid with Top_N. usefull for testing where each recommender works better
     # d_weights = [[2, 4, 0], [1, 4, 5], [0, 2, 8]]
 
-    from Base.Evaluation.Evaluator import SequentialEvaluator
 
     evaluator = SequentialEvaluator(URM_test, URM_train, exclude_seen=True)
 
@@ -127,6 +129,7 @@ if __name__ == '__main__':
         model = None
         # try:
         if XGB_model_ready:
+
             with open(os.path.join("Dataset", "XGBoostTraining.pkl"), 'rb') as handle:
                 X_train = pickle.load(handle)
 
@@ -135,27 +138,32 @@ if __name__ == '__main__':
 
             y_train = y_train.reshape(-1, )
 
-            print("XGBoost training...")
-            print("X_train type: {}, shape: {}".format(type(X_train), X_train.shape))
-            print("y_train shape: {}".format(y_train.shape))
-            print("N classes: {}".format(y_train[-1]))
+            model = RandomForestClassifier(n_estimators=100, max_depth=2,
+                                        random_state = 0)
+            model.fit(X_train, y_train)
 
-            dump_svmlight_file(X_train, y_train, 'dtrain.svm', zero_based=True)
-            dtrain = xgb.DMatrix('dtrain.svm')
-            # dtrain = xgb.DMatrix(X_train, label=y_train)
 
-            param = {
-                'max_depth': 5,  # the maximum depth of each tree
-                'eta': 0.3,  # the training step for each iteration
-                'silent': 1,  # logging mode - quiet
-                'objective': 'multi:softprob',  # error evaluation for multiclass training
-                'num_class': y_train[-1]}  # the number of classes that exist in this datset
-            num_round = 20  # the number of training iterations
-
-            model = xgb.train(param, dtrain, num_round, verbose_eval=2,
-                              evals=[(dtrain, 'train')])
-            # except:
-            XGB_model_ready = False
+            # print("XGBoost training...")
+            # print("X_train type: {}, shape: {}".format(type(X_train), X_train.shape))
+            # print("y_train shape: {}".format(y_train.shape))
+            # print("N classes: {}".format(y_train[-1]))
+            #
+            # dump_svmlight_file(X_train, y_train, 'dtrain.svm', zero_based=True)
+            # dtrain = xgb.DMatrix('dtrain.svm')
+            # # dtrain = xgb.DMatrix(X_train, label=y_train)
+            #
+            # param = {
+            #     'max_depth': 5,  # the maximum depth of each tree
+            #     'eta': 0.3,  # the training step for each iteration
+            #     'silent': 1,  # logging mode - quiet
+            #     'objective': 'multi:softprob',  # error evaluation for multiclass training
+            #     'num_class': y_train[-1]}  # the number of classes that exist in this datset
+            # num_round = 20  # the number of training iterations
+            #
+            # model = xgb.train(param, dtrain, num_round, verbose_eval=2,
+            #                   evals=[(dtrain, 'train')])
+            # # except:
+            # XGB_model_ready = False
 
         # On pop it used to choose if have dynamic weights for
         recommender = recommender_class(URM_train, ICM, recommender_list, dataReader.tracks,

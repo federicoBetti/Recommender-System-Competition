@@ -1009,55 +1009,44 @@ Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderCluste
 Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: setting an array element with a sequence.
 Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: setting an array element with a sequence.
 Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: 
-Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: 
-Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: final ranking shape: (1000, 10) and [[20065 19582 19034 ...   356 17421 16931]
- [  102   699   800 ...  2336  2544 20242]
- [18904 18669 18490 ... 16949 16762 16645]
- ...
- [20371 20254 19775 ... 18479 17818 17229]
- [  508   579   817 ...  2980  3001  2989]
- [20394 20016 19928 ... 16225 15758 15699]]
-Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: user_id_array shape:1000; final ranking shape: (1000, 10) and [[20065 19582 19034 ...   356 17421 16931]
- [  102   699   800 ...  2336  2544 20242]
- [18904 18669 18490 ... 16949 16762 16645]
- ...
- [20371 20254 19775 ... 18479 17818 17229]
- [  508   579   817 ...  2980  3001  2989]
- [20394 20016 19928 ... 16225 15758 15699]]
-Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: 
-Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'>, results: 
-CUTOFF: 10 - ROC_AUC: 0.1596853, PRECISION: 0.0820756, RECALL: 0.0801100, RECALL_TEST_LEN: 0.0820756, MAP: 0.0270721, MRR: 0.1074347, NDCG: 0.0609747, F1: 0.0810809, HIT_RATE: 0.4339492, ARHR: 0.1262607, NOVELTY: 0.0064180, DIVERSITY_MEAN_INTER_LIST: 0.9928156, DIVERSITY_HERFINDAHL: 0.9992796, COVERAGE_ITEM: 0.4571844, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2356341, SHANNON_ENTROPY: 11.4228376, 
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3423647, PRECISION: 0.1974822, RECALL: 0.1940450, RECALL_TEST_LEN: 0.1974822, MAP: 0.1092495, MRR: 0.2896028, NDCG: 0.1747370, F1: 0.1957485, HIT_RATE: 0.9470325, ARHR: 0.3865703, NOVELTY: 0.0062030, DIVERSITY_MEAN_INTER_LIST: 0.9958711, DIVERSITY_HERFINDAHL: 0.9995851, COVERAGE_ITEM: 0.7030288, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2568109, SHANNON_ENTROPY: 12.1814708, 
 
-Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'>, results: 
-CUTOFF: 10 - ROC_AUC: 0.2200200, PRECISION: 0.1099392, RECALL: 0.1074842, RECALL_TEST_LEN: 0.1099392, MAP: 0.0440298, MRR: 0.1621773, NDCG: 0.0887423, F1: 0.1086978, HIT_RATE: 0.5675574, ARHR: 0.1951507, NOVELTY: 0.0063457, DIVERSITY_MEAN_INTER_LIST: 0.9932206, DIVERSITY_HERFINDAHL: 0.9993201, COVERAGE_ITEM: 0.7749455, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2480705, SHANNON_ENTROPY: 12.0284447, 
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3423647, PRECISION: 0.1974822, RECALL: 0.1940450, RECALL_TEST_LEN: 0.1974822, MAP: 0.1092495, MRR: 0.2896028, NDCG: 0.1747370, F1: 0.1957485, HIT_RATE: 0.9470325, ARHR: 0.3865703, NOVELTY: 0.0062030, DIVERSITY_MEAN_INTER_LIST: 0.9958711, DIVERSITY_HERFINDAHL: 0.9995851, COVERAGE_ITEM: 0.7030288, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2568109, SHANNON_ENTROPY: 12.1814708, 
 
-Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: all the input arrays must have same number of dimensions
-Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'> - Exception: all the input arrays must have same number of dimensions
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost'> - Exception: 'RandomForestClassifier' object has no attribute 'predict_poba'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Weights: 5 and recommender list: 6 have different lenghts
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Knns, Shrinks and recommender list have different lenghts 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'tfidf'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'NoneType' object is not subscriptable
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: dimension mismatch
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'NoneType' object is not subscriptable
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'NoneType' object is not subscriptable
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: dimension mismatch
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: dimension mismatch
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: __init__() got an unexpected keyword argument 'feature_weighting_index'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: __init__() got an unexpected keyword argument 'feature_weighting_index'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'feature_weighting_index'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3559524, PRECISION: 0.2071926, RECALL: 0.2037377, RECALL_TEST_LEN: 0.2071926, MAP: 0.1125263, MRR: 0.3004721, NDCG: 0.1817722, F1: 0.2054506, HIT_RATE: 0.9884233, ARHR: 0.4005254, NOVELTY: 0.0060389, DIVERSITY_MEAN_INTER_LIST: 0.9936511, DIVERSITY_HERFINDAHL: 0.9993631, COVERAGE_ITEM: 0.7061304, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2100422, SHANNON_ENTROPY: 11.7977213, 
 
-questo è il risultato che ho ottenuto solamente provando a riordinare le canzoni già nella top10, infatti la Precision è la stessa rispetto ai casi sopra normali ma la MAP è diminuita...
-Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'>, results:
-CUTOFF: 10 - ROC_AUC: 0.2608846, PRECISION: 0.1967369, RECALL: 0.1933324, RECALL_TEST_LEN: 0.1967369, MAP: 0.0761076, MRR: 0.2144170, NDCG: 0.1435442, F1: 0.1950198, HIT_RATE: 0.9444555, ARHR: 0.2865854, NOVELTY: 0.0062067, DIVERSITY_MEAN_INTER_LIST: 0.9959225, DIVERSITY_HERFINDAHL: 0.9995903, COVERAGE_ITEM: 0.7062273, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2570690, SHANNON_ENTROPY: 12.1920605, 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3493722, PRECISION: 0.2043617, RECALL: 0.2008474, RECALL_TEST_LEN: 0.2043617, MAP: 0.1121381, MRR: 0.2957897, NDCG: 0.1797600, F1: 0.2025893, HIT_RATE: 0.9791064, ARHR: 0.3963280, NOVELTY: 0.0061297, DIVERSITY_MEAN_INTER_LIST: 0.9950916, DIVERSITY_HERFINDAHL: 0.9995072, COVERAGE_ITEM: 0.6891689, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2412119, SHANNON_ENTROPY: 12.0286088, 
 
-ho ottenuto 11.50 di MAP usando i random dataset invece che quello che abbiamo preso noi. Voglio provare come va anche il modell che usa pytorch
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Weights: 5 and recommender list: 6 have different lenghts
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Knns, Shrinks and recommender list have different lenghts 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Knns, Shrinks and recommender list have different lenghts 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Weights: 6 and recommender list: 12 have different lenghts
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: Scores and weights have different lengths
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3362825, PRECISION: 0.1910885, RECALL: 0.1879751, RECALL_TEST_LEN: 0.1910885, MAP: 0.0995930, MRR: 0.2765005, NDCG: 0.1653666, F1: 0.1895190, HIT_RATE: 0.9079610, ARHR: 0.3608390, NOVELTY: 0.0058766, DIVERSITY_MEAN_INTER_LIST: 0.9886209, DIVERSITY_HERFINDAHL: 0.9988601, COVERAGE_ITEM: 0.7217349, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.1737460, SHANNON_ENTROPY: 11.2918434, 
 
-Algorithm: <class 'KNN.HybridRecommenderClusterizzazione.HybridRecommenderClusterizzazione'>, results: 
-CUTOFF: 10 - ROC_AUC: 0.2343370, PRECISION: 0.2104201, RECALL: 0.2088499, RECALL_TEST_LEN: 0.2104201, MAP: 0.0761478, MRR: 0.1843027, NDCG: 0.1396993, F1: 0.2096321, HIT_RATE: 0.7870203, ARHR: 0.2370164, NOVELTY: 0.0061513, DIVERSITY_MEAN_INTER_LIST: 0.9954391, DIVERSITY_HERFINDAHL: 0.9995417, COVERAGE_ITEM: 0.6703174, COVERAGE_USER: 0.8998533, DIVERSITY_GINI: 0.2506206, SHANNON_ENTROPY: 12.0671498, 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3436706, PRECISION: 0.1943131, RECALL: 0.1911314, RECALL_TEST_LEN: 0.1943131, MAP: 0.1020814, MRR: 0.2838317, NDCG: 0.1690056, F1: 0.1927092, HIT_RATE: 0.9231257, ARHR: 0.3705178, NOVELTY: 0.0058408, DIVERSITY_MEAN_INTER_LIST: 0.9899344, DIVERSITY_HERFINDAHL: 0.9989915, COVERAGE_ITEM: 0.6329053, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.1710520, SHANNON_ENTROPY: 11.2455837, 
 
-Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'>, results: 
-CUTOFF: 10 - ROC_AUC: 0.3245414, PRECISION: 0.2190821, RECALL: 0.2175863, RECALL_TEST_LEN: 0.2190821, MAP: 0.1141497, MRR: 0.2648267, NDCG: 0.1778367, F1: 0.2183316, HIT_RATE: 0.8075201, ARHR: 0.3357997, NOVELTY: 0.0059151, DIVERSITY_MEAN_INTER_LIST: 0.9931232, DIVERSITY_HERFINDAHL: 0.9993101, COVERAGE_ITEM: 0.5907439, COVERAGE_USER: 0.8988820, DIVERSITY_GINI: 0.2112107, SHANNON_ENTROPY: 11.5835440, 
-
-Algorithm: <class 'KNN.HybridSimilaritiesRecommender.HybridSimilaritiesRecommender'> - Exception: name 'cioa' is not defined
-Algorithm: <class 'KNN.HybridSimilaritiesRecommender.HybridSimilaritiesRecommender'>, results: 
-CUTOFF: 10 - ROC_AUC: 0.0000000, PRECISION: 0.0000000, RECALL: 0.0000000, RECALL_TEST_LEN: 0.0000000, MAP: 0.0000000, MRR: 0.0000000, NDCG: 0.0000000, F1: 0.0000000, HIT_RATE: 0.0000000, ARHR: 0.0000000, NOVELTY: 0.0058109, DIVERSITY_MEAN_INTER_LIST: 0.9917956, DIVERSITY_HERFINDAHL: 0.9991696, COVERAGE_ITEM: 0.3522171, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2737877, SHANNON_ENTROPY: 11.2334695, 
-
-Algorithm: <class 'KNN.HybridSimilaritiesRecommender.HybridSimilaritiesRecommender'>, results: 
-CUTOFF: 10 - ROC_AUC: 0.0000000, PRECISION: 0.0000000, RECALL: 0.0000000, RECALL_TEST_LEN: 0.0000000, MAP: 0.0000000, MRR: 0.0000000, NDCG: 0.0000000, F1: 0.0000000, HIT_RATE: 0.0000000, ARHR: 0.0000000, NOVELTY: 0.0058109, DIVERSITY_MEAN_INTER_LIST: 0.9917956, DIVERSITY_HERFINDAHL: 0.9991696, COVERAGE_ITEM: 0.3522171, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2737877, SHANNON_ENTROPY: 11.2334695, 
-
-Algorithm: <class 'KNN.HybridSimilaritiesRecommender.HybridSimilaritiesRecommender'>, results: 
-CUTOFF: 10 - ROC_AUC: 0.3580263, PRECISION: 0.2084409, RECALL: 0.2049665, RECALL_TEST_LEN: 0.2084409, MAP: 0.1124746, MRR: 0.3010903, NDCG: 0.1822954, F1: 0.2066891, HIT_RATE: 0.9904056, ARHR: 0.4006590, NOVELTY: 0.0059024, DIVERSITY_MEAN_INTER_LIST: 0.9928462, DIVERSITY_HERFINDAHL: 0.9992827, COVERAGE_ITEM: 0.6030531, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.2032698, SHANNON_ENTROPY: 11.5457520, 
-
-Algorithm: <class 'KNN.HybridSimilaritiesRecommender.HybridSimilaritiesRecommender'>, results: 
-CUTOFF: 10 - ROC_AUC: 0.3265556, PRECISION: 0.2239819, RECALL: 0.2224283, RECALL_TEST_LEN: 0.2239819, MAP: 0.1168183, MRR: 0.2680806, NDCG: 0.1811860, F1: 0.2232024, HIT_RATE: 0.8191187, ARHR: 0.3400925, NOVELTY: 0.0058613, DIVERSITY_MEAN_INTER_LIST: 0.9922520, DIVERSITY_HERFINDAHL: 0.9992230, COVERAGE_ITEM: 0.5648655, COVERAGE_USER: 0.9001903, DIVERSITY_GINI: 0.2011302, SHANNON_ENTROPY: 11.4326807, 
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.3429606, PRECISION: 0.1937245, RECALL: 0.1905592, RECALL_TEST_LEN: 0.1937245, MAP: 0.1016926, MRR: 0.2829583, NDCG: 0.1684186, F1: 0.1921288, HIT_RATE: 0.9198152, ARHR: 0.3689932, NOVELTY: 0.0058439, DIVERSITY_MEAN_INTER_LIST: 0.9896532, DIVERSITY_HERFINDAHL: 0.9989634, COVERAGE_ITEM: 0.6497213, COVERAGE_USER: 1.0000000, DIVERSITY_GINI: 0.1702824, SHANNON_ENTROPY: 11.2508901, 
 
 Algorithm: <class 'KNN.HybridPytorch.HybridPytorch'>, results: 
 CUTOFF: 10 - ROC_AUC: 0.3003228, PRECISION: 0.2034485, RECALL: 0.2022227, RECALL_TEST_LEN: 0.2034485, MAP: 0.1083454, MRR: 0.2461615, NDCG: 0.1663793, F1: 0.2028338, HIT_RATE: 0.7363582, ARHR: 0.3121788, NOVELTY: 0.0061458, DIVERSITY_MEAN_INTER_LIST: 0.9953546, DIVERSITY_HERFINDAHL: 0.9995333, COVERAGE_ITEM: 0.6857766, COVERAGE_USER: 0.8991199, DIVERSITY_GINI: 0.2622554, SHANNON_ENTROPY: 12.1309166, 

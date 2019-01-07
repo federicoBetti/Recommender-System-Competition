@@ -12,10 +12,11 @@ from Base.NonPersonalizedRecommender import TopPop, Random
 from Dataset.RS_Data_Loader import RS_Data_Loader
 from KNN.HybridRecommender import HybridRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
+from KNN.ItemKNNCFPageRankRecommender import ItemKNNCFPageRankRecommender
 from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
 from KNN.UserKNNCFRecommender import UserKNNCFRecommender
 from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
-from MatrixFactorization.PyTorch.MF_MSE_PyTorch import MF_MSE_PyTorch
+# from MatrixFactorization.PyTorch.MF_MSE_PyTorch import MF_MSE_PyTorch
 from ParameterTuning.RandomSearch import RandomSearch
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender, MultiThreadSLIM_ElasticNet
@@ -196,6 +197,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
+        # ItemKNNCFPageRankRecommender,
         # UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
@@ -255,7 +257,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": False,
-                                                                       "UCM_train": UCM_train},
+                                                                       "UCM_train": UCM_train, "URM_pagerank": URM_pagerank},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {
                                  "topK": [10, 220, 160, 61, 276],
@@ -300,20 +302,21 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
     recommender_list = [
         # Random,
         # TopPop,
-        # ItemKNNCBFRecommender,
+        ItemKNNCBFRecommender,
+        # ItemKNNCFPageRankRecommender,
         # UserKNNCBRecommender,
-        # ItemKNNCFRecommender,
-        # UserKNNCFRecommender,
+        ItemKNNCFRecommender,
+        UserKNNCFRecommender,
         P3alphaRecommender,
-        # RP3betaRecommender,
+        RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender
-        # PureSVDRecommender
+        PureSVDRecommender
     ]
 
-    this_output_root_path = output_root_path + "3rd_interval_test:" + "{}".format(
+    this_output_root_path = output_root_path + "whole_interval_test:" + "{}".format(
         "_".join([x.RECOMMENDER_NAME for x in recommender_list]))
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
@@ -359,6 +362,7 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
     hyperparamethers_range_dictionary["alphaP3"] = range(0, 2)
     hyperparamethers_range_dictionary["normalize_similarity"] = [True, False]
 
+
     lambda_i = 0.1
     lambda_j = 0.05
     old_similrity_matrix = None
@@ -375,10 +379,10 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": True,
                                                                        "UCM_train": UCM_train},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
-                             DictionaryKeys.FIT_KEYWORD_ARGS: {  # "topK": [60, 100, 150, 146, 50, 100],
+                             DictionaryKeys.FIT_KEYWORD_ARGS: {  "topK": [60, 100, 150, 146, 50, 100, 100],
                                  # "shrink": [5, 50, 10, -1, -1, -1],
                                  "pop": [130, 346],
-                                 "weights": [1],
+                                 # "weights": [1],
                                  "force_compute_sim": True,
                                  "old_similarity_matrix": old_similrity_matrix,
                                  "epochs": 30,
@@ -389,7 +393,7 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
                                  # 'alphaRP3': 0.4156476217553893,
                                  # 'betaRP': 0.20430089442930188,
                                  # 'l1_ratio': l1_ratio,
-                                 "weights_to_dweights": 2},
+                                 "weights_to_dweights": -1},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
@@ -819,6 +823,7 @@ def read_data_split_and_search():
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()
     URM_test = dataReader.get_URM_test()
+    URM_pagerank = dataReader.get_page_rank_URM()
     ICM = dataReader.get_ICM()
     UCM_train = dataReader.get_tfidf_artists()
     output_root_path = "result_experiments/"
@@ -844,7 +849,7 @@ def read_data_split_and_search():
         # MatrixFactorization_AsySVD_Cython,
         # PureSVDRecommender,
         # SLIM_BPR_Cython,
-        SLIMElasticNetRecommender,
+        # SLIMElasticNetRecommender,
         # MultiThreadSLIM_ElasticNet,
         # HybridRecommender
     ]
@@ -919,6 +924,7 @@ def read_data_split_and_search():
                     if single is False:
                         # old similarity matrix is the starting matrix for the SLIM recommender
                         runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recommender_list,
+                                                          URM_pagerank=URM_pagerank,
                                                           evaluator_validation=evaluator_validation,
                                                           evaluator_test=evaluator_test, URM_test=URM_test,
                                                           old_similrity_matrix=transfer_matrix, UCM_train=UCM_train)

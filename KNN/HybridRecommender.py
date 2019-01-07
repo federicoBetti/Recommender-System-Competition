@@ -14,6 +14,7 @@ import numpy as np
 from GraphBased.P3alphaRecommender import P3alphaRecommender
 from GraphBased.RP3betaRecommender import RP3betaRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
+from KNN.ItemKNNCFPageRankRecommender import ItemKNNCFPageRankRecommender
 from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython, \
     MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
@@ -29,11 +30,14 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     RECOMMENDER_NAME = "ItemKNNCFRecommender"
 
-    def __init__(self, URM_train, ICM, recommender_list, UCM_train=None, dynamic=False, d_weights=None, weights=None,
+    def __init__(self, URM_train, ICM, recommender_list, UCM_train=None,
+                 URM_PageRank_train=None,
+                 dynamic=False, d_weights=None, weights=None,
                  URM_validation=None, sparse_weights=True, onPop=True, moreHybrids=False):
         super(Recommender, self).__init__()
 
         # CSR is faster during evaluation
+        self.URM_PageRank_train = URM_PageRank_train
         self.pop = None
         self.UCM_train = UCM_train
         self.URM_train = check_matrix(URM_train, 'csr')
@@ -78,6 +82,9 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 self.recommender_list.append(recommender(URM_train))
             elif recommender in [UserKNNCBRecommender]:
                 self.recommender_list.append(recommender(self.UCM_train, URM_train))
+            elif recommender in [ItemKNNCFPageRankRecommender]:
+                self.recommender_list.append(recommender(self.URM_train, self.URM_PageRank_train))
+
             # For sake of simplicity the recommender in this case is initialized and fitted outside
             elif recommender.__class__ in [HybridRecommender]:
                 self.recommender_list.append(recommender)
@@ -173,13 +180,17 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 rp3bcounter += 1
 
             elif recommender.__class__ in [ItemKNNCBFRecommender]:
-                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
-                                feature_weighting_index=similarity_args["feature_weighting_index"])
+                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
+                                # feature_weighting_index=similarity_args["feature_weighting_index"])
 
-            elif recommender.__class__ in [ItemKNNCFRecommender]:
-                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
-                                tfidf=similarity_args["tfidf"][tfidf_counter])
-                tfidf_counter += 1
+            elif recommender.__class__ in [ItemKNNCFPageRankRecommender]:
+                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
+                                # feature_weighting_index=similarity_args["feature_weighting_index"])
+
+            # elif recommender.__class__ in [ItemKNNCFRecommender]:
+            #     recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
+            #                     tfidf=similarity_args["tfidf"][tfidf_counter])
+            #     tfidf_counter += 1
 
             else:  # ItemCF, UserCF, ItemCBF, UserCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
@@ -190,15 +201,15 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             return self.d_weights[0]
             # return [0.45590938562950867, 0, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228, 0.19081956929601618, 0, 0.11267140391070507]
 
-        elif pop[0] < level < pop[1]:
+        # elif pop[0] < level < pop[1]:
             # return self.weights
             # return [0, 0, 0, 0, 0, 0, 0, 0]
             # return [0.973259052781316, 0, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645, 0.4723616073494711, 0, 0.4188403112229081]
-            return self.d_weights[1]
+            # return self.d_weights[1]
         else:
             # return self.weights
             # return [0, 0, 0, 0, 0, 0, 0, 0]
-            return self.d_weights[2]
+            return self.d_weights[1]
             # return [0.9780713488404191, 0, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535, 0.9504112133900943, 0, 0.9034510004379944]
 
     def compute_score_hybrid(self, recommender, user_id_array, dict_pop, remove_seen_flag=True,
@@ -345,8 +356,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         ranking_list = ranking.tolist()
 
         # Creating numpy array for training XGBoost
-
-
 
         # Return single list for one user, instead of list of lists
         if single_user:

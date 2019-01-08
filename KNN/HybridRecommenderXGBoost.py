@@ -57,6 +57,10 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
         self.UCM_dense = self.UCM_train.todense()
         self.ICM_dense = self.ICM.todense()
 
+        self.dict_song_pop = ged.tracks_popularity()
+        self.tracks_duration_list = np.array(self.tracks['duration_sec']).reshape((-1, 1))[:, 0].tolist()
+        self.all_tracks = range(0, URM_train.shape[1])
+
         # with open(os.path.join("Dataset", "Cluster_0_dict_Kmeans_3.pkl"), 'rb') as handle:
         #     self.cluster_0 = pickle.load(handle)
         # with open(os.path.join("Dataset", "Cluster_1_dict_Kmeans_3.pkl"), 'rb') as handle:
@@ -228,17 +232,17 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
         dim_ucm = int(len(user_list) * 20)
         ucm_batch = np.array([self.UCM_dense[user] for _ in range(cutoff_Boost)
                               for user in user_list]).reshape(dim_ucm, -1)
-        '''
+       
         dim_icm = int(len(relevant_items_boost) * 20)
         icm_batch = np.array([[self.ICM_dense[item] for item in relevant_line]
                               for relevant_line in relevant_items_boost.tolist()], dtype=int).reshape(dim_icm, -1)
-
+        '''
         tracks_duration = np.array([[tracks_duration_list[item] for item in relevant_line]
                                     for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
 
         relevant_items_boost = relevant_items_boost.reshape(-1, 1)
         return np.concatenate([relevant_items_boost, song_pop, playlist_pop, playlist_length,
-                               tracks_duration, icm_batch], axis=1)  # , ucm_batch],
+                               tracks_duration], axis=1)  #icm_batch , ucm_batch],
 
     def mean_pl_length(self, URM, songs):
         length_list = []
@@ -274,35 +278,31 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
         return pop_list
 
     def xgboost_data_training(self, user_id, URM_train):
-
-        dict_song_pop = ged.tracks_popularity()
-        tracks_duration_list = np.array(self.tracks['duration_sec']).reshape((-1, 1))[:, 0].tolist()
-        all_tracks = range(0, URM_train.shape[1])
         # elements to add for each song
 
         playlist_pos_song_cut = URM_train[user_id].indices.tolist()
-        playlist_neg_song_cut = random.sample([x for x in all_tracks if x not in playlist_pos_song_cut],
+        playlist_neg_song_cut = random.sample([x for x in self.all_tracks if x not in playlist_pos_song_cut],
                                               len(playlist_pos_song_cut))
         playlist_songs_selected = playlist_pos_song_cut + playlist_neg_song_cut
         playlist_songs_selected_array = np.array(playlist_songs_selected).reshape(-1, 1)
 
-        songs_pop = np.array([dict_song_pop[item] for item in playlist_songs_selected]).reshape(-1, 1)
+        songs_pop = np.array([self.dict_song_pop[item] for item in playlist_songs_selected]).reshape(-1, 1)
         mean_playlist_length = np.array(self.mean_pl_length(URM_train, playlist_songs_selected)).reshape(-1, 1)
-        mean_playlist__pop = np.array(self.mean_pl_pop(URM_train, playlist_songs_selected, dict_song_pop)).reshape(-1,
-                                                                                                                   1)
-        tracks_duration = np.array([tracks_duration_list[item] for item in playlist_songs_selected]).reshape(-1, 1)
+        mean_playlist__pop = np.array(self.mean_pl_pop(URM_train, playlist_songs_selected,
+                                                       self.dict_song_pop)).reshape(-1, 1)
+        tracks_duration = np.array([self.tracks_duration_list[item] for item in playlist_songs_selected]).reshape(-1, 1)
 
         '''
         # ucm_batch = self.UCM_train[user_list].toarray()
         dim_ucm = int(len(user_list) * 20)
         ucm_batch = np.array([self.UCM_dense[user] for _ in range(cutoff_Boost)
                               for user in user_list]).reshape(dim_ucm, -1)
-        '''
+      
         icm_batch = np.array([self.ICM_dense[item] for item in
                               playlist_songs_selected], dtype=int).reshape(len(playlist_songs_selected), -1)
-
+        '''
         return np.concatenate([playlist_songs_selected_array, songs_pop, mean_playlist__pop, mean_playlist_length,
-                               tracks_duration, icm_batch], axis=1)  # , ucm_batch],
+                               tracks_duration], axis=1)  #icm_batch , ucm_batch],
 
     def reorder_songs(self, preds, user_recommendations):
 
@@ -431,8 +431,8 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
             #                                                     cutoff_Boost).reshape(-1, 1)], axis=0)
 
             train_xgboost = self.xgboost_data_training(user_id, URM_train)
-            labels_train = np.array([1 for _ in range(int(train_xgboost.shape[0] / 2))] +
-                                    [0 for _ in range(int(train_xgboost.shape[0] / 2))])
+            half_play = int(train_xgboost.shape[0] / 2)
+            labels_train = np.array([1] * half_play + [0] * half_play)
             dtrain = xgb.DMatrix(train_xgboost, label=labels_train)
             bst = xgb.train(param, dtrain, num_round)
 

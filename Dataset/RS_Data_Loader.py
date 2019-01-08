@@ -313,10 +313,17 @@ class RS_Data_Loader(object):
 
     def get_page_rank_URM(self):
         try:
-            with open(os.path.join("Dataset", "URM_pagerank.pkl"), 'rb') as handle:
-                to_ret = pickle.load(handle)
-                # print(to_ret)
-                return to_ret
+            if self.all_train:
+                with open(os.path.join("Dataset", "URM_pagerank_allTrain.pkl"), 'rb') as handle:
+                    to_ret = pickle.load(handle)
+                    # print(to_ret)
+                    return to_ret
+            elif not self.all_train:
+                with open(os.path.join("Dataset", "URM_pagerank_evaluate.pkl"), 'rb') as handle:
+                    to_ret = pickle.load(handle)
+                    # print(to_ret)
+                    return to_ret
+
         except FileNotFoundError:
             self.URM_train = self.URM_train.astype(float)
             l = range(self.URM_train.shape[1])

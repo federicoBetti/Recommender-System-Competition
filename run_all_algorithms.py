@@ -68,13 +68,13 @@ if __name__ == '__main__':
     recommender_list1 = [
         # Random,
         # TopPop,
-        ItemKNNCBFRecommender,
+        # ItemKNNCBFRecommender,
         ItemKNNCFPageRankRecommender,
         # UserKNNCBRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        P3alphaRecommender,
-        RP3betaRecommender,
+        # ItemKNNCFRecommender,
+        # UserKNNCFRecommender,
+        # P3alphaRecommender,
+        # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # SLIM_BPR_Cython,
@@ -86,13 +86,13 @@ if __name__ == '__main__':
     recommender_list2 = [
         # Random,
         # TopPop,
-        ItemKNNCBFRecommender,
-        ItemKNNCFPageRankRecommender,
+        # ItemKNNCBFRecommender,
+        # ItemKNNCFPageRankRecommender,
         # UserKNNCBRecommender,
         ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        P3alphaRecommender,
-        RP3betaRecommender,
+        # UserKNNCFRecommender,
+        # P3alphaRecommender,
+        # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # SLIM_BPR_Cython,
@@ -163,7 +163,7 @@ if __name__ == '__main__':
         transfer_matrix = None
 
     try:
-        recommender_class = HybridRecommenderXGBoost
+        recommender_class = HybridRecommender
         print("Algorithm: {}".format(recommender_class))
 
         '''
@@ -220,7 +220,7 @@ if __name__ == '__main__':
         recommender = recommender_class(URM_train, ICM, recommender_list, URM_PageRank_train=URM_PageRank_train,
                                         dynamic=False,
                                         d_weights=d_weights, UCM_train=UCM_tfidf,
-                                        URM_validation=URM_validation, onPop=onPop, tracks=dataReader.tracks)
+                                        URM_validation=URM_validation, onPop=onPop, )#tracks=dataReader.tracks)
 
         # dtrain = xgb.DMatrix(URM_train, label=)
         # dtest = xgb.DMatrix(X_test, label=y_test)
@@ -275,11 +275,11 @@ if __name__ == '__main__':
         # found.Config: {'top1': 50, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP
 
         recommender.fit(**{
-            "topK": [15, 595, 400, 105, 15, 20],#+ [21, 220, 300, 160, 70, -1],# + [250, 180, 240, 151, 91, 311, -1],
-            "shrink": [210, 1, 1, 30, -1, -1],# + [75, 1, 1, 150, -1, -1],# + [55, 2, 19, -1, -1, -1, -1],
+            "topK": [15,],# 595, 400, 105, 15, 20],#+ [21, 220, 300, 160, 70, -1],# + [250, 180, 240, 151, 91, 311, -1],
+            "shrink": [210],# 1, 1, 30, -1, -1],# + [75, 1, 1, 150, -1, -1],# + [55, 2, 19, -1, -1, -1, -1],
             "pop": [350],
-            "weights": [1] * 6,
-            "force_compute_sim": False,
+            "weights": [1] * 1,
+            "force_compute_sim": True,
             # "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
             "epochs": 1, "lambda_i": [0.10467537896611145],

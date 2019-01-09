@@ -119,6 +119,8 @@ def compute_cosine_similarity(matrix, shrink=0):
 
 
 lock = Lock()
+
+
 def write_txt(filename, txt):
     with lock:
         with open(filename, 'a', encoding='utf-8') as f:
@@ -131,6 +133,16 @@ def get_fake_test():
 
 def assign_recomendations_to_correct_playlist(target_playlist, target_recommendations):
     target_playlist['track_ids'] = pd.Series(['0'] * len(target_playlist.index), index=target_playlist.index)
+    playlists = set(target_playlist.playlist_id)
+
+    i = 0
     for user_id, recommendations in target_recommendations:
+        playlists.remove(user_id)
         ind = target_playlist[target_playlist.playlist_id == user_id].index[0]
         target_playlist.at[ind, 'track_ids'] = recommendations
+        assert len(recommendations) == 10, "Recommendations lenght for user {} is of lenght {}, and not 10".format(
+            user_id, len(recommendations))
+        i += 1
+
+    assert i == 10000
+    assert len(playlists) == 0

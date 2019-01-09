@@ -5,6 +5,7 @@ import time
 import traceback
 from enum import Enum
 from functools import partial
+import random
 
 import numpy as np
 import pandas as pd
@@ -12,8 +13,11 @@ from scipy import sparse as sps
 from scipy.sparse import csr_matrix
 from sklearn.linear_model import ElasticNet
 
-# from bayes_opt import BayesianOptimization
-from ParameterTuning.BayesianOptimization_master.bayes_opt.bayesian_optimization import BayesianOptimization
+kernel = False
+if kernel:
+    from bayes_opt import BayesianOptimization
+else:
+    from ParameterTuning.BayesianOptimization_master.bayes_opt.bayesian_optimization import BayesianOptimization
 
 '''
 Elastic Net
@@ -37,6 +41,7 @@ def check_matrix(X, format='csc', dtype=np.float32):
         return X.tolil().astype(dtype)
     else:
         return X.astype(dtype)
+
 
 class Recommender(object):
     """Abstract Recommender"""
@@ -341,7 +346,7 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
 
         self.URM_train = URM_train
 
-    def fit(self, l1_ratio=0.1, positive_only=True, topK=100, force_compute_sim=True):
+    def fit(self, l1_ratio=0.1, positive_only=True, topK=100, force_compute_sim=True, alpha=1.0):
 
         assert 0 <= l1_ratio <= 1, "SLIM_ElasticNet: l1_ratio must be between 0 and 1, provided value was {}".format(
             l1_ratio)
@@ -349,20 +354,22 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
         self.l1_ratio = l1_ratio
         self.positive_only = positive_only
         self.topK = topK
+        self.alpha = alpha
 
         # initialize the ElasticNet model
-        self.model = ElasticNet(alpha=1.0,
+        self.model = ElasticNet(alpha=self.alpha,
                                 l1_ratio=self.l1_ratio,
                                 positive=self.positive_only,
                                 fit_intercept=False,
                                 copy_X=False,
                                 precompute=True,
                                 selection='random',
-                                max_iter=30,
+                                max_iter=80,
                                 tol=1e-4)
 
         URM_train = check_matrix(self.URM_train, 'csc', dtype=np.float32)
-        n_items = self.URM_train.shape[1]
+
+        n_items = URM_train.shape[1]
 
         # Use array as it reduces memory requirements compared to lists
         dataBlock = 10000000
@@ -380,14 +387,14 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
         for currentItem in range(n_items):
 
             # get the target column
-            y = self.URM_train[:, currentItem].toarray()
+            y = URM_train[:, currentItem].toarray()
 
             # set the j-th column of X to zero
-            start_pos = self.URM_train.indptr[currentItem]
-            end_pos = self.URM_train.indptr[currentItem + 1]
+            start_pos = URM_train.indptr[currentItem]
+            end_pos = URM_train.indptr[currentItem + 1]
 
-            current_item_data_backup = self.URM_train.data[start_pos: end_pos].copy()
-            self.URM_train.data[start_pos: end_pos] = 0.0
+            current_item_data_backup = URM_train.data[start_pos: end_pos].copy()
+            URM_train.data[start_pos: end_pos] = 0.0
 
             # fit one ElasticNet model per column
             self.model.fit(URM_train, y)
@@ -427,7 +434,7 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
                 numCells += 1
 
             # finally, replace the original values of the j-th column
-            self.URM_train.data[start_pos:end_pos] = current_item_data_backup
+            URM_train.data[start_pos:end_pos] = current_item_data_backup
 
             if time.time() - start_time_printBatch > 30 or currentItem == n_items - 1:
                 print("Processed {} ( {:.2f}% ) in {:.2f} minutes. Items per second: {:.0f}".format(
@@ -441,8 +448,9 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
                 start_time_printBatch = time.time()
 
         # generate the sparse weight matrix
-        self.W_sparse = csr_matrix((values[:numCells], (rows[:numCells], cols[:numCells])),
-                                   shape=(n_items, n_items), dtype=np.float32)
+        self.W_sparse = sps.csr_matrix((values[:numCells], (rows[:numCells], cols[:numCells])),
+                                       shape=(n_items, n_items), dtype=np.float32)
+
 
 
 '''
@@ -685,7 +693,7 @@ class BayesianSearch(AbstractClassSearch):
     def runSingleCase_param_parsed(self, dictionary, metric, paramether_dictionary):
 
         if time.time() - start_time > 60 * 60 * 5:
-            return -np.inf
+            return 1e-06
 
         try:
 
@@ -1149,6 +1157,15 @@ def create_URM_matrix(train):
     return csr_matrix(([1] * len(row), (row, col)), shape=(50446, 20635))
 
 
+def add_dataframe(df, playlist_id, songs_list):
+    if type(playlist_id) is list:
+        data = pd.DataFrame({"playlist_id": playlist_id, "track_id": songs_list})
+    else:
+        data = pd.DataFrame({"playlist_id": [playlist_id] * len(songs_list), "track_id": songs_list})
+    df = df.append(data)
+    return df
+
+
 class RS_Data_Loader(object):
     def __init__(self, split_train_test_validation_quota=[0.8, 0.0, 0.2], distr_split=True, top10k=False,
                  all_train=False):
@@ -1163,19 +1180,102 @@ class RS_Data_Loader(object):
         self.all_train = all_train
         self.top10k = top10k
         self.distr_split = distr_split
-        # self.train = pd.read_csv(os.path.join("../input", "train.csv"))
-        # self.tracks = pd.read_csv(os.path.join("../input", "tracks.csv"))
-        # self.target_playlist = pd.read_csv(os.path.join("../input", "target_playlists.csv"))
-        self.train = pd.read_csv(os.path.join("../Dataset", "train.csv"))
-        self.tracks = pd.read_csv(os.path.join("../Dataset", "tracks.csv"))
-        self.target_playlist = pd.read_csv(os.path.join("../Dataset", "target_playlists.csv"))
+        if kernel:
+            self.train = pd.read_csv(os.path.join("../input/recommender-system-2018-challenge-polimi", "train.csv"))
+            self.tracks = pd.read_csv(os.path.join("../input/recommender-system-2018-challenge-polimi", "tracks.csv"))
+            self.target_playlist = pd.read_csv(os.path.join("../input/recommender-system-2018-challenge-polimi", "target_playlists.csv"))
+            self.train_sequential = pd.read_csv(os.path.join("../input/train-sequential-recsys", "train_sequential.csv"))
+        else:
+            self.train = pd.read_csv(os.path.join("../Dataset", "train.csv"))
+            self.tracks = pd.read_csv(os.path.join("../Dataset", "tracks.csv"))
+            self.target_playlist = pd.read_csv(os.path.join("../Dataset", "target_playlists.csv"))
+            self.train_sequential = pd.read_csv(os.path.join("Dataset", "train_sequential.csv"))
         self.ICM = None
 
-        train, test = divide_train_test(self.train, threshold=0.85)
+        try:
+            # self.UCB_tfidf_album = self.get_UCM_matrix_album(train_path=os.path.join("Dataset", "new_train.csv"))
+            self.URM_train = sps.load_npz(
+                os.path.join("../input/recommender-system-2018-challenge-polimi", "URM_train_keep_distrib.npz"))
+            self.URM_test = sps.load_npz(
+                os.path.join("../input/recommender-system-2018-challenge-polimi", "URM_test_keep_distrib.npz"))
+            self.URM_validation = sps.load_npz(
+                os.path.join("../input/recommender-system-2018-challenge-polimi", "URM_test_keep_distrib.npz"))
+        except FileNotFoundError:
+            data_grouped = self.train_sequential.groupby(self.train_sequential.playlist_id).track_id.apply(list)
+            target_plays = list(self.target_playlist.playlist_id)
+            # in datagrouped è una series con la playlist e la lista delle canzoni nella playlist
 
-        self.URM_train = create_URM_matrix(train)
-        self.URM_test = create_URM_matrix(test)
-        self.URM_validation = self.URM_test
+            # questi sono due DF vuoti all'inizio
+            train_keep_dist = pd.DataFrame(columns=["playlist_id", "track_id"])
+            test_keep_dist = pd.DataFrame(columns=["playlist_id", "track_id"])
+
+            for i in data_grouped.keys():
+                if i in target_plays:
+                    # per ogni playlist nelle squential
+                    line = data_grouped[i]
+                    # prendo l'80% della lunghezza
+                    len20 = int(len(line) * .8)
+                    # le prime 80% canzoni le metto nl dataframe train e le altre nel test
+                    train_keep_dist = add_dataframe(train_keep_dist, i, line[:len20])
+                    test_keep_dist = add_dataframe(test_keep_dist, i, line[len20:])
+                else:
+                    # line = data_grouped[i]
+                    # train_keep_dist = add_dataframe(train_keep_dist, i, line)
+                    line = data_grouped[i]
+                    # prendo l'80% della lunghezza
+                    len20 = int(len(line) * .8)
+                    # le prime 80% canzoni le metto nl dataframe train e le altre nel test
+                    train_keep_dist = add_dataframe(train_keep_dist, i, line[:len20])
+
+            sequential_playlists = data_grouped.keys()
+            # qua ci sono tutte le playlist con la rispettiva lista di canzoni
+            data_gr_all = self.train.groupby(self.train.playlist_id).track_id.apply(list)
+
+            to_add_train, to_add_test = [], []
+            to_add_train_ind, to_add_test_ind = [], []
+            for i in data_gr_all.keys():
+                # per ogni canzone
+                if i not in sequential_playlists:
+                    if i in target_plays:
+                        # se non è nelle sequential
+                        line = data_gr_all[i]
+                        len20 = int(len(line) * .8)
+                        # prendo gli indici dell'80 delle canzoni
+                        indexes = random.sample(range(0, len(line)), len20)
+                        for ind, el in enumerate(line):
+                            # per ogni canzone nella playlist
+                            if ind in indexes:
+                                # se è negli indici che ho selezionato a random prima la metto nella lista da aggiungere al train
+                                to_add_train_ind.append(i)
+                                to_add_train.append(el)
+                            else:
+                                # altrimenti al test
+                                to_add_test_ind.append(i)
+                                to_add_test.append(el)
+                    else:
+                        # line = data_gr_all[i]
+                        # for ind, el in enumerate(line):
+                        #     to_add_train_ind.append(i)
+                        #     to_add_train.append(el)
+                        line = data_gr_all[i]
+                        len20 = int(len(line) * .8)
+                        # prendo gli indici dell'80 delle canzoni
+                        indexes = random.sample(range(0, len(line)), len20)
+                        for ind, el in enumerate(line):
+                            # per ogni canzone nella playlist
+                            if ind in indexes:
+                                # se è negli indici che ho selezionato a random prima la metto nella lista da aggiungere al train
+                                to_add_train_ind.append(i)
+                                to_add_train.append(el)
+
+            # poi aggiorni i rispettivi df con le canzoni nella lista
+            train_keep_dist = add_dataframe(train_keep_dist, to_add_train_ind, to_add_train)
+            test_keep_dist = add_dataframe(test_keep_dist, to_add_test_ind, to_add_test)
+
+            # qua dai df con playlist_id track_id creo la matrice csr (non usaimo validation and test)
+            self.URM_train = create_URM_matrix(train_keep_dist)
+            self.URM_test = create_URM_matrix(test_keep_dist)
+            self.URM_validation = create_URM_matrix(test_keep_dist)
 
         print("RS_Data_Loader: loading complete")
 
@@ -1218,7 +1318,7 @@ if __name__ == '__main__':
     # else:
     #     print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
 
-    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm, distr_split=False)
+    dataReader = RS_Data_Loader(all_train=not evaluate_algorithm, distr_split=True)
 
     URM_train = dataReader.get_URM_train()
     URM_validation = dataReader.get_URM_validation()
@@ -1239,6 +1339,7 @@ if __name__ == '__main__':
     hyperparamethers_range_dictionary = {}
     hyperparamethers_range_dictionary["topK"] = list(range(10, 500, 30))
     hyperparamethers_range_dictionary["l1_ratio"] = list(np.linspace(0.000001, 0.0001, 50))
+    hyperparamethers_range_dictionary["alpha"] = range(0, 2)
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},

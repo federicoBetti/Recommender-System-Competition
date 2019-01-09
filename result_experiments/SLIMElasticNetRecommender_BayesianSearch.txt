@@ -86,3 +86,9 @@ BayesianSearch: Testing config: {'topK': 280, 'alpha': 0.37020811781508445, 'l1_
 BayesianSearch: Testing config: {'topK': 220, 'alpha': 1.2399680121461494, 'l1_ratio': 0.001} - Exception 'MultiThreadSLIM_ElasticNet' object has no attribute 'l1_ratio'
 BayesianSearch: Testing config: {'topK': 460, 'alpha': 0.19320533217319147, 'l1_ratio': 1e-05} - Exception 'MultiThreadSLIM_ElasticNet' object has no attribute 'l1_ratio'
 BayesianSearch: New best config found. Config: {'topK': 400, 'l1_ratio': 0.001} - MAP results: 0.0038356841458805795 - time: 2019-01-07 17:33:42.362761
+BayesianSearch: New best config found. Config: {'topK': 220, 'l1_ratio': 1e-05, 'alpha': 0.6351369510200213} - MAP results: 0.058400863362937594 - time: 2019-01-07 19:00:17.301582
+
+
+Con il nuovo test di sole canzoni da raccomandare:
+New best config found. Config: {'alpha': 0.0035135585353485155, 'l1_ratio': 3.020408163265306e-06, 'topK': 10} - MAP results: 0.07066914210128492
+{'alpha': 0.0014681984611695231, 'l1_ratio': 3.020408163265306e-06, 'topK': 490} - MAP results: 0.07768309967876007 -

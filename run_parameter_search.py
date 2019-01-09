@@ -11,6 +11,7 @@ from Base.Evaluation.Evaluator import SequentialEvaluator, ParallelEvaluator
 from Base.NonPersonalizedRecommender import TopPop, Random
 from Dataset.RS_Data_Loader import RS_Data_Loader
 from KNN.HybridRecommender import HybridRecommender
+from KNN.HybridSimilaritiesRecommender import HybridSimilaritiesRecommender
 from KNN.ItemKNNCBFRecommender import ItemKNNCBFRecommender
 from KNN.ItemKNNCFPageRankRecommender import ItemKNNCFPageRankRecommender
 from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
@@ -43,8 +44,8 @@ def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, UR
     # pay attention that it doesn't finish (it should after n_cases, but now it doens't work)
     # it saves best results in the txt file
     hyperparamethers_range_dictionary = {}
-    hyperparamethers_range_dictionary["topK"] = list(range(40, 250, 10))
-    hyperparamethers_range_dictionary["shrink"] = list(range(0, 20))
+    hyperparamethers_range_dictionary["topK"] = list(range(40, 450, 10))
+    hyperparamethers_range_dictionary["shrink"] = list(range(0, 150, 2))
     hyperparamethers_range_dictionary["similarity"] = [similarity_type]
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
@@ -197,12 +198,12 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
-        ItemKNNCFPageRankRecommender,
+        # UserKNNCBRecommender,
+        # ItemKNNCFPageRankRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        # P3alphaRecommender,
-        RP3betaRecommender,
+        P3alphaRecommender,
+        # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         SLIM_BPR_Cython,
@@ -210,21 +211,21 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
         # PureSVDRecommender
     ]
 
-    this_output_root_path = output_root_path + "2_intervals_parameter_tuning/Hybrid_second_interval:" + "{}".format(
+    this_output_root_path = output_root_path + "/Hybrid_similarities_new_2nd_in:" + "{}".format(
         "_".join([x.RECOMMENDER_NAME for x in recommender_list]))
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
     parameterSearch = BayesianSearch(recommender_class, evaluator_validation)
 
     hyperparamethers_range_dictionary = {}
-    hyperparamethers_range_dictionary["weights1"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights2"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights3"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights4"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights5"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights6"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights7"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights8"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights1"] = range(0, 2)
+    hyperparamethers_range_dictionary["weights2"] = range(0, 2)
+    hyperparamethers_range_dictionary["weights3"] = range(0, 2)
+    hyperparamethers_range_dictionary["weights4"] = range(0, 2)
+    hyperparamethers_range_dictionary["weights5"] = range(0, 2)
+    hyperparamethers_range_dictionary["weights6"] = range(0, 2)
+    # hyperparamethers_range_dictionary["weights7"] = range(0, 1)
+    # hyperparamethers_range_dictionary["weights8"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights7"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["weights8"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["pop1"] = list(range(80, 200))  # list(np.linspace(0, 1, 11))
@@ -236,44 +237,39 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
 
     num_factors_3 = 95
 
-    dynamic_best = [
-        [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731, 0.4112843940329439],
-        [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388, 0.6888103295594851],
-        [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613, 0.5873532658846817]
-    ]
-
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
-                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": True,
+                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": False,
                                                                        "UCM_train": UCM_train,
-                                                                       "URM_PageRank_train": URM_pagerank
+                                                                       # "URM_PageRank_train": URM_pagerank
                                                                        },
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {
-                                 "topK": [10, 170, 160, 220, 160, 276, 66, 50],
-                                 "shrink": [180, 196, 6, 1, 2, -1, -1, -1],
+                                 "topK": [130, 170, 160, 101, 761, 490],
+                                 "shrink": [2, 2, 2, -1, -1, -1],
                                  "pop": [280],
-                                 "weights": [1, 1, 1, 1],
-                                 "force_compute_sim": False,
-                                 "feature_weighting_index": 0,
+                                 "weights": [1, 1, 1, 1, 1, 1],
+                                 "final_weights": [1, 1],
+                                 "force_compute_sim": False,  # not evaluate_algorithm,
+                                 "feature_weighting_index": 1,
                                  "old_similarity_matrix": old_similrity_matrix,
-                                 "epochs": 50,
-                                 'lambda_i': [0.06928490242552432],
-                                 'lambda_j': [0.9408725374123923],
-                                 "num_factors": num_factors_3,
-                                 'alphaP3': [0.5203791059230995],
-                                 'alphaRP3': [0.8182264529058118],
-                                 'betaRP': [0.3775651302605211],
-                                 'l1_ratio': l1_ratio,
-                                 "weights_to_dweights": 1},
+                                 "epochs": 150,
+                                 'lambda_i': [0.0], 'lambda_j': [1.0153577332223556e-08], 'SLIM_lr': [0.1],
+                                 'alphaP3': [0.7649722376036994],
+                                 'alphaRP3': [0.8582865731462926],
+                                 'betaRP': [0.2814208416833668],
+                                 'l1_ratio': 3.020408163265306e-06,
+                                 'alpha': 0.0014681984611695231,
+                                 'tfidf': [True],
+                                 "weights_to_dweights": -1},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
 
     best_parameters = parameterSearch.search(recommenderDictionary,
-                                             n_cases=50,
+                                             n_cases=90,
                                              output_root_path=output_root_path_similarity,
                                              metric=metric_to_optimize,
-                                             init_points=20
+                                             init_points=60
                                              )
     print(best_parameters)
 
@@ -374,7 +370,7 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
                                                                # "weights": [1],
                                                                "force_compute_sim": True,
                                                                "old_similarity_matrix": old_similrity_matrix,
-                                                               "epochs": 30,
+                                                               "epochs": 100,
                                                                # "lambda_i": lambda_i,
                                                                # "lambda_j": lambda_j,
                                                                # "num_factors": num_factors,
@@ -493,9 +489,9 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
             similarity_type_list = ['cosine']  # , 'jaccard', "asymmetric", "dice", "tversky"]
 
             hyperparamethers_range_dictionary = {}
-            hyperparamethers_range_dictionary["topK"] = list(range(40, 250, 10))
-            hyperparamethers_range_dictionary["shrink"] = list(range(0, 50, 2))
-            hyperparamethers_range_dictionary["normalize"] = [True, False]
+            hyperparamethers_range_dictionary["topK"] = list(range(30, 250, 10))
+            hyperparamethers_range_dictionary["shrink"] = list(range(0, 10, 1))
+            hyperparamethers_range_dictionary["normalize"] = [True]
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, URM_page_rank],
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
@@ -729,11 +725,12 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         if recommender_class is SLIM_BPR_Cython:
             hyperparamethers_range_dictionary = {}
-            hyperparamethers_range_dictionary["topK"] = list(range(1, 800))
+            hyperparamethers_range_dictionary["topK"] = list(range(1, 800, 40))
             # hyperparamethers_range_dictionary["epochs"] = [1, 5, 10, 20, 30, 50, 70, 90, 110]
-            hyperparamethers_range_dictionary["sgd_mode"] = ["adagrad", "adam"]
+            # hyperparamethers_range_dictionary["sgd_mode"] = ["adagrad", "adam"]
             hyperparamethers_range_dictionary["lambda_i"] = range(0, 1)
             hyperparamethers_range_dictionary["lambda_j"] = range(0, 1)
+            hyperparamethers_range_dictionary["learning_rate"] = [0.1, 1e-2, 1e-3, 1e-4, 1e-5]
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train],
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {'train_with_sparse_weights': False,
@@ -746,7 +743,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                                                        "evaluator_object": evaluator_validation_earlystopping,
                                                                        "lower_validatons_allowed": 2,
                                                                        "validation_metric": metric_to_optimize,
-                                                                       "epochs": 50},
+                                                                       "epochs": 30},
                                      DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
         ##########################################################################################################
@@ -851,7 +848,7 @@ def read_data_split_and_search():
         # P3alphaRecommender,
         # RP3betaRecommender,
         # ItemKNNCFPageRankRecommender,
-        ItemKNNCFRecommender,
+        # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
         # MF_MSE_PyTorch,
@@ -861,7 +858,7 @@ def read_data_split_and_search():
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
         # MultiThreadSLIM_ElasticNet,
-        # HybridRecommender
+        HybridRecommender
     ]
 
     # if UserKNNCBRecommender in collaborative_algorithm_list:

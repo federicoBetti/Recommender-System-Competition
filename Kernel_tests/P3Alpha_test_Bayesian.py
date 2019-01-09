@@ -20,7 +20,6 @@ if kernel:
 else:
     from ParameterTuning.BayesianOptimization_master.bayes_opt.bayesian_optimization import BayesianOptimization
 
-
 from sklearn.preprocessing import normalize
 from scipy import sparse as sps
 
@@ -257,14 +256,14 @@ class BayesianSearch(AbstractClassSearch):
 
     def runSingleCase(self, dictionary, metric, **paramether_dictionary_input):
 
+        if time.time() - start_time_kernel > 1:
+            return 0.1
+
         paramether_dictionary = self.parameter_bayesian_to_token(paramether_dictionary_input)
 
         return self.runSingleCase_param_parsed(dictionary, metric, paramether_dictionary)
 
     def runSingleCase_param_parsed(self, dictionary, metric, paramether_dictionary):
-
-        if time.time() - start_time > 60 * 60 * 5:
-            return -np.inf
 
         try:
 
@@ -1281,23 +1280,6 @@ class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
         self.implicit = implicit
         self.normalize_similarity = normalize_similarity
 
-        if not force_compute_sim:
-            found = True
-            try:
-                with open(os.path.join("P3alphaMatrix.pkl"), 'rb') as handle:
-                    (topK_new, W_sparse_new) = pickle.load(handle)
-            except FileNotFoundError:
-                print("File {} not found".format(os.path.join("IntermediateComputations", "P3alphaMatrix.pkl")))
-                found = False
-
-            if found and self.topK == topK_new:
-                self.W_sparse = W_sparse_new
-                print("Saved P3alpha Similarity Matrix Used!")
-                return
-        #
-        # if X.dtype != np.float32:
-        #     print("P3ALPHA fit: For memory usage reasons, we suggest to use np.float32 as dtype for the dataset")
-
         if self.min_rating > 0:
             self.URM_train.data[self.URM_train.data < self.min_rating] = 0
             self.URM_train.eliminate_zeros()
@@ -1390,13 +1372,8 @@ class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
             self.W_sparse = similarityMatrixTopK(self.W_sparse, forceSparseOutput=True, k=self.topK)
             self.sparse_weights = True
 
-        with open(os.path.join("P3alphaMatrix.pkl"), 'wb') as handle:
-            pickle.dump((self.topK, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
-            print("P3alpha similarity matrix saved")
 
-
-
-start_time = time.time()
+start_time_kernel = time.time()
 if __name__ == '__main__':
     dataReader = RS_Data_Loader(distr_split=False)
 

@@ -9,8 +9,6 @@ Created on 06/07/2018
 import time
 
 
-
-
 class Incremental_Training_Early_Stopping(object):
     """
     This class provides a function which trains a model applying early stopping
@@ -67,7 +65,6 @@ class Incremental_Training_Early_Stopping(object):
         """
         raise NotImplementedError()
 
-
     def _update_best_model(self):
         """
         This function is called when the incremental model is found to have better validation score than the current best one
@@ -84,9 +81,8 @@ class Incremental_Training_Early_Stopping(object):
 
 
     def _train_with_early_stopping(self, epochs, validation_every_n, stop_on_validation,
-                                    validation_metric, lower_validatons_allowed, evaluator_object,
-                                    algorithm_name = "Incremental_Training_Early_Stopping"):
-
+                                   validation_metric, lower_validatons_allowed, evaluator_object,
+                                   algorithm_name="Incremental_Training_Early_Stopping"):
 
         start_time = time.time()
 
@@ -139,8 +135,10 @@ class Incremental_Training_Early_Stopping(object):
 
                     if lower_validatons_count >= lower_validatons_allowed:
                         convergence = True
-                        print("{}: Convergence reached! Terminating at epoch {}. Best value for '{}' at epoch {} is {:.4f}. Elapsed time {:.2f} min".format(
-                            algorithm_name, currentEpoch+1, validation_metric, self.epochs_best, self.best_validation_metric, (time.time() - start_time) / 60))
+                        print(
+                            "{}: Convergence reached! Terminating at epoch {}. Best value for '{}' at epoch {} is {:.4f}. Elapsed time {:.2f} min".format(
+                                algorithm_name, currentEpoch + 1, validation_metric, self.epochs_best,
+                                self.best_validation_metric, (time.time() - start_time) / 60))
 
                 else:
                     self.epochs_best = currentEpoch
@@ -150,6 +148,6 @@ class Incremental_Training_Early_Stopping(object):
                 self._update_best_model()
 
             print("{}: Epoch {} of {}. Elapsed time {:.2f} min".format(
-                algorithm_name, currentEpoch+1, epochs, (time.time() - start_time) / 60))
+                algorithm_name, currentEpoch + 1, epochs, (time.time() - start_time) / 60))
 
             currentEpoch += 1

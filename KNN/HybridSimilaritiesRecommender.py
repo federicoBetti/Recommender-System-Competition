@@ -32,9 +32,9 @@ from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 
 
-def get_popularity_vector():
+def get_popularity_vector(URM_train):
     from Support_functions import get_evaluate_data as ged
-    d = ged.tracks_popularity()
+    d = ged.tracks_popularity(URM_train)
     songs_number = len(d)
     popularity = np.asarray(list(d.values()))
     sort_ind = np.argsort(-popularity)
@@ -74,7 +74,7 @@ class HybridSimilaritiesRecommender(SimilarityMatrixRecommender, Recommender):
         #     self.cluster_2 = pickle.load(handle)
 
         self.sparse_weights = sparse_weights
-        self.popularity_vector = get_popularity_vector().T
+        self.popularity_vector = get_popularity_vector(self.URM_train).T
 
         self.recommender_list = []
         self.weights = weights

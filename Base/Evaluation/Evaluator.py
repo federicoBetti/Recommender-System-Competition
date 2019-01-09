@@ -851,7 +851,7 @@ class SequentialEvaluator(Evaluator):
 
         n_users_evaluated = 0
 
-        dict_song_pop = ged.tracks_popularity()
+        dict_song_pop = ged.tracks_popularity(self.URM_train)
         data_stats_pop = {}
         data_stats_len = {}
         # Start from -block_size to ensure it to be 0 at the first block

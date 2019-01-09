@@ -62,7 +62,7 @@ if __name__ == '__main__':
         # TopPop,
         ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
-        ItemKNNCFRecommender,
+        # ItemKNNCFRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
         P3alphaRecommender,
@@ -117,10 +117,10 @@ if __name__ == '__main__':
         num_factors_2 = 391
 
         recommender.fit(**{
-            "topK": [10, 220, 150, 160, 61, 276],
-            "shrink": [180, 1, 10, 2, -1, -1],
+            "topK": [10, 220, 160, 101, 391],
+            "shrink": [180, 1, 2, -1, -1],
             "pop": [130, 346],
-            "weights": [0.5553160795197877, 0.7757009882288872, 0.5982445930826743, 0.5982445930826743,
+            "weights": [0.5553160795197877, 0.5982445930826743, 0.5982445930826743,
                         0.9945089580422436, 0.19198495537212745],
             "final_weights": [1, 1],
             "force_compute_sim": True, #not evaluate_algorithm,
@@ -128,11 +128,11 @@ if __name__ == '__main__':
             "old_similarity_matrix": old_similrity_matrix,
             "epochs": 50,
             'lambda_i': 0.06928490242552432, 'lambda_j': 0.9408725374123923,
-            'alphaP3': [0.5203791059230995],
-            'alphaRP3': [0.8182264529058118],
-            'betaRP': [0.3775651302605211],
+            'alphaP3': [0.7649722376036994],
+            'alphaRP3': [0.8582865731462926],
+            'betaRP': [0.2814208416833668],
             'l1_ratio': l1_ratio,
-            'tfidf': [True, False],
+            'tfidf': [True],
             "weights_to_dweights": -1})
 
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,

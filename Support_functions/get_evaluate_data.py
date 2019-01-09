@@ -20,7 +20,11 @@ def make_series(test):
     return test_songs_per_playlist
 
 
-def tracks_popularity():
+def tracks_popularity(URM_train):
+    URM_train_csc = URM_train.copy().tocsc()
+    songs_popularity = np.diff(URM_train_csc.indptr)
+    del URM_train_csc
+    return songs_popularity
     with open(os.path.join("IntermediateComputations", "dic_pop.pkl_no_rem"), 'rb') as handle:
         to_ret = pickle.load(handle)
     return to_ret

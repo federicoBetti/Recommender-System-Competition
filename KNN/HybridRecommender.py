@@ -47,12 +47,14 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         self.onPop = onPop
         self.moreHybrids = moreHybrids
 
-        # with open(os.path.join("Dataset", "Cluster_0_dict_Kmeans_3.pkl"), 'rb') as handle:
-        #     self.cluster_0 = pickle.load(handle)
-        # with open(os.path.join("Dataset", "Cluster_1_dict_Kmeans_3.pkl"), 'rb') as handle:
-        #     self.cluster_1 = pickle.load(handle)
-        # with open(os.path.join("Dataset", "Cluster_2_dict_Kmeans_3.pkl"), 'rb') as handle:
-        #     self.cluster_2 = pickle.load(handle)
+        self.remove_top_pop_flag = True
+        URM_train_csc = self.URM_train.copy().tocsc()
+        songs_popularity = np.diff(URM_train_csc.indptr)
+        filter_top_pop_x = 10
+
+        self.filterTopPop = np.argsort(-songs_popularity)[:filter_top_pop_x]
+        del URM_train_csc
+
 
         self.sparse_weights = sparse_weights
 
@@ -147,7 +149,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                     recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
                                     force_compute_sim=force_compute_sim, topK=knn,
                                     lambda_i=similarity_args["lambda_i"][slim_counter],
-                                    lambda_j=similarity_args["lambda_j"][slim_counter])
+                                    lambda_j=similarity_args["lambda_j"][slim_counter],
+                                    learning_rate=similarity_args["SLIM_lr"][slim_counter])
                 else:
                     recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
                                     force_compute_sim=force_compute_sim, topK=knn)
@@ -158,7 +161,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 recommender.fit(epochs=epochs, force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [SLIMElasticNetRecommender]:
-                recommender.fit(topK=knn, l1_ratio=similarity_args["l1_ratio"], force_compute_sim=force_compute_sim)
+                recommender.fit(topK=knn, l1_ratio=similarity_args["l1_ratio"],alpha=similarity_args["alpha"], force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [PureSVDRecommender]:
                 recommender.fit(num_factors=similarity_args["num_factors"][factorCounter],
@@ -180,11 +183,11 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
             elif recommender.__class__ in [ItemKNNCBFRecommender]:
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
-                                # feature_weighting_index=similarity_args["feature_weighting_index"])
+                # feature_weighting_index=similarity_args["feature_weighting_index"])
 
             elif recommender.__class__ in [ItemKNNCFPageRankRecommender]:
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
-                                # feature_weighting_index=similarity_args["feature_weighting_index"])
+                # feature_weighting_index=similarity_args["feature_weighting_index"])
 
             # elif recommender.__class__ in [ItemKNNCFRecommender]:
             #     recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
@@ -200,7 +203,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             return self.d_weights[0]
             # return [0.45590938562950867, 0, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228, 0.19081956929601618, 0, 0.11267140391070507]
 
-        # elif pop[0] < level < pop[1]:
+            # elif pop[0] < level < pop[1]:
             # return self.weights
             # return [0, 0, 0, 0, 0, 0, 0, 0]
             # return [0.973259052781316, 0, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645, 0.4723616073494711, 0, 0.4188403112229081]
@@ -276,6 +279,9 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         else:
             cutoff
 
+        if self.remove_top_pop_flag is None:
+            self.remove_top_pop_flag = remove_top_pop_flag
+
         # compute the scores using the dot product
         # noinspection PyUnresolvedReferences
         if self.sparse_weights:
@@ -326,6 +332,17 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                         for score, weight in zip(scores, weights):
                             final_score_line += score[user_index] * weight
                     final_score[user_index] = final_score_line
+                    #
+                    # predicted_songs = np.argsort(-final_score_line)[:10]
+                    # if np.in1d(predicted_songs, user_profile).any():
+                    #     print("User {}, recommendations: {}\n songs in play: {}".format(user_id,
+                    #                                                                     np.argsort(-final_score_line)[
+                    #                                                                     :10], user_profile))
+                    #
+                    # if user_id < 20:
+                    #     print("User {}, recommendations: {}\n songs in play: {}".format(user_id,
+                    #                                                                     np.argsort(-final_score_line)[
+                    #                                                                     :10], user_profile))
             else:
                 for score, weight in zip(scores, weights):
                     final_score += (score * weight)
@@ -342,15 +359,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         ranking = relevant_items_partition[
             np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
 
-        # scores = final_score
-        # # relevant_items_partition is block_size x cutoff
-        # relevant_items_partition = (-scores_batch).argpartition(cutoff, axis=1)[:, 0:cutoff]
-        #
-        # relevant_items_partition_original_value = scores_batch[
-        #     np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
-        # relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-        # ranking = relevant_items_partition[
-        #     np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
 
         ranking_list = ranking.tolist()
 

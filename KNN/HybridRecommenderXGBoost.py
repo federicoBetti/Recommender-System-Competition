@@ -207,7 +207,7 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
                self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
 
     def xgboost_data_prediction(self, user_id_array, relevant_items_boost, cutoff_Boost):
-        dict_song_pop = ged.tracks_popularity()
+        dict_song_pop = ged.tracks_popularity(self.URM_train)
 
         # elements to add for each song
 
@@ -275,7 +275,7 @@ class HybridRecommenderXGBoost(SimilarityMatrixRecommender, Recommender):
 
     def xgboost_data_training(self, user_id, URM_train):
 
-        dict_song_pop = ged.tracks_popularity()
+        dict_song_pop = ged.tracks_popularity(self.URM_train)
         tracks_duration_list = np.array(self.tracks['duration_sec']).reshape((-1, 1))[:, 0].tolist()
         all_tracks = range(0, URM_train.shape[1])
         # elements to add for each song

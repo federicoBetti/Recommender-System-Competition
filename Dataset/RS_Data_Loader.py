@@ -179,17 +179,21 @@ class RS_Data_Loader(object):
 
                     for i in data_grouped.keys():
                         if i in target_plays:
-                            #per ogni playlist nelle squential
+                            # per ogni playlist nelle squential
                             line = data_grouped[i]
-                            #prendo l'80% della lunghezza
+                            # prendo l'80% della lunghezza
                             len20 = int(len(line) * .8)
                             # le prime 80% canzoni le metto nl dataframe train e le altre nel test
                             train_keep_dist = add_dataframe(train_keep_dist, i, line[:len20])
                             test_keep_dist = add_dataframe(test_keep_dist, i, line[len20:])
                         else:
+                            # line = data_grouped[i]
+                            # train_keep_dist = add_dataframe(train_keep_dist, i, line)
                             line = data_grouped[i]
-                            train_keep_dist = add_dataframe(train_keep_dist, i, line)
-
+                            # prendo l'80% della lunghezza
+                            len20 = int(len(line) * .8)
+                            # le prime 80% canzoni le metto nl dataframe train e le altre nel test
+                            train_keep_dist = add_dataframe(train_keep_dist, i, line[:len20])
 
                     sequential_playlists = data_grouped.keys()
                     # qua ci sono tutte le playlist con la rispettiva lista di canzoni
@@ -217,10 +221,20 @@ class RS_Data_Loader(object):
                                         to_add_test_ind.append(i)
                                         to_add_test.append(el)
                             else:
+                                # line = data_gr_all[i]
+                                # for ind, el in enumerate(line):
+                                #     to_add_train_ind.append(i)
+                                #     to_add_train.append(el)
                                 line = data_gr_all[i]
+                                len20 = int(len(line) * .8)
+                                # prendo gli indici dell'80 delle canzoni
+                                indexes = random.sample(range(0, len(line)), len20)
                                 for ind, el in enumerate(line):
-                                    to_add_train_ind.append(i)
-                                    to_add_train.append(el)
+                                    # per ogni canzone nella playlist
+                                    if ind in indexes:
+                                        # se è negli indici che ho selezionato a random prima la metto nella lista da aggiungere al train
+                                        to_add_train_ind.append(i)
+                                        to_add_train.append(el)
 
                     # poi aggiorni i rispettivi df con le canzoni nella lista
                     train_keep_dist = add_dataframe(train_keep_dist, to_add_train_ind, to_add_train)

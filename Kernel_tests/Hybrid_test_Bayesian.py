@@ -749,6 +749,15 @@ def get_icm_matrix(tracks):
     return to_ret
 
 
+def add_dataframe(df, playlist_id, songs_list):
+    if type(playlist_id) is list:
+        data = pd.DataFrame({"playlist_id": playlist_id, "track_id": songs_list})
+    else:
+        data = pd.DataFrame({"playlist_id": [playlist_id] * len(songs_list), "track_id": songs_list})
+    df = df.append(data)
+    return df
+
+
 class RS_Data_Loader(object):
     def __init__(self, split_train_test_validation_quota=[0.8, 0.0, 0.2], distr_split=True, top10k=False,
                  all_train=False):
@@ -764,20 +773,103 @@ class RS_Data_Loader(object):
         self.top10k = top10k
         self.distr_split = distr_split
         if kernel:
-            self.train = pd.read_csv(os.path.join("../input", "train.csv"))
-            self.tracks = pd.read_csv(os.path.join("../input", "tracks.csv"))
-            self.target_playlist = pd.read_csv(os.path.join("../input", "target_playlists.csv"))
+            self.train = pd.read_csv(os.path.join("../input/recommender-system-2018-challenge-polimi", "train.csv"))
+            self.tracks = pd.read_csv(os.path.join("../input/recommender-system-2018-challenge-polimi", "tracks.csv"))
+            self.target_playlist = pd.read_csv(
+                os.path.join("../input/recommender-system-2018-challenge-polimi", "target_playlists.csv"))
+            self.train_sequential = pd.read_csv(
+                os.path.join("../input/train-sequential-recsys", "train_sequential.csv"))
         else:
             self.train = pd.read_csv(os.path.join("../Dataset", "train.csv"))
             self.tracks = pd.read_csv(os.path.join("../Dataset", "tracks.csv"))
             self.target_playlist = pd.read_csv(os.path.join("../Dataset", "target_playlists.csv"))
+            self.train_sequential = pd.read_csv(os.path.join("Dataset", "train_sequential.csv"))
         self.ICM = None
 
-        train, test = divide_train_test(self.train, threshold=0.85)
+        try:
+            # self.UCB_tfidf_album = self.get_UCM_matrix_album(train_path=os.path.join("Dataset", "new_train.csv"))
+            self.URM_train = sps.load_npz(
+                os.path.join("../input/recommender-system-2018-challenge-polimi", "URM_train_keep_distrib.npz"))
+            self.URM_test = sps.load_npz(
+                os.path.join("../input/recommender-system-2018-challenge-polimi", "URM_test_keep_distrib.npz"))
+            self.URM_validation = sps.load_npz(
+                os.path.join("../input/recommender-system-2018-challenge-polimi", "URM_test_keep_distrib.npz"))
+        except FileNotFoundError:
+            data_grouped = self.train_sequential.groupby(self.train_sequential.playlist_id).track_id.apply(list)
+            target_plays = list(self.target_playlist.playlist_id)
+            # in datagrouped è una series con la playlist e la lista delle canzoni nella playlist
 
-        self.URM_train = create_URM_matrix(train)
-        self.URM_test = create_URM_matrix(test)
-        self.URM_validation = self.URM_test
+            # questi sono due DF vuoti all'inizio
+            train_keep_dist = pd.DataFrame(columns=["playlist_id", "track_id"])
+            test_keep_dist = pd.DataFrame(columns=["playlist_id", "track_id"])
+
+            for i in data_grouped.keys():
+                if i in target_plays:
+                    # per ogni playlist nelle squential
+                    line = data_grouped[i]
+                    # prendo l'80% della lunghezza
+                    len20 = int(len(line) * .8)
+                    # le prime 80% canzoni le metto nl dataframe train e le altre nel test
+                    train_keep_dist = add_dataframe(train_keep_dist, i, line[:len20])
+                    test_keep_dist = add_dataframe(test_keep_dist, i, line[len20:])
+                else:
+                    # line = data_grouped[i]
+                    # train_keep_dist = add_dataframe(train_keep_dist, i, line)
+                    line = data_grouped[i]
+                    # prendo l'80% della lunghezza
+                    len20 = int(len(line) * .8)
+                    # le prime 80% canzoni le metto nl dataframe train e le altre nel test
+                    train_keep_dist = add_dataframe(train_keep_dist, i, line[:len20])
+
+            sequential_playlists = data_grouped.keys()
+            # qua ci sono tutte le playlist con la rispettiva lista di canzoni
+            data_gr_all = self.train.groupby(self.train.playlist_id).track_id.apply(list)
+
+            to_add_train, to_add_test = [], []
+            to_add_train_ind, to_add_test_ind = [], []
+            for i in data_gr_all.keys():
+                # per ogni canzone
+                if i not in sequential_playlists:
+                    if i in target_plays:
+                        # se non è nelle sequential
+                        line = data_gr_all[i]
+                        len20 = int(len(line) * .8)
+                        # prendo gli indici dell'80 delle canzoni
+                        indexes = random.sample(range(0, len(line)), len20)
+                        for ind, el in enumerate(line):
+                            # per ogni canzone nella playlist
+                            if ind in indexes:
+                                # se è negli indici che ho selezionato a random prima la metto nella lista da aggiungere al train
+                                to_add_train_ind.append(i)
+                                to_add_train.append(el)
+                            else:
+                                # altrimenti al test
+                                to_add_test_ind.append(i)
+                                to_add_test.append(el)
+                    else:
+                        # line = data_gr_all[i]
+                        # for ind, el in enumerate(line):
+                        #     to_add_train_ind.append(i)
+                        #     to_add_train.append(el)
+                        line = data_gr_all[i]
+                        len20 = int(len(line) * .8)
+                        # prendo gli indici dell'80 delle canzoni
+                        indexes = random.sample(range(0, len(line)), len20)
+                        for ind, el in enumerate(line):
+                            # per ogni canzone nella playlist
+                            if ind in indexes:
+                                # se è negli indici che ho selezionato a random prima la metto nella lista da aggiungere al train
+                                to_add_train_ind.append(i)
+                                to_add_train.append(el)
+
+            # poi aggiorni i rispettivi df con le canzoni nella lista
+            train_keep_dist = add_dataframe(train_keep_dist, to_add_train_ind, to_add_train)
+            test_keep_dist = add_dataframe(test_keep_dist, to_add_test_ind, to_add_test)
+
+            # qua dai df con playlist_id track_id creo la matrice csr (non usaimo validation and test)
+            self.URM_train = create_URM_matrix(train_keep_dist)
+            self.URM_test = create_URM_matrix(test_keep_dist)
+            self.URM_validation = create_URM_matrix(test_keep_dist)
 
         print("RS_Data_Loader: loading complete")
 
@@ -806,11 +898,6 @@ class RS_Data_Loader(object):
         row = 50446
         col = 20635
         return csr_matrix(([1] * row, (range(row), [0] * row)), shape=(row, col))
-
-    def get_ICM(self):
-        if self.ICM is None:
-            self.ICM = get_icm_matrix(self.tracks)
-        return self.ICM
 
 
 '''
@@ -1935,6 +2022,71 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
             self.W = self.W.toarray()
 
 
+class ItemKNNCFRecommenderFAKESLIM(SimilarityMatrixRecommender, Recommender):
+    """ ItemKNN recommender"""
+
+    RECOMMENDER_NAME = "ItemKNNCFRecommender"
+
+    def __init__(self, URM_train, sparse_weights=True):
+        super(ItemKNNCFRecommender, self).__init__()
+
+        # CSR is faster during evaluation
+        self.URM_train = check_matrix(URM_train, 'csr')
+
+        self.dataset = None
+
+        self.sparse_weights = sparse_weights
+
+        self.W_sparse = None
+        self.topK = None
+        self.shrink = None
+        self.tfidf = None
+
+    def __str__(self):
+        return "Item Collaborative Filterng (tokK={}, shrink={}, tfidf={}, normalize={}".format(
+            self.topK, self.shrink, self.tfidf, self.normalize)
+
+    def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True, tfidf=True,
+            **similarity_args):
+
+        self.topK = topK
+        self.shrink = shrink
+        self.tfidf = tfidf
+
+        if not force_compute_sim:
+            found = True
+            try:
+                with open(os.path.join("SLIM_BPR_Matrix.pkl")),'rb') as handle:
+                    (topK_new, shrink_new, W_sparse_new) = pickle.load(handle)
+            except FileNotFoundError:
+                print("File {} not found".format(
+                    os.path.join("IntermediateComputations", "ItemCFMatrix_tfidf_{}.pkl".format(str(self.tfidf)))))
+                found = False
+
+            if found and self.topK == topK_new and self.shrink == shrink_new:
+                self.W_sparse = W_sparse_new
+                print("Saved Item CF Similarity Matrix Used!")
+                return
+
+        if tfidf:
+            sim_matrix_pre = get_tfidf(self.URM_train)
+        else:
+            sim_matrix_pre = self.URM_train
+
+        similarity = Compute_Similarity(sim_matrix_pre, shrink=shrink, topK=topK, normalize=normalize,
+                                        similarity=similarity, **similarity_args)
+        print('Similarity item based CF computed')
+
+        if self.sparse_weights:
+            self.W_sparse = similarity.compute_similarity()
+            with open(os.path.join("SLIM_BPR_Matrix.pkl"), 'wb') as handle:
+                pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
+                print("Item CF similarity matrix saved")
+        else:
+            self.W = similarity.compute_similarity()
+            self.W = self.W.toarray()
+
+
 class UserKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
     """ UserKNN recommender"""
 
@@ -2527,6 +2679,246 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
         with open(os.path.join("SLIM_ElasticNet_Matrix.pkl"), 'wb') as handle:
             pickle.dump(self.W_sparse, handle,
                         protocol=pickle.HIGHEST_PROTOCOL)
+
+
+# class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender):
+#     RECOMMENDER_NAME = "SLIM_BPR_Recommender"
+#
+#     def __init__(self, URM_train, positive_threshold=1, URM_validation=None,
+#                  recompile_cython=False, final_model_sparse_weights=True, train_with_sparse_weights=False,
+#                  symmetric=True):
+#
+#         super(SLIM_BPR_Cython, self).__init__()
+#
+#         self.URM_train = URM_train.copy()
+#         self.n_users = URM_train.shape[0]
+#         self.n_items = URM_train.shape[1]
+#         self.normalize = False
+#         self.positive_threshold = positive_threshold
+#
+#         self.train_with_sparse_weights = train_with_sparse_weights
+#         self.sparse_weights = final_model_sparse_weights
+#
+#         if URM_validation is not None:
+#             self.URM_validation = URM_validation.copy()
+#         else:
+#             self.URM_validation = None
+#
+#         if self.train_with_sparse_weights:
+#             self.sparse_weights = True
+#
+#         self.URM_mask = self.URM_train.copy()
+#
+#         self.URM_mask.data = self.URM_mask.data >= self.positive_threshold
+#         self.URM_mask.eliminate_zeros()
+#
+#         assert self.URM_mask.nnz > 0, "MatrixFactorization_Cython: URM_train_positive is empty, positive threshold is too high"
+#
+#         self.symmetric = symmetric
+#
+#         if not self.train_with_sparse_weights:
+#
+#             n_items = URM_train.shape[1]
+#             requiredGB = 8 * n_items ** 2 / 1e+06
+#
+#             if symmetric:
+#                 requiredGB /= 2
+#
+#             print("SLIM_BPR_Cython: Estimated memory required for similarity matrix of {} items is {:.2f} MB".format(
+#                 n_items, requiredGB))
+#
+#         if recompile_cython:
+#             print("Compiling in Cython")
+#             self.runCompilationScript()
+#             print("Compilation Complete")
+#
+#     def fit(self, epochs=300, logFile=None,
+#             batch_size=1000, lambda_i=0.1, lambda_j=0.1, learning_rate=1e-3, topK=200,
+#             sgd_mode='adagrad', gamma=0.995, beta_1=0.9, beta_2=0.999,
+#             stop_on_validation=False, lower_validatons_allowed=2, validation_metric="MAP",
+#             evaluator_object=None, validation_every_n=50, old_similarity_matrix=None,
+#             force_compute_sim=True):
+#         '''
+#
+#         :param epochs: max number of epochs
+#         :param logFile:
+#         :param batch_size:
+#         :param lambda_i: first regualrizer
+#         :param lambda_j: second regualrizer
+#         :param learning_rate:
+#         :param topK:
+#         :param sgd_mode:
+#         :param gamma:
+#         :param beta_1:
+#         :param beta_2:
+#         :param stop_on_validation: should I stop after some validations?
+#         :param lower_validatons_allowed: stop after n validations that worse the previous one
+#         :param validation_metric:
+#         :param evaluator_object:
+#         :param validation_every_n: how often do validations?
+#         :param old_similarity_matrix: if you want to start from a fixed similarity matrix
+#         :param force_compute_sim:
+#         :return:
+#         '''
+#         if not force_compute_sim:
+#             found = True
+#             try:
+#                 with open(os.path.join("IntermediateComputations", "SLIM_BPR_Matrix_.pkl"), 'rb') as handle:
+#                     (W_sparse_new) = pickle.load(handle)
+#             except FileNotFoundError:
+#                 found = False
+#
+#             if found:
+#                 self.W_sparse = W_sparse_new
+#                 print("Saved SLIM Matrix Used!")
+#                 return
+#
+#         if evaluator_object is None and stop_on_validation:
+#             print("Creating evaluator object for SLIM BPR")
+#             evaluator_object = SequentialEvaluator(self.URM_validation, self.URM_train)
+#
+#         # Import compiled module
+#         from SLIM_BPR.Cython.SLIM_BPR_Cython_Epoch import SLIM_BPR_Cython_Epoch
+#
+#         # Select only positive interactions
+#         URM_train_positive = self.URM_train.copy()
+#
+#         URM_train_positive.data = URM_train_positive.data >= self.positive_threshold
+#         URM_train_positive.eliminate_zeros()
+#
+#         self.sgd_mode = sgd_mode
+#         self.epochs = epochs
+#
+#         self.cythonEpoch = SLIM_BPR_Cython_Epoch(self.URM_mask,
+#                                                  old_similarity=old_similarity_matrix,
+#                                                  train_with_sparse_weights=self.train_with_sparse_weights,
+#                                                  final_model_sparse_weights=self.sparse_weights,
+#                                                  topK=topK,
+#                                                  learning_rate=learning_rate,
+#                                                  li_reg=lambda_i,
+#                                                  lj_reg=lambda_j,
+#                                                  batch_size=1,
+#                                                  symmetric=self.symmetric,  # di default è simmetrica
+#                                                  sgd_mode=sgd_mode,
+#                                                  gamma=gamma,
+#                                                  beta_1=beta_1,
+#                                                  beta_2=beta_2)
+#
+#         if topK != False and topK < 1:
+#             raise ValueError(
+#                 "TopK not valid. Acceptable values are either False or a positive integer value. Provided value was '{}'".format(
+#                     topK))
+#         self.topK = topK
+#
+#         if validation_every_n is not None:
+#             self.validation_every_n = validation_every_n
+#         else:
+#             self.validation_every_n = np.inf
+#
+#         self.batch_size = batch_size
+#         self.lambda_i = lambda_i
+#         self.lambda_j = lambda_j
+#         self.learning_rate = learning_rate
+#
+#         self._train_with_early_stopping(epochs, validation_every_n, stop_on_validation,
+#                                         validation_metric, lower_validatons_allowed, evaluator_object,
+#                                         algorithm_name=self.RECOMMENDER_NAME)
+#
+#         self.get_S_incremental_and_set_W()
+#         # self.normalized_SLIM()
+#         with open(os.path.join("IntermediateComputations", "SLIM_BPR_Matrix_.pkl"), 'wb') as handle:
+#             pickle.dump(self.W_sparse, handle,
+#                         protocol=pickle.HIGHEST_PROTOCOL)
+#
+#         sys.stdout.flush()
+#
+#     def _initialize_incremental_model(self):
+#         self.S_incremental = self.cythonEpoch.get_S()
+#         self.S_best = self.S_incremental.copy()
+#
+#     def _update_incremental_model(self):
+#         self.get_S_incremental_and_set_W()
+#
+#     def _update_best_model(self):
+#         self.S_best = self.S_incremental.copy()
+#
+#     def _run_epoch(self, num_epoch):
+#         self.cythonEpoch.epochIteration_Cython()
+#
+#     def get_S_incremental_and_set_W(self):
+#
+#         self.S_incremental = self.cythonEpoch.get_S()
+#
+#         if self.train_with_sparse_weights:
+#             self.W_sparse = self.S_incremental
+#         else:
+#             if self.sparse_weights:
+#                 self.W_sparse = similarityMatrixTopK(self.S_incremental, k=self.topK)
+#             else:
+#                 self.W = self.S_incremental
+#
+#     def writeCurrentConfig(self, currentEpoch, results_run, logFile):
+#
+#         current_config = {'lambda_i': self.lambda_i,
+#                           'lambda_j': self.lambda_j,
+#                           'batch_size': self.batch_size,
+#                           'learn_rate': self.learning_rate,
+#                           'topK_similarity': self.topK,
+#                           'epoch': currentEpoch}
+#
+#         print("Test case: {}\nResults {}\n".format(current_config, results_run))
+#         # print("Weights: {}\n".format(str(list(self.weights))))
+#
+#         sys.stdout.flush()
+#
+#         if (logFile != None):
+#             logFile.write("Test case: {}, Results {}\n".format(current_config, results_run))
+#             # logFile.write("Weights: {}\n".format(str(list(self.weights))))
+#             logFile.flush()
+#
+#     def runCompilationScript(self):
+#
+#         # Run compile script setting the working directory to ensure the compiled file are contained in the
+#         # appropriate subfolder and not the project root
+#
+#         compiledModuleSubfolder = "/SLIM_BPR/Cython"
+#         # fileToCompile_list = ['Sparse_Matrix_CSR.pyx', 'SLIM_BPR_Cython_Epoch.pyx']
+#         fileToCompile_list = ['SLIM_BPR_Cython_Epoch.pyx']
+#
+#         for fileToCompile in fileToCompile_list:
+#
+#             command = ['python',
+#                        'compileCython.py',
+#                        fileToCompile,
+#                        'build_ext',
+#                        '--inplace'
+#                        ]
+#
+#             output = subprocess.check_output(' '.join(command), shell=True, cwd=os.getcwd() + compiledModuleSubfolder)
+#
+#             try:
+#
+#                 command = ['cython',
+#                            fileToCompile,
+#                            '-a'
+#                            ]
+#
+#                 output = subprocess.check_output(' '.join(command), shell=True,
+#                                                  cwd=os.getcwd() + compiledModuleSubfolder)
+#
+#             except:
+#                 pass
+#
+#         print("Compiled module saved in subfolder: {}".format(compiledModuleSubfolder))
+#
+#         # Command to run compilation script
+#         # python compileCython.py SLIM_BPR_Cython_Epoch.pyx build_ext --inplace
+#
+#         # Command to generate html report
+#         # cython -a SLIM_BPR_Cython_Epoch.pyx
+#
+#     def normalized_SLIM(self):
+#         self.W_sparse = self.W_sparse / self.W_sparse.max() * 0.55
 
 
 start_time = time.time()

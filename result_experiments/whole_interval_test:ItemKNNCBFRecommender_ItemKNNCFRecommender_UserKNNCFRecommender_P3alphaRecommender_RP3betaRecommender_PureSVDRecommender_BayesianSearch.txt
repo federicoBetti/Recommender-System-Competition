@@ -1,0 +1,16 @@
+BayesianSearch: Testing config: {'shrink1': 60, 'top1': 381, 'alphaP3': 0.9475048884614714, 'normalize_similarity': True} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 70, 'top1': 456, 'alphaP3': 1.9056119677169017, 'normalize_similarity': True} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 130, 'top1': 131, 'alphaP3': 0.12777717948307132, 'normalize_similarity': False} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 85, 'top1': 776, 'alphaP3': 0.0026223653922183843, 'normalize_similarity': False} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 145, 'top1': 166, 'alphaP3': 1.0861220082262006, 'normalize_similarity': True} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 170, 'top1': 101, 'alphaP3': 1.254364426717035, 'normalize_similarity': False} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 65, 'top1': 186, 'alphaP3': 1.5373539290038492, 'normalize_similarity': False} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 25, 'top1': 686, 'alphaP3': 0.7080039675438015, 'normalize_similarity': True} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 25, 'top1': 336, 'alphaP3': 0.5612826948764087, 'normalize_similarity': True} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 185, 'top1': 101, 'alphaP3': 1.7163571532574036, 'normalize_similarity': True} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 200, 'top1': 566, 'alphaP3': 1.9621526984339503, 'normalize_similarity': False} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 145, 'top1': 71, 'alphaP3': 1.9928901914634523, 'normalize_similarity': True} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 150, 'top1': 751, 'alphaP3': 0.9004607428053586, 'normalize_similarity': False} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 200, 'top1': 601, 'alphaP3': 1.5556145361209348, 'normalize_similarity': False} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 220, 'top1': 26, 'alphaP3': 1.3509909696305034, 'normalize_similarity': True} - Exception Weights Are None!
+BayesianSearch: Testing config: {'shrink1': 220, 'top1': 721, 'alphaP3': 0.7677221507013992, 'normalize_similarity': False} - Exception Weights Are None!

@@ -20,7 +20,7 @@ from Base.Similarity.Compute_Similarity import Compute_Similarity
 class ItemKNNCFPageRankRecommender(SimilarityMatrixRecommender, Recommender):
     """ ItemKNN recommender"""
 
-    RECOMMENDER_NAME = "ItemKNNCFRecommender"
+    RECOMMENDER_NAME = "ItemKNNCFPageRankRecommender"
 
     def __init__(self, URM_train, URM_PageRank_train, sparse_weights=True):
         super(ItemKNNCFPageRankRecommender, self).__init__()

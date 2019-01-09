@@ -1,0 +1,4 @@
+BayesianSearch: New best config found. Config: {'topK': 41, 'alpha': 0.2354717061325695, 'normalize_similarity': False} - MAP results: 0.08723023076463883 - time: 2019-01-08 16:44:07.780563
+
+BayesianSearch: New best config found. Config: {'topK': 461, 'alpha': 0.5679490554523212, 'normalize_similarity': False} - MAP results: 0.09598968951858833 - time: 2019-01-08 16:45:39.078998
+

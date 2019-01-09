@@ -64,3 +64,94 @@ BayesianSearch: Config is suboptimal. Config: {'topK': 590, 'shrink': 101, 'simi
 BayesianSearch: Config is suboptimal. Config: {'topK': 610, 'shrink': 36, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.0463013809523813 - time: 2018-12-01 13:10:07.090569
 BayesianSearch: Config is suboptimal. Config: {'topK': 790, 'shrink': 1, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05334928174603225 - time: 2018-12-01 13:11:02.611125
 BayesianSearch: New best config found. Config: {'topK': 170, 'shrink': 196, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05886333333333322 - time: 2018-12-01 13:12:29.337485
+BayesianSearch: Testing config: {'topK': 120, 'shrink': 22, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 150, 'shrink': 54, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 230, 'shrink': 96, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 290, 'shrink': 56, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 300, 'shrink': 120, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 320, 'shrink': 18, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 410, 'shrink': 116, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 120, 'shrink': 134, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 190, 'shrink': 32, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 340, 'shrink': 16, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 160, 'shrink': 118, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 400, 'shrink': 116, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 200, 'shrink': 38, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 130, 'shrink': 40, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 330, 'shrink': 4, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 290, 'shrink': 46, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 140, 'shrink': 110, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 200, 'shrink': 38, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 210, 'shrink': 36, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 360, 'shrink': 102, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - Exception __init__() missing 1 required positional argument: 'URM_train'
+BayesianSearch: Testing config: {'topK': 350, 'shrink': 56, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 1} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 60, 'shrink': 62, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 1} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 130, 'shrink': 116, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 2} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 190, 'shrink': 114, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 1} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 350, 'shrink': 16, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 0} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 260, 'shrink': 24, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 0} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 370, 'shrink': 80, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 1} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 140, 'shrink': 82, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 0} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 310, 'shrink': 76, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 2} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 240, 'shrink': 96, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 1} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 390, 'shrink': 54, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 1} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 280, 'shrink': 70, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 0} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 370, 'shrink': 18, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 1} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 330, 'shrink': 44, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 0} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 170, 'shrink': 14, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 1} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 350, 'shrink': 146, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 0} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 360, 'shrink': 112, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 2} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 200, 'shrink': 94, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 0} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 350, 'shrink': 12, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 1} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: Testing config: {'topK': 170, 'shrink': 50, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 1} - Exception __init__() got an unexpected keyword argument 'feature_weighting_index'
+BayesianSearch: New best config found. Config: {'topK': 350, 'shrink': 116, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.058128019305870415 - time: 2019-01-09 11:34:22.018415
+BayesianSearch: Config is suboptimal. Config: {'topK': 70, 'shrink': 78, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.057022266943814306 - time: 2019-01-09 11:34:55.525872
+BayesianSearch: New best config found. Config: {'topK': 250, 'shrink': 114, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05885205139833704 - time: 2019-01-09 11:35:35.797865
+BayesianSearch: Config is suboptimal. Config: {'topK': 350, 'shrink': 92, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05812135263920375 - time: 2019-01-09 11:36:16.538098
+BayesianSearch: New best config found. Config: {'topK': 140, 'shrink': 16, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05913542570546723 - time: 2019-01-09 11:36:51.134026
+BayesianSearch: Config is suboptimal. Config: {'topK': 290, 'shrink': 116, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05865430850025183 - time: 2019-01-09 11:37:26.842296
+BayesianSearch: Config is suboptimal. Config: {'topK': 130, 'shrink': 20, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.058988518896447364 - time: 2019-01-09 11:38:05.107495
+BayesianSearch: Config is suboptimal. Config: {'topK': 330, 'shrink': 132, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05851595079050126 - time: 2019-01-09 11:38:47.766848
+BayesianSearch: Config is suboptimal. Config: {'topK': 430, 'shrink': 38, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05764403828105303 - time: 2019-01-09 11:39:31.760155
+BayesianSearch: Config is suboptimal. Config: {'topK': 340, 'shrink': 8, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05833261860670185 - time: 2019-01-09 11:40:10.034627
+BayesianSearch: New best config found. Config: {'topK': 210, 'shrink': 90, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.059174500787351744 - time: 2019-01-09 11:40:49.422603
+BayesianSearch: Config is suboptimal. Config: {'topK': 230, 'shrink': 58, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.059046817019400205 - time: 2019-01-09 11:41:31.326144
+BayesianSearch: Config is suboptimal. Config: {'topK': 200, 'shrink': 38, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05913706021667906 - time: 2019-01-09 11:42:02.383223
+BayesianSearch: Config is suboptimal. Config: {'topK': 250, 'shrink': 60, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05885205139833704 - time: 2019-01-09 11:42:40.470814
+BayesianSearch: Config is suboptimal. Config: {'topK': 240, 'shrink': 130, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05905035030864185 - time: 2019-01-09 11:43:13.697955
+BayesianSearch: Config is suboptimal. Config: {'topK': 290, 'shrink': 44, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05865430850025183 - time: 2019-01-09 11:43:49.364554
+BayesianSearch: Config is suboptimal. Config: {'topK': 50, 'shrink': 30, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.0557291014896698 - time: 2019-01-09 11:44:25.353009
+BayesianSearch: Config is suboptimal. Config: {'topK': 170, 'shrink': 44, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05876078432854598 - time: 2019-01-09 11:45:01.126091
+BayesianSearch: Config is suboptimal. Config: {'topK': 330, 'shrink': 36, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05851595079050126 - time: 2019-01-09 11:45:38.043396
+BayesianSearch: Config is suboptimal. Config: {'topK': 370, 'shrink': 78, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05787857893990922 - time: 2019-01-09 11:46:16.901707
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 148, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05433820995527815 - time: 2019-01-09 11:46:54.086870
+BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 148, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.057742535289115576 - time: 2019-01-09 11:47:38.818744
+BayesianSearch: Config is suboptimal. Config: {'topK': 190, 'shrink': 0, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05917128561980316 - time: 2019-01-09 11:48:23.365367
+BayesianSearch: Config is suboptimal. Config: {'topK': 240, 'shrink': 148, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05905035030864185 - time: 2019-01-09 11:49:02.476024
+BayesianSearch: Config is suboptimal. Config: {'topK': 220, 'shrink': 16, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05888752376228248 - time: 2019-01-09 11:49:48.611518
+BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 0, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.057742535289115576 - time: 2019-01-09 11:50:34.285361
+BayesianSearch: Config is suboptimal. Config: {'topK': 90, 'shrink': 0, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.057538440680901796 - time: 2019-01-09 11:51:15.366483
+BayesianSearch: Config is suboptimal. Config: {'topK': 190, 'shrink': 74, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05917128561980316 - time: 2019-01-09 11:51:54.258946
+BayesianSearch: Config is suboptimal. Config: {'topK': 290, 'shrink': 148, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05865430850025183 - time: 2019-01-09 11:52:33.669565
+BayesianSearch: Config is suboptimal. Config: {'topK': 200, 'shrink': 138, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05913706021667906 - time: 2019-01-09 11:53:18.690381
+BayesianSearch: Config is suboptimal. Config: {'topK': 170, 'shrink': 114, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05876078432854598 - time: 2019-01-09 11:53:56.588747
+BayesianSearch: Config is suboptimal. Config: {'topK': 210, 'shrink': 0, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.059174500787351744 - time: 2019-01-09 11:54:33.376765
+BayesianSearch: Config is suboptimal. Config: {'topK': 220, 'shrink': 72, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05888752376228248 - time: 2019-01-09 11:55:15.754624
+BayesianSearch: Config is suboptimal. Config: {'topK': 160, 'shrink': 82, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.058830882653060926 - time: 2019-01-09 11:56:00.596603
+BayesianSearch: Config is suboptimal. Config: {'topK': 160, 'shrink': 88, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.058830882653060926 - time: 2019-01-09 11:56:43.017821
+BayesianSearch: Config is suboptimal. Config: {'topK': 150, 'shrink': 14, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05884655481544454 - time: 2019-01-09 11:57:23.899422
+BayesianSearch: Config is suboptimal. Config: {'topK': 320, 'shrink': 0, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.058619789981733256 - time: 2019-01-09 11:58:12.158491
+BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 94, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.057742535289115576 - time: 2019-01-09 11:59:00.630173
+BayesianSearch: Config is suboptimal. Config: {'topK': 120, 'shrink': 30, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05868032090891886 - time: 2019-01-09 11:59:39.943024
+BayesianSearch: Config is suboptimal. Config: {'topK': 150, 'shrink': 148, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05884655481544454 - time: 2019-01-09 12:00:17.199354
+BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 16, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.057742535289115576 - time: 2019-01-09 12:01:03.599113
+BayesianSearch: Config is suboptimal. Config: {'topK': 300, 'shrink': 22, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.058643629172965395 - time: 2019-01-09 12:01:46.697722
+BayesianSearch: Config is suboptimal. Config: {'topK': 150, 'shrink': 24, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05884655481544454 - time: 2019-01-09 12:02:24.061547
+BayesianSearch: Config is suboptimal. Config: {'topK': 90, 'shrink': 14, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.057538440680901796 - time: 2019-01-09 12:03:04.020005
+BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 130, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.057742535289115576 - time: 2019-01-09 12:03:47.654476
+BayesianSearch: Config is suboptimal. Config: {'topK': 90, 'shrink': 58, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.057538440680901796 - time: 2019-01-09 12:04:26.154743
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 118, 'similarity': 'cosine', 'normalize': False} - MAP results: 0.05433820995527815 - time: 2019-01-09 12:05:04.445519
+BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 64, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.057742535289115576 - time: 2019-01-09 12:05:52.021859
+BayesianSearch: Config is suboptimal. Config: {'topK': 250, 'shrink': 0, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05885205139833704 - time: 2019-01-09 12:06:42.269598
+BayesianSearch: Config is suboptimal. Config: {'topK': 240, 'shrink': 40, 'similarity': 'cosine', 'normalize': True} - MAP results: 0.05905035030864185 - time: 2019-01-09 12:07:26.059862
+BayesianSearch: Best config is: Config {'topK': 210, 'shrink': 90, 'similarity': 'cosine', 'normalize': False}, MAP value is 0.0592

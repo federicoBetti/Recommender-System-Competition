@@ -35,7 +35,7 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     delete_old_computations = False
     slim_after_hybrid = False
 
@@ -136,12 +136,12 @@ if __name__ == '__main__':
                             "topK": [130, 170, 160, 101, 601],
                             "shrink": [2, 2, 2, -1, -1],
                             "pop": [280],
-                            "weights": [0.4693877551020408, 0.6326530612244898, 0.6775510204081632, 1.0,
-                                        0.32040816326530613],
-                            "force_compute_sim": True,
+                            "weights": [0.8558368700159882, 0.201498575971369, 1.504181915043752, 1.0295254841780876,
+                                        0.7315500681376081],
+                            "force_compute_sim": False,
                             "feature_weighting_index": 0,
                             "old_similarity_matrix": old_similrity_matrix,
-                            "epochs": 150,
+                            "epochs": 50,
                             'lambda_i': [0.0], 'lambda_j': [1.0153577332223556e-08], 'SLIM_lr': [0.1],
                             'alphaP3': [0.7649722376036994],
                             'alphaRP3': [0.8582865731462926],

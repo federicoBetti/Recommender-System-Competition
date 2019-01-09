@@ -71,10 +71,10 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
 
         similarity = Compute_Similarity(sim_matrix_pre, shrink=shrink, topK=topK, normalize=normalize,
                                         similarity=similarity, **similarity_args)
-        print('Similarity item based CF computed')
 
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
+            print('Similarity item based CF computed')
             with open(os.path.join("IntermediateComputations", "ItemCFMatrix_tfidf_{}.pkl".format(str(self.tfidf))),
                       'wb') as handle:
                 pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)

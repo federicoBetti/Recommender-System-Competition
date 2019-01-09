@@ -63,7 +63,8 @@ def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, UR
         hyperparamethers_range_dictionary["tfidf"] = [True, False]
     else:  # Content Base Filtering Algorithms
         first_dict = [UCM_train, URM_train]
-        hyperparamethers_range_dictionary["feature_weighting_index"] = [0, 1, 2]
+        if UCM_train.shape[0] < 30000: # Item CB
+            hyperparamethers_range_dictionary["feature_weighting_index"] = [0, 1, 2]
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: first_dict,
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
@@ -844,7 +845,7 @@ def read_data_split_and_search():
         # Random,
         # TopPop,
         # ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
+        UserKNNCBRecommender,
         # P3alphaRecommender,
         # RP3betaRecommender,
         # ItemKNNCFPageRankRecommender,
@@ -858,7 +859,7 @@ def read_data_split_and_search():
         # SLIM_BPR_Cython,
         # SLIMElasticNetRecommender,
         # MultiThreadSLIM_ElasticNet,
-        HybridRecommender
+        # HybridRecommender
     ]
 
     # if UserKNNCBRecommender in collaborative_algorithm_list:
@@ -947,6 +948,7 @@ def read_data_split_and_search():
                     runParameterSearch_Collaborative_partial = partial(runParameterSearch_Collaborative,
                                                                        URM_train=URM_train,
                                                                        ICM=ICM,
+                                                                       UCM_train=UCM_train,
                                                                        metric_to_optimize="MAP",
                                                                        evaluator_validation_earlystopping=evaluator_validation_earlystopping,
                                                                        evaluator_validation=evaluator_validation,

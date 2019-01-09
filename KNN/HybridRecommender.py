@@ -47,12 +47,11 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         self.onPop = onPop
         self.moreHybrids = moreHybrids
 
-        self.remove_top_pop_flag = True
         URM_train_csc = self.URM_train.copy().tocsc()
         songs_popularity = np.diff(URM_train_csc.indptr)
-        filter_top_pop_x = 10
+        filter_top_pop_max = 150
 
-        self.filterTopPop = np.argsort(-songs_popularity)[:filter_top_pop_x]
+        self.filterTopPop_ItemsID = np.argsort(-songs_popularity)[:filter_top_pop_max]
         del URM_train_csc
 
 
@@ -97,7 +96,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             weights4=None,
             weights5=None, weights6=None, weights7=None, weights8=None, pop1=None, pop2=None, similarity='cosine',
             normalize=True,
-            old_similarity_matrix=None, epochs=1, top1=None, shrink1=None,
+            old_similarity_matrix=None, epochs=1, top1=None, shrink1=None, filter_top_pop_len=0,
             force_compute_sim=False, weights_to_dweights=-1, **similarity_args):
 
         if topK is None:  # IT MEANS THAT I'M TESTING ONE RECOMMENDER ON A SPECIIFC INTERVAL
@@ -118,6 +117,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         if weights_to_dweights != -1:
             self.d_weights[weights_to_dweights] = self.weights
+
+        self.filterTopPop_ItemsID = self.filterTopPop_ItemsID[:filter_top_pop_len]
 
         assert self.weights is not None, "Weights Are None!"
 
@@ -263,7 +264,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 final_score += (score * weight)
         return final_score
 
-    def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
+    def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=True,
                   remove_CustomItems_flag=False):
 
         if np.isscalar(user_id_array):
@@ -279,8 +280,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         else:
             cutoff
 
-        if self.remove_top_pop_flag is None:
-            self.remove_top_pop_flag = remove_top_pop_flag
+        if len(self.filterTopPop_ItemsID) == 0:
+            remove_top_pop_flag=False
 
         # compute the scores using the dot product
         # noinspection PyUnresolvedReferences

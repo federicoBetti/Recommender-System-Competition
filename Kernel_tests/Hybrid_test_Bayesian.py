@@ -3,7 +3,7 @@ import sys
 import traceback, os
 from enum import Enum
 from functools import partial
-from random import shuffle
+from random import shuffle, random
 
 import gc
 
@@ -224,19 +224,7 @@ class BayesianSearch(AbstractClassSearch):
 
         print("Starting the Maximize function!")
         self.bayesian_optimizer.maximize(init_points=init_points, n_iter=n_cases, kappa=2)
-        #
-        # best_solution = self.bayesian_optimizer.res['max']
-        #
-        # self.best_solution_val = best_solution["max_val"]
-        # self.best_solution_parameters = best_solution["max_params"].copy()
-        # self.best_solution_parameters = self.parameter_bayesian_to_token(self.best_solution_parameters)
-        # self.best_solution_parameters = self.from_fit_params_to_saved_params[
-        #     frozenset(self.best_solution_parameters.items())]
-        #
-        # print("BayesianSearch: Best config is: Config {}, {} value is {:.4f}\n".format(
-        #     self.best_solution_parameters, metric, self.best_solution_val))
 
-        # return self.best_solution_parameters.copy()
         return 1
 
     def parameter_bayesian_to_token(self, paramether_dictionary):
@@ -268,8 +256,8 @@ class BayesianSearch(AbstractClassSearch):
 
     def runSingleCase_param_parsed(self, dictionary, metric, paramether_dictionary):
 
-        if time.time() - start_time > 60 * 60 * 5:
-            return -np.inf
+        if time.time() - start_time_kernel > 60 * 60 * 5:
+            sys.exit(1)
 
         try:
 
@@ -777,8 +765,7 @@ class RS_Data_Loader(object):
             self.tracks = pd.read_csv(os.path.join("../input/recommender-system-2018-challenge-polimi", "tracks.csv"))
             self.target_playlist = pd.read_csv(
                 os.path.join("../input/recommender-system-2018-challenge-polimi", "target_playlists.csv"))
-            self.train_sequential = pd.read_csv(
-                os.path.join("../input/train-sequential-recsys", "train_sequential.csv"))
+            self.train_sequential = pd.read_csv("../input/recommendersystem2018challengepolimi/train_sequential.csv")
         else:
             self.train = pd.read_csv(os.path.join("../Dataset", "train.csv"))
             self.tracks = pd.read_csv(os.path.join("../Dataset", "tracks.csv"))
@@ -789,12 +776,19 @@ class RS_Data_Loader(object):
         try:
             # self.UCB_tfidf_album = self.get_UCM_matrix_album(train_path=os.path.join("Dataset", "new_train.csv"))
             self.URM_train = sps.load_npz(
-                os.path.join("../input/recommender-system-2018-challenge-polimi", "URM_train_keep_distrib.npz"))
+                os.path.join("../input/recommendersystem2018challengepolimi", "URM_train_keep_distrib.npz"))
             self.URM_test = sps.load_npz(
-                os.path.join("../input/recommender-system-2018-challenge-polimi", "URM_test_keep_distrib.npz"))
+                os.path.join("../input/recommendersystem2018challengepolimi", "URM_test_keep_distrib.npz"))
             self.URM_validation = sps.load_npz(
-                os.path.join("../input/recommender-system-2018-challenge-polimi", "URM_test_keep_distrib.npz"))
+                os.path.join("../input/recommendersystem2018challengepolimi", "URM_test_keep_distrib.npz"))
+
+            with open(os.path.join("../input/recommendersystem2018challengepolimi", "UserCBF_artists.pkl"), 'rb') as handle:
+                self.UCB_tfidf_artists = pickle.load(handle)
+            print("Saved matrices correctly loaded!")
         except FileNotFoundError:
+            if kernel:
+                print("Attenzione che lo SLIM potrebbe essere sbagliato!")
+                sys.exit(1)
             data_grouped = self.train_sequential.groupby(self.train_sequential.playlist_id).track_id.apply(list)
             target_plays = list(self.target_playlist.playlist_id)
             # in datagrouped è una series con la playlist e la lista delle canzoni nella playlist
@@ -899,9 +893,57 @@ class RS_Data_Loader(object):
         col = 20635
         return csr_matrix(([1] * row, (range(row), [0] * row)), shape=(row, col))
 
+    def get_ICM(self):
+        if self.ICM is None:
+            self.ICM = get_icm_matrix(self.tracks)
+        return self.ICM
+
+    def get_UCM_matrix_artists(self, train_path=""):
+        try:
+            if self.all_train:
+                with open(os.path.join("Dataset", "UserCBF_artists_all.pkl"), 'rb') as handle:
+                    to_ret = pickle.load(handle)
+                    return to_ret
+            else:
+                if self.distr_split:
+                    with open(os.path.join("../input/recommendersystem2018challengepolimi", "UserCBF_artists.pkl"),
+                              'rb') as handle:
+                        to_ret = pickle.load(handle)
+                        return to_ret
+                else:
+                    with open(os.path.join("Dataset", "UserCBF_artists_notop10.pkl"), 'rb') as handle:
+                        to_ret = pickle.load(handle)
+                        return to_ret
+
+        except FileNotFoundError:
+            train = pd.read_csv(train_path)
+            tracks_for_playlist = train.merge(self.tracks, on="track_id").loc[:, 'playlist_id':'artist_id'].sort_values(
+                by="playlist_id")
+            playlists_arr = tracks_for_playlist.playlist_id.unique()
+            artists_arr = self.tracks.artist_id.unique()
+            UCM_artists = np.zeros(shape=(50446, artists_arr.shape[0]))
+
+            def create_feature_artists(entry):
+                if entry.playlist_id in playlists_arr:
+                    UCM_artists[entry.playlist_id][entry.artist_id] += 1
+
+            tracks_for_playlist.apply(create_feature_artists, axis=1)
+            UCM_tfidf = get_tfidf(UCM_artists)
+
+            if self.all_train:
+                print("All train artists matrix saved")
+                with open(os.path.join("Dataset", "UserCBF_artists_all.pkl"), 'wb') as handle:
+                    pickle.dump(UCM_tfidf, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            else:
+                if self.distr_split:
+                    with open(os.path.join("Dataset", "UserCBF_artists.pkl"), 'wb') as handle:
+                        pickle.dump(UCM_tfidf, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+            return UCM_tfidf
+
 
 '''
-RP3beta, this is the part related to the single recommender that one should change
+Down here there are all the recommenders
 '''
 
 
@@ -1974,6 +2016,8 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
         self.topK = None
         self.shrink = None
         self.tfidf = None
+        gc.collect()
+        # questo gc collect vale per tutto, e viene runnato ogni iterazione
 
     def __str__(self):
         return "Item Collaborative Filterng (tokK={}, shrink={}, tfidf={}, normalize={}".format(
@@ -2025,10 +2069,10 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
 class ItemKNNCFRecommenderFAKESLIM(SimilarityMatrixRecommender, Recommender):
     """ ItemKNN recommender"""
 
-    RECOMMENDER_NAME = "ItemKNNCFRecommender"
+    RECOMMENDER_NAME = "ItemKNNCFRecommenderFAKESLIM"
 
     def __init__(self, URM_train, sparse_weights=True):
-        super(ItemKNNCFRecommender, self).__init__()
+        super(ItemKNNCFRecommenderFAKESLIM, self).__init__()
 
         # CSR is faster during evaluation
         self.URM_train = check_matrix(URM_train, 'csr')
@@ -2056,18 +2100,17 @@ class ItemKNNCFRecommenderFAKESLIM(SimilarityMatrixRecommender, Recommender):
         if not force_compute_sim:
             found = True
             try:
-                with open(os.path.join("SLIM_BPR_Matrix.pkl")),'rb') as handle:
-                    (topK_new, shrink_new, W_sparse_new) = pickle.load(handle)
+                with open(os.path.join("../input/recommendersystem2018challengepolimi", "SLIM_BPR_Matrix_.pkl"),
+                          'rb') as handle:
+                    self.W_sparse = pickle.load(handle)
+                    return
             except FileNotFoundError:
                 print("File {} not found".format(
                     os.path.join("IntermediateComputations", "ItemCFMatrix_tfidf_{}.pkl".format(str(self.tfidf)))))
                 found = False
 
-            if found and self.topK == topK_new and self.shrink == shrink_new:
-                self.W_sparse = W_sparse_new
-                print("Saved Item CF Similarity Matrix Used!")
-                return
-
+        print("SLIM doesn't work")
+        sys.exit(1)
         if tfidf:
             sim_matrix_pre = get_tfidf(self.URM_train)
         else:
@@ -2082,6 +2125,53 @@ class ItemKNNCFRecommenderFAKESLIM(SimilarityMatrixRecommender, Recommender):
             with open(os.path.join("SLIM_BPR_Matrix.pkl"), 'wb') as handle:
                 pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
                 print("Item CF similarity matrix saved")
+        else:
+            self.W = similarity.compute_similarity()
+            self.W = self.W.toarray()
+
+
+class UserKNNCBRecommender(SimilarityMatrixRecommender, Recommender):
+    """ UserKNN recommender"""
+
+    RECOMMENDER_NAME = "UserKNNCBRecommender"
+
+    def __init__(self, UCM_train, URM_train, sparse_weights=True):
+        super(UserKNNCBRecommender, self).__init__()
+
+        # Not sure if CSR here is faster
+        self.URM_train = check_matrix(URM_train, 'csr')
+        self.UCM_train = check_matrix(UCM_train, 'csr')
+        self.dataset = None
+
+        self.sparse_weights = sparse_weights
+
+        self.compute_item_score = self.compute_score_user_based
+
+    def fit(self, topK=350, shrink=10, similarity='cosine', normalize=False, force_compute_sim=True, **similarity_args):
+
+        self.topK = topK
+        self.shrink = shrink
+
+        if not force_compute_sim:
+            found = True
+            try:
+                with open(os.path.join("UCMCBFSimMatrix.pkl"), 'rb') as handle:
+                    W_sparse_new = pickle.load(handle)
+            except FileNotFoundError:
+                found = False
+
+            if found:
+                self.W_sparse = W_sparse_new
+                print("Saved User Content Base Similarity Matrix Used!")
+                return
+
+        similarity = Compute_Similarity(self.UCM_train.T, shrink=shrink, topK=topK, normalize=normalize,
+                                        similarity=similarity, **similarity_args)
+
+        if self.sparse_weights:
+            self.W_sparse = similarity.compute_similarity()
+            with open(os.path.join("UCMCBFSimMatrix.pkl"), 'wb') as handle:
+                pickle.dump(self.W_sparse, handle, protocol=pickle.HIGHEST_PROTOCOL)
         else:
             self.W = similarity.compute_similarity()
             self.W = self.W.toarray()
@@ -2307,12 +2397,12 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         self.onPop = onPop
         self.moreHybrids = moreHybrids
 
-        # with open(os.path.join("Dataset", "Cluster_0_dict_Kmeans_3.pkl"), 'rb') as handle:
-        #     self.cluster_0 = pickle.load(handle)
-        # with open(os.path.join("Dataset", "Cluster_1_dict_Kmeans_3.pkl"), 'rb') as handle:
-        #     self.cluster_1 = pickle.load(handle)
-        # with open(os.path.join("Dataset", "Cluster_2_dict_Kmeans_3.pkl"), 'rb') as handle:
-        #     self.cluster_2 = pickle.load(handle)
+        URM_train_csc = self.URM_train.copy().tocsc()
+        songs_popularity = np.diff(URM_train_csc.indptr)
+        filter_top_pop_max = 150
+
+        self.filterTopPop_ItemsID = np.argsort(-songs_popularity)[:filter_top_pop_max]
+        del URM_train_csc
 
         self.sparse_weights = sparse_weights
 
@@ -2333,6 +2423,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             if recommender is ItemKNNCBFRecommender:
                 self.recommender_list.append(recommender(ICM, URM_train))
 
+            elif recommender in [UserKNNCBRecommender]:
+                self.recommender_list.append(recommender(self.UCM_train, URM_train))
             elif recommender.__class__ in [HybridRecommender]:
                 self.recommender_list.append(recommender)
 
@@ -2343,7 +2435,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             weights4=None,
             weights5=None, weights6=None, weights7=None, weights8=None, pop1=None, pop2=None, similarity='cosine',
             normalize=True,
-            old_similarity_matrix=None, epochs=1, top1=None, shrink1=None,
+            old_similarity_matrix=None, epochs=1, top1=None, shrink1=None, filter_top_pop_len=0,
             force_compute_sim=False, weights_to_dweights=-1, **similarity_args):
 
         if topK is None:  # IT MEANS THAT I'M TESTING ONE RECOMMENDER ON A SPECIIFC INTERVAL
@@ -2364,6 +2456,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         if weights_to_dweights != -1:
             self.d_weights[weights_to_dweights] = self.weights
+
+        self.filterTopPop_ItemsID = self.filterTopPop_ItemsID[:filter_top_pop_len]
 
         assert self.weights is not None, "Weights Are None!"
 
@@ -2432,7 +2526,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             return self.d_weights[2]
             # return [0.9780713488404191, 0, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535, 0.9504112133900943, 0, 0.9034510004379944]
 
-    def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
+    def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=True,
                   remove_CustomItems_flag=False):
 
         if np.isscalar(user_id_array):
@@ -2447,6 +2541,9 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             cutoff = self.URM_train.shape[1] - 1
         else:
             cutoff
+
+        if len(self.filterTopPop_ItemsID) == 0:
+            remove_top_pop_flag = False
 
         # compute the scores using the dot product
         # noinspection PyUnresolvedReferences
@@ -2567,7 +2664,8 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
         if not force_compute_sim:
             found = True
             try:
-                with open(os.path.join("SLIM_ElasticNet_Matrix.pkl"), 'rb') as handle:
+                with open(os.path.join("../input/recommendersystem2018challengepolimi", "SLIM_ElasticNet_Matrix.pkl"),
+                          'rb') as handle:
                     (W_sparse_new) = pickle.load(handle)
             except FileNotFoundError:
                 found = False
@@ -2681,247 +2779,7 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
                         protocol=pickle.HIGHEST_PROTOCOL)
 
 
-# class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender):
-#     RECOMMENDER_NAME = "SLIM_BPR_Recommender"
-#
-#     def __init__(self, URM_train, positive_threshold=1, URM_validation=None,
-#                  recompile_cython=False, final_model_sparse_weights=True, train_with_sparse_weights=False,
-#                  symmetric=True):
-#
-#         super(SLIM_BPR_Cython, self).__init__()
-#
-#         self.URM_train = URM_train.copy()
-#         self.n_users = URM_train.shape[0]
-#         self.n_items = URM_train.shape[1]
-#         self.normalize = False
-#         self.positive_threshold = positive_threshold
-#
-#         self.train_with_sparse_weights = train_with_sparse_weights
-#         self.sparse_weights = final_model_sparse_weights
-#
-#         if URM_validation is not None:
-#             self.URM_validation = URM_validation.copy()
-#         else:
-#             self.URM_validation = None
-#
-#         if self.train_with_sparse_weights:
-#             self.sparse_weights = True
-#
-#         self.URM_mask = self.URM_train.copy()
-#
-#         self.URM_mask.data = self.URM_mask.data >= self.positive_threshold
-#         self.URM_mask.eliminate_zeros()
-#
-#         assert self.URM_mask.nnz > 0, "MatrixFactorization_Cython: URM_train_positive is empty, positive threshold is too high"
-#
-#         self.symmetric = symmetric
-#
-#         if not self.train_with_sparse_weights:
-#
-#             n_items = URM_train.shape[1]
-#             requiredGB = 8 * n_items ** 2 / 1e+06
-#
-#             if symmetric:
-#                 requiredGB /= 2
-#
-#             print("SLIM_BPR_Cython: Estimated memory required for similarity matrix of {} items is {:.2f} MB".format(
-#                 n_items, requiredGB))
-#
-#         if recompile_cython:
-#             print("Compiling in Cython")
-#             self.runCompilationScript()
-#             print("Compilation Complete")
-#
-#     def fit(self, epochs=300, logFile=None,
-#             batch_size=1000, lambda_i=0.1, lambda_j=0.1, learning_rate=1e-3, topK=200,
-#             sgd_mode='adagrad', gamma=0.995, beta_1=0.9, beta_2=0.999,
-#             stop_on_validation=False, lower_validatons_allowed=2, validation_metric="MAP",
-#             evaluator_object=None, validation_every_n=50, old_similarity_matrix=None,
-#             force_compute_sim=True):
-#         '''
-#
-#         :param epochs: max number of epochs
-#         :param logFile:
-#         :param batch_size:
-#         :param lambda_i: first regualrizer
-#         :param lambda_j: second regualrizer
-#         :param learning_rate:
-#         :param topK:
-#         :param sgd_mode:
-#         :param gamma:
-#         :param beta_1:
-#         :param beta_2:
-#         :param stop_on_validation: should I stop after some validations?
-#         :param lower_validatons_allowed: stop after n validations that worse the previous one
-#         :param validation_metric:
-#         :param evaluator_object:
-#         :param validation_every_n: how often do validations?
-#         :param old_similarity_matrix: if you want to start from a fixed similarity matrix
-#         :param force_compute_sim:
-#         :return:
-#         '''
-#         if not force_compute_sim:
-#             found = True
-#             try:
-#                 with open(os.path.join("IntermediateComputations", "SLIM_BPR_Matrix_.pkl"), 'rb') as handle:
-#                     (W_sparse_new) = pickle.load(handle)
-#             except FileNotFoundError:
-#                 found = False
-#
-#             if found:
-#                 self.W_sparse = W_sparse_new
-#                 print("Saved SLIM Matrix Used!")
-#                 return
-#
-#         if evaluator_object is None and stop_on_validation:
-#             print("Creating evaluator object for SLIM BPR")
-#             evaluator_object = SequentialEvaluator(self.URM_validation, self.URM_train)
-#
-#         # Import compiled module
-#         from SLIM_BPR.Cython.SLIM_BPR_Cython_Epoch import SLIM_BPR_Cython_Epoch
-#
-#         # Select only positive interactions
-#         URM_train_positive = self.URM_train.copy()
-#
-#         URM_train_positive.data = URM_train_positive.data >= self.positive_threshold
-#         URM_train_positive.eliminate_zeros()
-#
-#         self.sgd_mode = sgd_mode
-#         self.epochs = epochs
-#
-#         self.cythonEpoch = SLIM_BPR_Cython_Epoch(self.URM_mask,
-#                                                  old_similarity=old_similarity_matrix,
-#                                                  train_with_sparse_weights=self.train_with_sparse_weights,
-#                                                  final_model_sparse_weights=self.sparse_weights,
-#                                                  topK=topK,
-#                                                  learning_rate=learning_rate,
-#                                                  li_reg=lambda_i,
-#                                                  lj_reg=lambda_j,
-#                                                  batch_size=1,
-#                                                  symmetric=self.symmetric,  # di default è simmetrica
-#                                                  sgd_mode=sgd_mode,
-#                                                  gamma=gamma,
-#                                                  beta_1=beta_1,
-#                                                  beta_2=beta_2)
-#
-#         if topK != False and topK < 1:
-#             raise ValueError(
-#                 "TopK not valid. Acceptable values are either False or a positive integer value. Provided value was '{}'".format(
-#                     topK))
-#         self.topK = topK
-#
-#         if validation_every_n is not None:
-#             self.validation_every_n = validation_every_n
-#         else:
-#             self.validation_every_n = np.inf
-#
-#         self.batch_size = batch_size
-#         self.lambda_i = lambda_i
-#         self.lambda_j = lambda_j
-#         self.learning_rate = learning_rate
-#
-#         self._train_with_early_stopping(epochs, validation_every_n, stop_on_validation,
-#                                         validation_metric, lower_validatons_allowed, evaluator_object,
-#                                         algorithm_name=self.RECOMMENDER_NAME)
-#
-#         self.get_S_incremental_and_set_W()
-#         # self.normalized_SLIM()
-#         with open(os.path.join("IntermediateComputations", "SLIM_BPR_Matrix_.pkl"), 'wb') as handle:
-#             pickle.dump(self.W_sparse, handle,
-#                         protocol=pickle.HIGHEST_PROTOCOL)
-#
-#         sys.stdout.flush()
-#
-#     def _initialize_incremental_model(self):
-#         self.S_incremental = self.cythonEpoch.get_S()
-#         self.S_best = self.S_incremental.copy()
-#
-#     def _update_incremental_model(self):
-#         self.get_S_incremental_and_set_W()
-#
-#     def _update_best_model(self):
-#         self.S_best = self.S_incremental.copy()
-#
-#     def _run_epoch(self, num_epoch):
-#         self.cythonEpoch.epochIteration_Cython()
-#
-#     def get_S_incremental_and_set_W(self):
-#
-#         self.S_incremental = self.cythonEpoch.get_S()
-#
-#         if self.train_with_sparse_weights:
-#             self.W_sparse = self.S_incremental
-#         else:
-#             if self.sparse_weights:
-#                 self.W_sparse = similarityMatrixTopK(self.S_incremental, k=self.topK)
-#             else:
-#                 self.W = self.S_incremental
-#
-#     def writeCurrentConfig(self, currentEpoch, results_run, logFile):
-#
-#         current_config = {'lambda_i': self.lambda_i,
-#                           'lambda_j': self.lambda_j,
-#                           'batch_size': self.batch_size,
-#                           'learn_rate': self.learning_rate,
-#                           'topK_similarity': self.topK,
-#                           'epoch': currentEpoch}
-#
-#         print("Test case: {}\nResults {}\n".format(current_config, results_run))
-#         # print("Weights: {}\n".format(str(list(self.weights))))
-#
-#         sys.stdout.flush()
-#
-#         if (logFile != None):
-#             logFile.write("Test case: {}, Results {}\n".format(current_config, results_run))
-#             # logFile.write("Weights: {}\n".format(str(list(self.weights))))
-#             logFile.flush()
-#
-#     def runCompilationScript(self):
-#
-#         # Run compile script setting the working directory to ensure the compiled file are contained in the
-#         # appropriate subfolder and not the project root
-#
-#         compiledModuleSubfolder = "/SLIM_BPR/Cython"
-#         # fileToCompile_list = ['Sparse_Matrix_CSR.pyx', 'SLIM_BPR_Cython_Epoch.pyx']
-#         fileToCompile_list = ['SLIM_BPR_Cython_Epoch.pyx']
-#
-#         for fileToCompile in fileToCompile_list:
-#
-#             command = ['python',
-#                        'compileCython.py',
-#                        fileToCompile,
-#                        'build_ext',
-#                        '--inplace'
-#                        ]
-#
-#             output = subprocess.check_output(' '.join(command), shell=True, cwd=os.getcwd() + compiledModuleSubfolder)
-#
-#             try:
-#
-#                 command = ['cython',
-#                            fileToCompile,
-#                            '-a'
-#                            ]
-#
-#                 output = subprocess.check_output(' '.join(command), shell=True,
-#                                                  cwd=os.getcwd() + compiledModuleSubfolder)
-#
-#             except:
-#                 pass
-#
-#         print("Compiled module saved in subfolder: {}".format(compiledModuleSubfolder))
-#
-#         # Command to run compilation script
-#         # python compileCython.py SLIM_BPR_Cython_Epoch.pyx build_ext --inplace
-#
-#         # Command to generate html report
-#         # cython -a SLIM_BPR_Cython_Epoch.pyx
-#
-#     def normalized_SLIM(self):
-#         self.W_sparse = self.W_sparse / self.W_sparse.max() * 0.55
-
-
-start_time = time.time()
+start_time_kernel = time.time()
 if __name__ == '__main__':
     dataReader = RS_Data_Loader(distr_split=False)
 
@@ -2929,21 +2787,21 @@ if __name__ == '__main__':
     URM_validation = dataReader.get_URM_validation()
     URM_test = dataReader.get_URM_test()
     ICM = dataReader.get_ICM()
+    UCM_artist = dataReader.get_tfidf_artists()
 
     evaluator = SequentialEvaluator(URM_test, URM_train, exclude_seen=True)
     evaluator_validation_wrapper = EvaluatorWrapper(evaluator)
 
     recommender_class = HybridRecommender
 
-    n_cases = 100
+    n_cases = 150
     metric_to_optimize = 'MAP'
 
     recommender_list = [
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
-        ItemKNNCFRecommender,
+        UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
         P3alphaRecommender,
@@ -2951,8 +2809,8 @@ if __name__ == '__main__':
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         # SLIM_BPR_Cython,
+        ItemKNNCFRecommenderFAKESLIM,
         # PureSVDRecommender,
-
         SLIMElasticNetRecommender
     ]
 
@@ -2963,64 +2821,43 @@ if __name__ == '__main__':
     parameterSearch = BayesianSearch(recommender_class, evaluator_validation_wrapper)
 
     hyperparamethers_range_dictionary = {}
-    hyperparamethers_range_dictionary["weights1"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights2"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights3"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights4"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights5"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights6"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights7"] = range(0, 1)
-    # hyperparamethers_range_dictionary["weights8"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights1"] = range(0, 2)
+    hyperparamethers_range_dictionary["weights2"] = range(0, 2)
+    hyperparamethers_range_dictionary["weights3"] = range(0, 2)
+    hyperparamethers_range_dictionary["weights4"] = range(0, 2)
+    hyperparamethers_range_dictionary["weights5"] = range(0, 2)
+    hyperparamethers_range_dictionary["weights6"] = range(0, 2)
+    hyperparamethers_range_dictionary["weights7"] = range(0, 2)
+    hyperparamethers_range_dictionary["weights8"] = range(0, 2)
+
+    hyperparamethers_range_dictionary["filter_top_pop_len"] = list(range(0, 30, 2))
     # hyperparamethers_range_dictionary["weights7"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["weights8"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["pop1"] = list(range(80, 200))  # list(np.linspace(0, 1, 11))
     # hyperparamethers_range_dictionary["pop2"] = list(range(250, 450))  # list(np.linspace(0, 1, 11))
 
 
-    lambda_i = 0.03868852215907281
-    lambda_j = 0.020779886132281544
-    old_similrity_matrix = None
-    num_factors = 95
-    l1_ratio = 1e-06
-
-    alphaRP3_1 = 0.457685370741483
-    betaRP_1 = 0.289432865731463
-    lambda_i_1 = 0.6892356201296567
-    lambda_j_1 = 0.35586838378889707
-
-    alphaRP3_3 = 0.49774549098196397
-    betaRP_3 = 0.2333486973947896
-    lambda_i_3 = 0.10467537896611145
-    lambda_j_3 = 0.004454204678491891
-    num_factors_3 = 95
-
-    dynamic_best = [
-        [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731, 0.4112843940329439],
-        [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388, 0.6888103295594851],
-        [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613, 0.5873532658846817]
-    ]
-
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
-                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": False},
+                             DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": False,
+                                                                       "UCM_train": UCM_artist},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {
-                                 "topK": [10, 220, 150, 160, 61, 236, 40],
-                                 "shrink": [180, 0, 15, 2, -1, -1, -1],
-                                 "pop": [130, 346],
-                                 "weights": [1, 1, 1, 1],
-                                 "force_compute_sim": False,
-                                 "feature_weighting_index": 0,
-                                 "old_similarity_matrix": old_similrity_matrix,
-                                 "epochs": 50,
-                                 "lambda_i": [lambda_i_3],
-                                 "lambda_j": [lambda_j_3],
-                                 "num_factors": num_factors_3,
-                                 'alphaP3': [0.5203791059230995],
-                                 'alphaRP3': [0.3855771543086173],
-                                 'betaRP': [0.5217815631262526],
-                                 'l1_ratio': 2.726530612244898e-05,
-                                 "weights_to_dweights": -1,
-                                 "tfidf": [True, False]},
+                                 "topK": [130, 210, 170, 160, 101, 391, 761, 490],
+                                 "shrink": [2, 90, 2, 2, -1, -1, -1, -1],
+                                 "pop": [280],
+                                 "weights": [1, 1, 1, 1, 1, 1, 1],
+                                 "final_weights": [1, 1],
+                                 "force_compute_sim": False,  # not evaluate_algorithm,
+                                 "feature_weighting_index": 1,
+                                 "epochs": 150,
+                                 'lambda_i': [0.0], 'lambda_j': [1.0153577332223556e-08], 'SLIM_lr': [0.1],
+                                 'alphaP3': [0.7649722376036994],
+                                 'alphaRP3': [0.8582865731462926],
+                                 'betaRP': [0.2814208416833668],
+                                 'l1_ratio': 3.020408163265306e-06,
+                                 'alpha': 0.0014681984611695231,
+                                 'tfidf': [True],
+                                 "weights_to_dweights": -1},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path
@@ -3029,6 +2866,6 @@ if __name__ == '__main__':
                                              n_cases=n_cases,
                                              metric=metric_to_optimize,  # do not put output path
                                              output_root_path="Hybrid",
-                                             init_points=90
+                                             init_points=60
                                              )
     print(best_parameters)

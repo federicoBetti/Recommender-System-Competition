@@ -337,7 +337,7 @@ BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 1, 'similar
 BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 19, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.0722269768361046 - time: 2019-01-07 19:19:22.823914
 BayesianSearch: Config is suboptimal. Config: {'topK': 190, 'shrink': 3, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07436410281242123 - time: 2019-01-07 19:22:06.787353
 BayesianSearch: Best config is: Config {'topK': 170, 'shrink': 2, 'similarity': 'cosine', 'normalize': True, 'tfidf': True}, MAP value is 0.0757
-
+PRIMA USAVO QUESTO DI ICF!!!!
 
 BayesianSearch: New best config found. Config: {'topK': 370, 'shrink': 134, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06191760315885614 - time: 2019-01-08 13:04:33.566436
 BayesianSearch: New best config found. Config: {'topK': 270, 'shrink': 82, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06390687350403126 - time: 2019-01-08 13:04:46.320968
@@ -390,3 +390,133 @@ BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 106, 'simi
 BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 6, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07179100836167783 - time: 2019-01-08 13:17:56.207333
 BayesianSearch: Config is suboptimal. Config: {'topK': 280, 'shrink': 0, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.07135806520849065 - time: 2019-01-08 13:18:13.041619
 BayesianSearch: Best config is: Config {'topK': 430, 'shrink': 0, 'similarity': 'cosine', 'normalize': True, 'tfidf': True}, MAP value is 0.0719
+
+
+
+woth new division
+BayesianSearch: New best config found. Config: {'topK': 300, 'shrink': 30, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07099930467372105 - time: 2019-01-09 16:38:15.987236
+BayesianSearch: Config is suboptimal. Config: {'topK': 380, 'shrink': 92, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06318918986205599 - time: 2019-01-09 16:39:14.691704
+BayesianSearch: Config is suboptimal. Config: {'topK': 410, 'shrink': 40, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.0702386598481982 - time: 2019-01-09 16:39:59.183603
+BayesianSearch: Config is suboptimal. Config: {'topK': 430, 'shrink': 144, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.05358197401738463 - time: 2019-01-09 16:40:46.450850
+BayesianSearch: Config is suboptimal. Config: {'topK': 130, 'shrink': 42, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06313154993386239 - time: 2019-01-09 16:41:26.985433
+BayesianSearch: Config is suboptimal. Config: {'topK': 180, 'shrink': 112, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06284385629251706 - time: 2019-01-09 16:42:10.472606
+BayesianSearch: Config is suboptimal. Config: {'topK': 80, 'shrink': 108, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.05659451796737211 - time: 2019-01-09 16:42:51.004251
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 104, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06462991950113363 - time: 2019-01-09 16:43:37.429991
+BayesianSearch: Config is suboptimal. Config: {'topK': 350, 'shrink': 108, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.05396250563744005 - time: 2019-01-09 16:44:14.483617
+BayesianSearch: Config is suboptimal. Config: {'topK': 290, 'shrink': 126, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.05433843227198279 - time: 2019-01-09 16:44:59.402132
+BayesianSearch: Config is suboptimal. Config: {'topK': 110, 'shrink': 38, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06328091668241369 - time: 2019-01-09 16:45:39.858346
+BayesianSearch: Config is suboptimal. Config: {'topK': 150, 'shrink': 114, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.06695677858087676 - time: 2019-01-09 16:46:17.191728
+BayesianSearch: Config is suboptimal. Config: {'topK': 90, 'shrink': 2, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.05626875881834211 - time: 2019-01-09 16:46:54.722606
+BayesianSearch: Config is suboptimal. Config: {'topK': 320, 'shrink': 114, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06343960350529095 - time: 2019-01-09 16:47:44.249776
+BayesianSearch: Config is suboptimal. Config: {'topK': 50, 'shrink': 102, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.06726170553036025 - time: 2019-01-09 16:48:23.517318
+BayesianSearch: Config is suboptimal. Config: {'topK': 300, 'shrink': 128, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06349084912761398 - time: 2019-01-09 16:49:10.251991
+BayesianSearch: Config is suboptimal. Config: {'topK': 140, 'shrink': 94, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06300870170382968 - time: 2019-01-09 16:49:51.814162
+BayesianSearch: Config is suboptimal. Config: {'topK': 190, 'shrink': 144, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06280443176807768 - time: 2019-01-09 16:50:27.616749
+BayesianSearch: Config is suboptimal. Config: {'topK': 160, 'shrink': 146, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06284595686885876 - time: 2019-01-09 16:51:01.705575
+BayesianSearch: Config is suboptimal. Config: {'topK': 110, 'shrink': 124, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06328091668241369 - time: 2019-01-09 16:51:41.511331
+BayesianSearch: New best config found. Config: {'topK': 430, 'shrink': 0, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.07192039997480455 - time: 2019-01-09 16:53:16.628231
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 148, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06439528906840487 - time: 2019-01-09 16:54:50.887917
+BayesianSearch: Config is suboptimal. Config: {'topK': 240, 'shrink': 0, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.07127701551083375 - time: 2019-01-09 16:56:32.169115
+BayesianSearch: Config is suboptimal. Config: {'topK': 220, 'shrink': 54, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06493526382590065 - time: 2019-01-09 16:58:00.760546
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 64, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.0649333382149156 - time: 2019-01-09 16:59:42.040064
+BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 20, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06646701595175096 - time: 2019-01-09 17:01:17.532168
+BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 64, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06378509364764431 - time: 2019-01-09 17:02:48.141257
+BayesianSearch: Config is suboptimal. Config: {'topK': 340, 'shrink': 0, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.05400694623960686 - time: 2019-01-09 17:04:15.733834
+BayesianSearch: Config is suboptimal. Config: {'topK': 180, 'shrink': 16, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07153072223796897 - time: 2019-01-09 17:05:58.999391
+BayesianSearch: Config is suboptimal. Config: {'topK': 190, 'shrink': 24, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06698472110418224 - time: 2019-01-09 17:07:32.182872
+BayesianSearch: Config is suboptimal. Config: {'topK': 110, 'shrink': 138, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06424046422272604 - time: 2019-01-09 17:08:20.964294
+BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 104, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06305784939531373 - time: 2019-01-09 17:09:09.597968
+BayesianSearch: Config is suboptimal. Config: {'topK': 130, 'shrink': 40, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07088370888447947 - time: 2019-01-09 17:09:54.490088
+BayesianSearch: Config is suboptimal. Config: {'topK': 70, 'shrink': 88, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06502624124464584 - time: 2019-01-09 17:10:34.519258
+BayesianSearch: Config is suboptimal. Config: {'topK': 250, 'shrink': 82, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.0640115420760898 - time: 2019-01-09 17:11:12.992128
+BayesianSearch: Config is suboptimal. Config: {'topK': 180, 'shrink': 0, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.06930396034895428 - time: 2019-01-09 17:11:53.054591
+BayesianSearch: Config is suboptimal. Config: {'topK': 360, 'shrink': 52, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06422153932035787 - time: 2019-01-09 17:12:32.660080
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 20, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.06917295822310379 - time: 2019-01-09 17:13:10.809547
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 40, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.06866224434681259 - time: 2019-01-09 17:13:44.826237
+BayesianSearch: Config is suboptimal. Config: {'topK': 350, 'shrink': 148, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06209219028722599 - time: 2019-01-09 17:14:15.909884
+BayesianSearch: Config is suboptimal. Config: {'topK': 120, 'shrink': 110, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06441540342340639 - time: 2019-01-09 17:14:48.872250
+BayesianSearch: Config is suboptimal. Config: {'topK': 140, 'shrink': 68, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.06910929623330804 - time: 2019-01-09 17:15:21.388799
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 124, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.06671463411753568 - time: 2019-01-09 17:15:54.679256
+BayesianSearch: New best config found. Config: {'topK': 260, 'shrink': 12, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07199619735764647 - time: 2019-01-09 17:16:30.378378
+BayesianSearch: Config is suboptimal. Config: {'topK': 360, 'shrink': 26, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.0658119967876039 - time: 2019-01-09 17:17:06.284423
+BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 44, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06183430450050383 - time: 2019-01-09 17:17:40.742468
+BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 38, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07042713570798649 - time: 2019-01-09 17:18:15.958294
+BayesianSearch: Config is suboptimal. Config: {'topK': 180, 'shrink': 122, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06395986999244135 - time: 2019-01-09 17:18:46.833879
+BayesianSearch: Config is suboptimal. Config: {'topK': 440, 'shrink': 128, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06288932489292011 - time: 2019-01-09 17:19:19.938846
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 94, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.06764420302658085 - time: 2019-01-09 17:19:52.364941
+BayesianSearch: Best config is: Config {'topK': 260, 'shrink': 12, 'similarity': 'cosine', 'normalize': True, 'tfidf': False}, MAP value is 0.0720
+BayesianSearch: New best config found. Config: {'topK': 195, 'shrink': 39, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06574454168241366 - time: 2019-01-10 11:06:59.007487
+BayesianSearch: Config is suboptimal. Config: {'topK': 225, 'shrink': 31, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.054792417076089624 - time: 2019-01-10 11:07:09.107036
+BayesianSearch: New best config found. Config: {'topK': 95, 'shrink': 15, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06855543416162754 - time: 2019-01-10 11:07:17.627021
+BayesianSearch: New best config found. Config: {'topK': 210, 'shrink': 33, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07100237967687036 - time: 2019-01-10 11:07:27.612286
+BayesianSearch: Config is suboptimal. Config: {'topK': 170, 'shrink': 43, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06282395234945837 - time: 2019-01-10 11:07:36.083416
+BayesianSearch: Config is suboptimal. Config: {'topK': 160, 'shrink': 6, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.07090389495149887 - time: 2019-01-10 11:07:45.417797
+BayesianSearch: New best config found. Config: {'topK': 130, 'shrink': 5, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07120008023116645 - time: 2019-01-10 11:07:55.089804
+BayesianSearch: Config is suboptimal. Config: {'topK': 80, 'shrink': 36, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07027846653754094 - time: 2019-01-10 11:08:03.690864
+BayesianSearch: Config is suboptimal. Config: {'topK': 215, 'shrink': 39, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06293120658541204 - time: 2019-01-10 11:08:13.304710
+BayesianSearch: New best config found. Config: {'topK': 215, 'shrink': 3, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.0725396919249179 - time: 2019-01-10 11:08:23.210761
+BayesianSearch: Config is suboptimal. Config: {'topK': 75, 'shrink': 23, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06382461673280404 - time: 2019-01-10 11:08:31.436332
+BayesianSearch: Config is suboptimal. Config: {'topK': 160, 'shrink': 32, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.05530562608654569 - time: 2019-01-10 11:08:41.450508
+BayesianSearch: Config is suboptimal. Config: {'topK': 110, 'shrink': 46, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.0705376812956663 - time: 2019-01-10 11:08:50.413320
+BayesianSearch: Config is suboptimal. Config: {'topK': 180, 'shrink': 1, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07027871998614259 - time: 2019-01-10 11:09:00.250699
+BayesianSearch: Config is suboptimal. Config: {'topK': 245, 'shrink': 18, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06283321236457551 - time: 2019-01-10 11:09:10.523071
+BayesianSearch: Config is suboptimal. Config: {'topK': 190, 'shrink': 43, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.0550482164745527 - time: 2019-01-10 11:09:20.282330
+BayesianSearch: Config is suboptimal. Config: {'topK': 175, 'shrink': 15, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.05503217254031241 - time: 2019-01-10 11:09:30.165765
+BayesianSearch: Config is suboptimal. Config: {'topK': 180, 'shrink': 3, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06284385629251706 - time: 2019-01-10 11:09:41.408656
+BayesianSearch: Config is suboptimal. Config: {'topK': 135, 'shrink': 33, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.055516525966868166 - time: 2019-01-10 11:09:51.569915
+BayesianSearch: Config is suboptimal. Config: {'topK': 120, 'shrink': 46, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.0634459177847065 - time: 2019-01-10 11:10:03.331000
+BayesianSearch: Config is suboptimal. Config: {'topK': 225, 'shrink': 21, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07142239018014583 - time: 2019-01-10 11:10:15.472040
+BayesianSearch: Config is suboptimal. Config: {'topK': 120, 'shrink': 36, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.0634459177847065 - time: 2019-01-10 11:10:25.779360
+BayesianSearch: Config is suboptimal. Config: {'topK': 120, 'shrink': 35, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.05587060763101517 - time: 2019-01-10 11:10:35.424784
+BayesianSearch: Config is suboptimal. Config: {'topK': 130, 'shrink': 3, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06313154993386239 - time: 2019-01-10 11:10:44.781255
+BayesianSearch: Config is suboptimal. Config: {'topK': 130, 'shrink': 45, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07070508638825879 - time: 2019-01-10 11:10:54.396147
+BayesianSearch: Config is suboptimal. Config: {'topK': 230, 'shrink': 2, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.054658629913076275 - time: 2019-01-10 11:11:05.201063
+BayesianSearch: Config is suboptimal. Config: {'topK': 130, 'shrink': 14, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07187750507054651 - time: 2019-01-10 11:11:16.523842
+BayesianSearch: Config is suboptimal. Config: {'topK': 170, 'shrink': 49, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06282395234945837 - time: 2019-01-10 11:11:25.975344
+BayesianSearch: Config is suboptimal. Config: {'topK': 210, 'shrink': 13, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07192103281683031 - time: 2019-01-10 11:11:37.226819
+BayesianSearch: Config is suboptimal. Config: {'topK': 125, 'shrink': 33, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07085729676870724 - time: 2019-01-10 11:11:48.186802
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 0, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06647438235386754 - time: 2019-01-10 11:12:05.225441
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 49, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.065281665186445 - time: 2019-01-10 11:12:25.392111
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 14, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06788419351536912 - time: 2019-01-10 11:12:44.813184
+BayesianSearch: Config is suboptimal. Config: {'topK': 245, 'shrink': 49, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.0648883897549761 - time: 2019-01-10 11:13:05.720269
+BayesianSearch: Config is suboptimal. Config: {'topK': 90, 'shrink': 49, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06559103785588304 - time: 2019-01-10 11:13:25.909655
+BayesianSearch: Config is suboptimal. Config: {'topK': 190, 'shrink': 27, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06658883267195752 - time: 2019-01-10 11:13:45.834216
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 35, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06588418057130264 - time: 2019-01-10 11:14:02.786792
+BayesianSearch: Config is suboptimal. Config: {'topK': 75, 'shrink': 5, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.07131812037037022 - time: 2019-01-10 11:14:21.528093
+BayesianSearch: Config is suboptimal. Config: {'topK': 110, 'shrink': 26, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06720606588561334 - time: 2019-01-10 11:14:41.647829
+BayesianSearch: Config is suboptimal. Config: {'topK': 110, 'shrink': 42, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06611711416603686 - time: 2019-01-10 11:15:02.097566
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 26, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06665869592466618 - time: 2019-01-10 11:15:18.679750
+BayesianSearch: Config is suboptimal. Config: {'topK': 90, 'shrink': 32, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06673464473104049 - time: 2019-01-10 11:15:36.682520
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 43, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.06877314184933209 - time: 2019-01-10 11:15:53.858312
+BayesianSearch: Config is suboptimal. Config: {'topK': 75, 'shrink': 0, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.06755887967687073 - time: 2019-01-10 11:16:12.121716
+BayesianSearch: Config is suboptimal. Config: {'topK': 245, 'shrink': 0, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.07136462427563602 - time: 2019-01-10 11:16:33.006613
+BayesianSearch: Config is suboptimal. Config: {'topK': 245, 'shrink': 42, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07027381021667911 - time: 2019-01-10 11:16:54.066320
+BayesianSearch: Config is suboptimal. Config: {'topK': 245, 'shrink': 7, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07174835378873762 - time: 2019-01-10 11:17:14.579495
+BayesianSearch: Config is suboptimal. Config: {'topK': 70, 'shrink': 18, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.0678897897455278 - time: 2019-01-10 11:17:34.328008
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 8, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.057251213199168365 - time: 2019-01-10 11:17:52.776401
+BayesianSearch: Config is suboptimal. Config: {'topK': 60, 'shrink': 49, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.056904988567649264 - time: 2019-01-10 11:18:13.860533
+BayesianSearch: Config is suboptimal. Config: {'topK': 125, 'shrink': 49, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07028469726316425 - time: 2019-01-10 11:18:36.930118
+BayesianSearch: Config is suboptimal. Config: {'topK': 245, 'shrink': 20, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07130521211262257 - time: 2019-01-10 11:19:01.442834
+BayesianSearch: Config is suboptimal. Config: {'topK': 225, 'shrink': 19, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06764360038737702 - time: 2019-01-10 11:19:24.102025
+BayesianSearch: Config is suboptimal. Config: {'topK': 195, 'shrink': 7, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07166995148337098 - time: 2019-01-10 11:19:45.537750
+BayesianSearch: Config is suboptimal. Config: {'topK': 245, 'shrink': 48, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.05459663769211373 - time: 2019-01-10 11:20:06.821252
+BayesianSearch: Config is suboptimal. Config: {'topK': 200, 'shrink': 0, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.070848449845679 - time: 2019-01-10 11:20:29.405946
+BayesianSearch: Config is suboptimal. Config: {'topK': 150, 'shrink': 37, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06597164701436115 - time: 2019-01-10 11:20:51.603479
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 19, 'similarity': 'cosine', 'normalize': False, 'tfidf': True} - MAP results: 0.06384136227639167 - time: 2019-01-10 11:21:11.614961
+BayesianSearch: Config is suboptimal. Config: {'topK': 155, 'shrink': 0, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.07054882086167791 - time: 2019-01-10 11:21:34.006445
+BayesianSearch: Config is suboptimal. Config: {'topK': 105, 'shrink': 9, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.07001709695452248 - time: 2019-01-10 11:21:56.306921
+BayesianSearch: Config is suboptimal. Config: {'topK': 160, 'shrink': 46, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06529865847820591 - time: 2019-01-10 11:22:20.297603
+BayesianSearch: Config is suboptimal. Config: {'topK': 65, 'shrink': 40, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06620446193940524 - time: 2019-01-10 11:22:40.916834
+BayesianSearch: Config is suboptimal. Config: {'topK': 40, 'shrink': 20, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.06917295822310379 - time: 2019-01-10 11:23:01.087887
+BayesianSearch: Config is suboptimal. Config: {'topK': 115, 'shrink': 34, 'similarity': 'cosine', 'normalize': True, 'tfidf': True} - MAP results: 0.06664168946837977 - time: 2019-01-10 11:23:22.931916
+BayesianSearch: Config is suboptimal. Config: {'topK': 150, 'shrink': 23, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07168639355001245 - time: 2019-01-10 11:23:43.224834
+BayesianSearch: Config is suboptimal. Config: {'topK': 60, 'shrink': 31, 'similarity': 'cosine', 'normalize': False, 'tfidf': False} - MAP results: 0.05685718775195261 - time: 2019-01-10 11:24:02.672598
+BayesianSearch: Config is suboptimal. Config: {'topK': 215, 'shrink': 49, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.0699545664525066 - time: 2019-01-10 11:24:22.842234
+BayesianSearch: Config is suboptimal. Config: {'topK': 70, 'shrink': 11, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07104853412383468 - time: 2019-01-10 11:24:42.258947
+BayesianSearch: Config is suboptimal. Config: {'topK': 185, 'shrink': 31, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07113583969513709 - time: 2019-01-10 11:25:03.372099
+BayesianSearch: Config is suboptimal. Config: {'topK': 130, 'shrink': 28, 'similarity': 'cosine', 'normalize': True, 'tfidf': False} - MAP results: 0.07115807256235801 - time: 2019-01-10 11:25:26.040801
+BayesianSearch: Best config is: Config {'topK': 215, 'shrink': 3, 'similarity': 'cosine', 'normalize': True, 'tfidf': True}, MAP value is 0.0725
+
+BayesianSearch: Best config is: Config {'topK': 170, 'shrink': 2, 'similarity': 'cosine', 'normalize': True, 'tfidf': True}, MAP value is 0.0757
+PRIMA USAVO QUESTO DI ICF!!!!
+

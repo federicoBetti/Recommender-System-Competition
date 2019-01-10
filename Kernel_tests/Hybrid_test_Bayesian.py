@@ -462,6 +462,13 @@ def create_empty_metrics_dict():
     return empty_dict
 
 
+def tracks_popularity(URM_train):
+    URM_train_csc = URM_train.copy().tocsc()
+    songs_popularity = np.diff(URM_train_csc.indptr)
+    del URM_train_csc
+    return songs_popularity
+
+
 class Evaluator(object):
     """Abstract Evaluator"""
 
@@ -593,7 +600,7 @@ class SequentialEvaluator(Evaluator):
             results_dict[cutoff] = create_empty_metrics_dict()
 
         n_users_evaluated = 0
-
+        dict_song_pop = tracks_popularity(self.URM_train)
         data_stats_pop = {}
         data_stats_len = {}
         # Start from -block_size to ensure it to be 0 at the first block
@@ -611,9 +618,9 @@ class SequentialEvaluator(Evaluator):
             recommended_items_batch_list = recommender_object.recommend(test_user_batch_array,
                                                                         remove_seen_flag=self.exclude_seen,
                                                                         cutoff=self.max_cutoff,
-                                                                        remove_top_pop_flag=False,
-                                                                        remove_CustomItems_flag=self.ignore_items_flag
-                                                                        )
+                                                                        remove_top_pop_flag=True,
+                                                                        remove_CustomItems_flag=self.ignore_items_flag,
+                                                                        dict_pop=dict_song_pop)
 
             # Compute recommendation quality for each user in batch
             for batch_user_index in range(len(recommended_items_batch_list)):
@@ -782,8 +789,13 @@ class RS_Data_Loader(object):
             self.URM_validation = sps.load_npz(
                 os.path.join("../input/recommendersystem2018challengepolimi", "URM_test_keep_distrib.npz"))
 
-            with open(os.path.join("../input/recommendersystem2018challengepolimi", "UserCBF_artists.pkl"), 'rb') as handle:
+            with open(os.path.join("../input/recommendersystem2018challengepolimi", "UserCBF_artists.pkl"),
+                      'rb') as handle:
                 self.UCB_tfidf_artists = pickle.load(handle)
+
+            with open(os.path.join("../input/recommendersystem2018challengepolimi", "URM_pagerank_evaluate.pkl"),
+                      'rb') as handle:
+                self.page_rank_matrix = pickle.load(handle)
             print("Saved matrices correctly loaded!")
         except FileNotFoundError:
             if kernel:
@@ -2066,6 +2078,62 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
             self.W = self.W.toarray()
 
 
+class ItemKNNCFPageRankRecommender(SimilarityMatrixRecommender, Recommender):
+    """ ItemKNN recommender"""
+
+    RECOMMENDER_NAME = "ItemKNNCFPageRankRecommender"
+
+    def __init__(self, URM_train, URM_PageRank_train, sparse_weights=True):
+        super(ItemKNNCFPageRankRecommender, self).__init__()
+
+        # CSR is faster during evaluation
+        self.URM_train = URM_train
+
+        self.URM_PageRank_train = check_matrix(URM_PageRank_train, 'csr')
+
+        self.dataset = None
+
+        self.sparse_weights = sparse_weights
+
+        self.W_sparse = None
+
+    def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True, tfidf=True,
+            **similarity_args):
+
+        self.topK = topK
+        self.shrink = shrink
+
+        if not force_compute_sim:
+            found = True
+            try:
+                with open(os.path.join("ItemCFPageRankMatrix.pkl"), 'rb') as handle:
+                    (topK_new, shrink_new, W_sparse_new) = pickle.load(handle)
+            except FileNotFoundError:
+                print("File {} not found".format(os.path.join("IntermediateComputations", "ItemCFPageRankMatrix.pkl")))
+                found = False
+
+            if found and self.topK == topK_new and self.shrink == shrink_new:
+                self.W_sparse = W_sparse_new
+                print("Saved Item CF Similarity Matrix Used!")
+                return
+
+        sim_matrix_pre = self.URM_PageRank_train
+
+        print()
+        similarity = Compute_Similarity(sim_matrix_pre, shrink=shrink, topK=topK, normalize=normalize,
+                                        similarity=similarity, **similarity_args)
+
+        if self.sparse_weights:
+            self.W_sparse = similarity.compute_similarity()
+            print('Similarity Item Page Rank CF computed')
+            with open(os.path.join("ItemCFPageRankMatrix.pkl"), 'wb') as handle:
+                pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
+                print("Item CF PageRank similarity matrix saved")
+        else:
+            self.W = similarity.compute_similarity()
+            self.W = self.W.toarray()
+
+
 class ItemKNNCFRecommenderFAKESLIM(SimilarityMatrixRecommender, Recommender):
     """ ItemKNN recommender"""
 
@@ -2382,7 +2450,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     RECOMMENDER_NAME = "ItemKNNCFRecommender"
 
-    def __init__(self, URM_train, ICM, recommender_list, UCM_train=None, dynamic=False, d_weights=None, weights=None,
+    def __init__(self, URM_train, ICM, recommender_list, UCM_train=None, URM_PageRank_train=None, dynamic=False,
+                 d_weights=None, weights=None,
                  URM_validation=None, sparse_weights=True, onPop=True, moreHybrids=False):
         super(Recommender, self).__init__()
 
@@ -2427,6 +2496,9 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 self.recommender_list.append(recommender(self.UCM_train, URM_train))
             elif recommender.__class__ in [HybridRecommender]:
                 self.recommender_list.append(recommender)
+
+            elif recommender in [ItemKNNCFPageRankRecommender]:
+                self.recommender_list.append(recommender(self.URM_train, URM_PageRank_train))
 
             else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
                 self.recommender_list.append(recommender(URM_train))
@@ -2511,20 +2583,10 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     def change_weights(self, level, pop):
         if level < pop[0]:
-            # return [0, 0, 0, 0, 0, 0, 0, 0]
             return self.d_weights[0]
-            # return [0.45590938562950867, 0, 0.23905548168035573, 0.017005850670624212, 0.9443556793576228, 0.19081956929601618, 0, 0.11267140391070507]
 
-        elif pop[0] < level < pop[1]:
-            # return self.weights
-            # return [0, 0, 0, 0, 0, 0, 0, 0]
-            # return [0.973259052781316, 0, 0.8477517414017691, 0.33288193455193427, 0.9696801027638645, 0.4723616073494711, 0, 0.4188403112229081]
-            return self.d_weights[1]
         else:
-            # return self.weights
-            # return [0, 0, 0, 0, 0, 0, 0, 0]
-            return self.d_weights[2]
-            # return [0.9780713488404191, 0, 0.9694246318172682, 0.5703399158380364, 0.9721597253259535, 0.9504112133900943, 0, 0.9034510004379944]
+            return self.d_weights[1]
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=True,
                   remove_CustomItems_flag=False):
@@ -2788,13 +2850,14 @@ if __name__ == '__main__':
     URM_test = dataReader.get_URM_test()
     ICM = dataReader.get_ICM()
     UCM_artist = dataReader.get_tfidf_artists()
+    Page_Rank = dataReader.page_rank_matrix
 
     evaluator = SequentialEvaluator(URM_test, URM_train, exclude_seen=True)
     evaluator_validation_wrapper = EvaluatorWrapper(evaluator)
 
     recommender_class = HybridRecommender
 
-    n_cases = 150
+    n_cases = 100
     metric_to_optimize = 'MAP'
 
     recommender_list = [
@@ -2804,6 +2867,7 @@ if __name__ == '__main__':
         UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
+        ItemKNNCFPageRankRecommender,
         P3alphaRecommender,
         RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
@@ -2830,7 +2894,7 @@ if __name__ == '__main__':
     hyperparamethers_range_dictionary["weights7"] = range(0, 2)
     hyperparamethers_range_dictionary["weights8"] = range(0, 2)
 
-    hyperparamethers_range_dictionary["filter_top_pop_len"] = list(range(0, 30, 2))
+    hyperparamethers_range_dictionary["filter_top_pop_len"] = list(range(0, 30, 10))
     # hyperparamethers_range_dictionary["weights7"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["weights8"] = list(np.linspace(0, 1, 10))  # range(0, 1)
     # hyperparamethers_range_dictionary["pop1"] = list(range(80, 200))  # list(np.linspace(0, 1, 11))
@@ -2839,11 +2903,12 @@ if __name__ == '__main__':
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, ICM, recommender_list],
                              DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {"URM_validation": URM_test, "dynamic": False,
-                                                                       "UCM_train": UCM_artist},
+                                                                       "UCM_train": UCM_artist,
+                                                                       "URM_PageRank_train": Page_Rank},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {
-                                 "topK": [130, 210, 170, 160, 101, 391, 761, 490],
-                                 "shrink": [2, 90, 2, 2, -1, -1, -1, -1],
+                                 "topK": [130, 210, 215, 185, 330, 101, 391, 761, 490],
+                                 "shrink": [2, 90, 3, 28, 2, -1, -1, -1, -1],
                                  "pop": [280],
                                  "weights": [1, 1, 1, 1, 1, 1, 1],
                                  "final_weights": [1, 1],
@@ -2866,6 +2931,6 @@ if __name__ == '__main__':
                                              n_cases=n_cases,
                                              metric=metric_to_optimize,  # do not put output path
                                              output_root_path="Hybrid",
-                                             init_points=60
+                                             init_points=120
                                              )
     print(best_parameters)

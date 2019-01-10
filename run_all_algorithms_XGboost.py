@@ -5,7 +5,7 @@ from scipy import sparse
 from sklearn.datasets import dump_svmlight_file
 
 from Dataset.RS_Data_Loader import RS_Data_Loader
-from KNN.HybridRecommenderXGBoost import HybridRecommenderXGBoost
+from KNN.HybridRecommenderXGBoost import HybridRecommenderXGBoost, HybridRecommenderXGBoost_Fede
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 
@@ -87,19 +87,6 @@ if __name__ == '__main__':
     d_weights = [
         0.6708034395599534, 0.4180455311930482, 0.013121631586130333, 0.9606783176615321, 0.9192576193987754
     ]
-    #
-    # d_best = [[0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731,
-    #            0.4112843940329439],
-    #           [0.2, 0.012499871230102988, 0.020242981888115352, 0.9969708006657074, 0.9999132876156388,
-    #            0.6888103295594851],
-    #           [0.2, 0.10389111810225915, 0.14839466129917822, 0.866992903043857, 0.07010619211847613,
-    #            0.5873532658846817]]
-
-    # BEST RESULT : d_weights = [[0.5, 0.5, 0], [0.4, 0.4, 0.2], [0, 0.8, 0.2], [0, 0.5, 0.5]]
-
-    # Dynamics for Hybrid with Top_N. usefull for testing where each recommender works better
-    # d_weights = [[2, 4, 0], [1, 4, 5], [0, 2, 8]]
-
 
     evaluator = SequentialEvaluator(URM_test, URM_train, exclude_seen=True)
 
@@ -120,54 +107,16 @@ if __name__ == '__main__':
         transfer_matrix = None
 
     try:
-        recommender_class = HybridRecommenderXGBoost
+        recommender_class = HybridRecommenderXGBoost_Fede
         print("Algorithm: {}".format(recommender_class))
 
         onPop = True
 
         # XGBoost
         model = None
-        # try:
-        if XGB_model_ready:
 
-            with open(os.path.join("Dataset", "XGBoostTraining.pkl"), 'rb') as handle:
-                X_train = pickle.load(handle)
-
-            with open(os.path.join("Dataset", "XGBoostLabels.pkl"), 'rb') as handle:
-                y_train = pickle.load(handle)
-
-            y_train = y_train.reshape(-1, )
-
-            model = RandomForestClassifier(n_estimators=100, max_depth=2,
-                                        random_state = 0)
-            model.fit(X_train, y_train)
-
-
-            # print("XGBoost training...")
-            # print("X_train type: {}, shape: {}".format(type(X_train), X_train.shape))
-            # print("y_train shape: {}".format(y_train.shape))
-            # print("N classes: {}".format(y_train[-1]))
-            #
-            # dump_svmlight_file(X_train, y_train, 'dtrain.svm', zero_based=True)
-            # dtrain = xgb.DMatrix('dtrain.svm')
-            # # dtrain = xgb.DMatrix(X_train, label=y_train)
-            #
-            # param = {
-            #     'max_depth': 5,  # the maximum depth of each tree
-            #     'eta': 0.3,  # the training step for each iteration
-            #     'silent': 1,  # logging mode - quiet
-            #     'objective': 'multi:softprob',  # error evaluation for multiclass training
-            #     'num_class': y_train[-1]}  # the number of classes that exist in this datset
-            # num_round = 20  # the number of training iterations
-            #
-            # model = xgb.train(param, dtrain, num_round, verbose_eval=2,
-            #                   evals=[(dtrain, 'train')])
-            # # except:
-            # XGB_model_ready = False
-
-        # On pop it used to choose if have dynamic weights for
-        recommender = recommender_class(URM_train, ICM, recommender_list, dataReader.tracks,
-                                        XGB_model_ready=XGB_model_ready,
+        recommender = recommender_class(URM_train, ICM, recommender_list, tracks=dataReader.tracks,
+                                        XGB_model_ready=False,
                                         XGBoost_model=model,
                                         dynamic=False,
                                         d_weights=d_weights, UCM_train=UCM_tfidf,
@@ -176,55 +125,6 @@ if __name__ == '__main__':
         # dtrain = xgb.DMatrix(URM_train, label=)
         # dtest = xgb.DMatrix(X_test, label=y_test)
 
-        lambda_i = 0.1
-        lambda_j = 0.05
-        old_similrity_matrix = None
-        num_factors = 395
-        l1_ratio = 1e-06
-
-        # Variabili secondo intervallo
-        alphaRP3_2 = 0.9223827655310622
-        betaRP3_2 = 0.2213306613226453
-        num_factors_2 = 391
-
-        # UserCBF, ItemCF, UserCF, P3alpha, RP3b, SLIM, PurSVD
-        #
-        # Item
-        # Collaborative: Best
-        # config is: Config
-        # {'top1': 180, 'shrink1': 2}, MAP
-
-        # User
-        # Collaborative: Best
-        # config is: Config
-        # {'top1': 240, 'shrink1': 19}, MAP
-
-        # PureSVD: Best
-        # config is: Config: {'num_factors': 95} - MAP
-
-        # P3Beta: Best
-        # config is: Config
-        # {'shrink1': 80, 'top1': 151, 'alphaP3': 1.2827139967773968, 'normalize_similarity': False}, MAP
-
-        # RP3Beta: Best
-        # config is: Config
-        # {'top1': 91, 'shrink1': -1, 'alphaRP3': 0.49774549098196397, 'betaRP': 0.2333486973947896}, MAP
-
-        # SLIM_BPR: Best
-        # config is: Config
-        # {'top1': 311, 'lambda_i': 0.10467537896611145, 'lambda_j': 0.004454204678491891, 'shrink1': -1}, MAP
-
-        # Item
-        # Content: Schifo
-
-        # User
-        # Content: {'top1': 250, 'shrink1': 55, 'normalize': False} - MAP
-
-        # ElasticNet: New
-        # best
-        # config
-        # found.Config: {'top1': 50, 'l1_ratio': 1e-06, 'shrink1': -1} - MAP
-
         recommender.fit(**{
             "topK": [15, 595, 105, 15, 20],
             "shrink": [210, 1, 30, -1, -1],
@@ -232,14 +132,14 @@ if __name__ == '__main__':
             "weights": d_weights,
             "force_compute_sim": False,
             "feature_weighting_index": 0,
-            "old_similarity_matrix": old_similrity_matrix,
+            "old_similarity_matrix": None,
             "epochs": 1, "lambda_i": [0.10467537896611145],
             "lambda_j": [0.004454204678491891],  # SOLO ULTIMO HA SLIM
             "num_factors": [395, 391, 95],
             'alphaP3': [0.7100641282565131, 1.2827139967773968],
             'alphaRP3': [0.457685370741483, 0.9223827655310622, 0.49774549098196397],
             'betaRP': [0.289432865731463, 0.2213306613226453, 0.2333486973947896],
-            'l1_ratio': l1_ratio,
+            'l1_ratio': 123,
             "weights_to_dweights": -1})
 
         print("Starting Evaluations...")
@@ -249,8 +149,45 @@ if __name__ == '__main__':
                                                                                                 plot_stats=False,
                                                                                                 onPop=onPop)
 
-        print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
-                                                    results_run_string))
+        print("Algorithm without XGboost: {}, results: \n{}".format(
+            [rec.__class__ for rec in recommender.recommender_list],
+            results_run_string))
+
+        '''
+        train the model and rerun the evaluation
+        '''
+        X_train = recommender.trainXGBoost
+        Y_train = recommender.label_XGboost
+        print("XGBoost training...")
+        print("X_train type: {}, shape: {}".format(type(X_train), X_train.shape))
+        print("y_train shape: {}".format(Y_train.shape))
+
+        # dump_svmlight_file(X_train, Y_train, 'dtrain.svm', zero_based=True)
+        # dtrain = xgb.DMatrix('dtrain.svm')
+        dtrain = xgb.DMatrix(X_train, label=Y_train)
+
+        param = {
+            'max_depth': 5,  # the maximum depth of each tree
+            'eta': 1,  # the training step for each iteration
+            'silent': 1,  # logging mode - quiet
+            'objective': 'binary:logistic',  # error evaluation for multiclass training
+            'num_class': 1   # the number of classes that exist in this datset
+        }
+        num_round = 60  # the number of training iterations
+
+        model = xgb.train(param, dtrain, num_round, verbose_eval=2)
+
+        recommender.xgb_model_ready = True
+        recommender.xgbModel = model
+
+        results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
+                                                                                                plot_stats=False,
+                                                                                                onPop=onPop)
+
+        print("Algorithm with XGboost: {}, results: \n{}".format(
+            [rec.__class__ for rec in recommender.recommender_list],
+            results_run_string))
+
         logFile.write("Algorithm: {}, results: \n{}\n".format(recommender.__class__, results_run_string))
         logFile.flush()
 

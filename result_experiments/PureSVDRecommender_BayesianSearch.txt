@@ -145,3 +145,47 @@ BayesianSearch: Config is suboptimal. Config: {'num_factors': 325, 'n_iter': 13}
 BayesianSearch: Config is suboptimal. Config: {'num_factors': 365, 'n_iter': 36} - MAP results: 0.06322648966682284 - time: 2018-12-23 14:48:41.916267
 BayesianSearch: Config is suboptimal. Config: {'num_factors': 235, 'n_iter': 13} - MAP results: 0.062451599136185594 - time: 2018-12-23 14:50:01.579099
 BayesianSearch: Best config is: Config {'num_factors': 280, 'n_iter': 2}, MAP value is 0.0685
+
+
+New Division with Artoni Ds
+BayesianSearch: New best config found. Config: {'num_factors': 385, 'n_iter': 41} - MAP results: 0.0487349820956159 - time: 2019-01-09 16:39:43.298478
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 65, 'n_iter': 22} - MAP results: 0.043037382196396815 - time: 2019-01-09 16:40:54.715879
+BayesianSearch: New best config found. Config: {'num_factors': 235, 'n_iter': 25} - MAP results: 0.048859361552028066 - time: 2019-01-09 16:44:03.690553
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 165, 'n_iter': 22} - MAP results: 0.04769729179264275 - time: 2019-01-09 16:46:10.743809
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 225, 'n_iter': 27} - MAP results: 0.04840502950995203 - time: 2019-01-09 16:49:14.082128
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 65, 'n_iter': 37} - MAP results: 0.042952426162131324 - time: 2019-01-09 16:50:36.057206
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 10, 'n_iter': 25} - MAP results: 0.02092001344797171 - time: 2019-01-09 16:51:02.618573
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 170, 'n_iter': 22} - MAP results: 0.04810720271164002 - time: 2019-01-09 16:53:18.174579
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 120, 'n_iter': 7} - MAP results: 0.047725392841395736 - time: 2019-01-09 16:54:18.315865
+BayesianSearch: New best config found. Config: {'num_factors': 375, 'n_iter': 1} - MAP results: 0.05341330374464591 - time: 2019-01-09 16:55:56.877725
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 155, 'n_iter': 21} - MAP results: 0.04799082528659596 - time: 2019-01-09 16:57:51.966195
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 130, 'n_iter': 35} - MAP results: 0.047430578404509816 - time: 2019-01-09 17:00:28.756950
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 130, 'n_iter': 31} - MAP results: 0.047264210569412844 - time: 2019-01-09 17:02:39.101058
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 375, 'n_iter': 42} - MAP results: 0.04872880374464585 - time: 2019-01-09 17:08:33.068318
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 35, 'n_iter': 43} - MAP results: 0.03794413076341637 - time: 2019-01-09 17:09:05.899832
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 290, 'n_iter': 27} - MAP results: 0.04897743340576958 - time: 2019-01-09 17:10:59.791250
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 125, 'n_iter': 15} - MAP results: 0.04756926395187695 - time: 2019-01-09 17:11:34.148796
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 270, 'n_iter': 32} - MAP results: 0.048811907076719493 - time: 2019-01-09 17:13:27.583970
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 110, 'n_iter': 13} - MAP results: 0.0471687917296548 - time: 2019-01-09 17:13:51.282892
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 330, 'n_iter': 28} - MAP results: 0.049252273888258986 - time: 2019-01-09 17:15:24.384874
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 150, 'n_iter': 41} - MAP results: 0.04778806061035513 - time: 2019-01-09 17:16:43.632987
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 370, 'n_iter': 28} - MAP results: 0.04878049880322485 - time: 2019-01-09 17:18:27.030723
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 365, 'n_iter': 7} - MAP results: 0.05026820411312662 - time: 2019-01-09 17:19:05.035818
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 155, 'n_iter': 2} - MAP results: 0.05053467106009066 - time: 2019-01-09 17:19:16.498603
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 235, 'n_iter': 17} - MAP results: 0.048898639203829655 - time: 2019-01-09 17:20:07.516110
+BayesianSearch: New best config found. Config: {'num_factors': 370, 'n_iter': 2} - MAP results: 0.05358415975371606 - time: 2019-01-09 17:20:25.033708
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 100, 'n_iter': 3} - MAP results: 0.047504560594608045 - time: 2019-01-09 17:20:35.156649
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 280, 'n_iter': 38} - MAP results: 0.048964302500629824 - time: 2019-01-09 17:22:01.258934
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 365, 'n_iter': 41} - MAP results: 0.04880736284328533 - time: 2019-01-09 17:23:56.405069
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 375, 'n_iter': 28} - MAP results: 0.04887567465041546 - time: 2019-01-09 17:25:42.000164
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 320, 'n_iter': 15} - MAP results: 0.04977933319160996 - time: 2019-01-09 17:26:35.000603
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 375, 'n_iter': 28} - MAP results: 0.048699090513983224 - time: 2019-01-09 17:28:04.773094
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 155, 'n_iter': 33} - MAP results: 0.04762787270093215 - time: 2019-01-09 17:29:01.752409
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 175, 'n_iter': 15} - MAP results: 0.04830172093096486 - time: 2019-01-09 17:29:40.670555
+BayesianSearch: New best config found. Config: {'num_factors': 360, 'n_iter': 2} - MAP results: 0.05404396078987134 - time: 2019-01-09 17:30:00.544158
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 390, 'n_iter': 8} - MAP results: 0.04980623223733923 - time: 2019-01-09 17:30:43.138689
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 295, 'n_iter': 31} - MAP results: 0.04913264035336351 - time: 2019-01-09 17:32:03.072608
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 60, 'n_iter': 42} - MAP results: 0.04281778806059454 - time: 2019-01-09 17:32:27.246678
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 285, 'n_iter': 2} - MAP results: 0.05252265814751812 - time: 2019-01-09 17:32:41.683054
+BayesianSearch: Config is suboptimal. Config: {'num_factors': 10, 'n_iter': 44} - MAP results: 0.02092001344797171 - time: 2019-01-09 17:32:52.061284
+Best: Config: {'num_factors': 360, 'n_iter': 2} - MAP results: 0.05404396078987134

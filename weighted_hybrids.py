@@ -58,18 +58,18 @@ if __name__ == '__main__':
     recommender_list = [
         # Random,
         # TopPop,
-        ItemKNNCBFRecommender,
+        # ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
+        # ItemKNNCFPageRankRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
         P3alphaRecommender,
-        RP3betaRecommender,
+        # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        # SLIM_BPR_Cython,
-        # PureSVDRecommender,
-
-        # SLIMElasticNetRecommender
+        SLIM_BPR_Cython,
+        SLIMElasticNetRecommender
+        # PureSVDRecommender
     ]
 
     from Base.Evaluation.Evaluator import SequentialEvaluator
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     evaluator = SequentialEvaluator(URM_test, URM_train, exclude_seen=True)
 
     logFile = open("result_experiments/" + "result_weighted_hybrids.txt", "a")
-    dict_song_pop = ged.tracks_popularity()
+    dict_song_pop = ged.tracks_popularity(URM_train)
 
     URM_test_list = URM_test
     if not isinstance(URM_test_list, list):
@@ -120,7 +120,7 @@ if __name__ == '__main__':
         l1_ratio = 1e-06
         # alpha = [1.9959734038074426, 0.10609858937191907, 0.4608371142966865, 1.905978868103585, 1.6329874929834254, 1.7878599729785276]
         # alpha = [1 / len(recommender_list)]*len(recommender_list)
-        alpha = [1 / 5, 1 / 5, 1 / 5, 1 / 5, 1 / 5]
+        alpha = [1] * len(recommender_list)
         i = 0
         while i < 80:
             recommender_class = HybridRecommender
@@ -129,19 +129,22 @@ if __name__ == '__main__':
                                             URM_validation=URM_validation, onPop=onPop)
             MAP = 0
             print("alpha: {}".format(alpha))
-            recommender.fit(**{"topK": [10, 220, 160, 61, 276],
-                               "shrink": [180, 1, 2, -1, -1],
-                               "pop": [130, 346],
-                               "weights": alpha,
-                               "force_compute_sim": False,
-                               "feature_weighting_index": 0,
-                               "old_similarity_matrix": old_similrity_matrix,
-                               "epochs": 50,
-                               'alphaP3': [0.5203791059230995],
-                               'alphaRP3': [0.8182264529058118],
-                               'betaRP': [0.3775651302605211],
-                               'l1_ratio': l1_ratio,
-                               "weights_to_dweights": -1})
+            recommender.fit(**{
+                            "topK": [215, 170, 160, 761, 490],
+                            "shrink": [3, 2, 2, -1, -1],
+                            "pop": [280],
+                            "weights": alpha,
+                            "force_compute_sim": False,
+                            "feature_weighting_index": 1,
+                            "old_similarity_matrix": old_similrity_matrix,
+                            "epochs": 50,
+                            'lambda_i': [0.0], 'lambda_j': [1.0153577332223556e-08], 'SLIM_lr': [0.1],
+                            'alphaP3': [0.7649722376036994],
+                            'alphaRP3': [0.8582865731462926],
+                            'betaRP': [0.2814208416833668],
+                            'alpha': 0.0014681984611695231,
+                            'l1_ratio': 3.020408163265306e-06,
+                            "weights_to_dweights": -1})
 
             print("Starting Evaluations...")
             t = time.time()

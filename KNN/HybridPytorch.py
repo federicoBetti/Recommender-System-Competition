@@ -8,6 +8,7 @@ Created on 23/11/18
 import sys
 import random
 
+import time
 import torch
 from torch.autograd import Function
 from torch.autograd import Variable
@@ -522,7 +523,7 @@ class HybridPytorch_WARP(SimilarityMatrixRecommender, Recommender):
             cutoff = self.URM_train.shape[1] - 1
         else:
             cutoff
-
+        remove_seen_flag = False or not self.training
         # compute the scores using the dot product
         # noinspection PyUnresolvedReferences
         if self.sparse_weights:
@@ -533,6 +534,14 @@ class HybridPytorch_WARP(SimilarityMatrixRecommender, Recommender):
                 scores_batch = recommender.compute_item_score(user_id_array)
                 # scores_batch = np.ravel(scores_batch) # because i'm not using batch
 
+                if remove_seen_flag:
+                    for user_index in range(len(user_id_array)):
+                        user_id = user_id_array[user_index]
+
+                        seen = self.URM_train.indices[self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
+
+                        scores_batch[user_index, seen] = -100000
+
                 if remove_top_pop_flag:
                     scores_batch = self._remove_TopPop_on_scores(scores_batch)
 
@@ -542,60 +551,53 @@ class HybridPytorch_WARP(SimilarityMatrixRecommender, Recommender):
                 scores.append(scores_batch)
 
             final_score = np.zeros(scores[0].shape)
+            input_data_tensor, label_tensor = [], []
+
+            print("Training users {}".format(user_id_array))
             for user_index in range(len(user_id_array)):
                 user_id = user_id_array[user_index]
-                seen = self.URM_train.indices[self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
-                seel_len = len(seen)
 
-                target_var = np.ones((seel_len, 1))
-                only_positive_samples = False
-                if only_positive_samples:
-                    negative_items = []
-                else:
-                    negative_items = random.sample(range(1, self.URM_train.shape[1]), seel_len)
-                    negative_items = [x for x in negative_items if x not in list(seen)]
-                    target_var_zeros = np.zeros((seel_len, 1))
-                    target_var = np.concatenate((target_var, target_var_zeros))
+                test_songs = self.URM_validation.indices[
+                             self.URM_validation.indptr[user_id]:self.URM_validation.indptr[user_id + 1]]
+                # train_songs = self.URM_train.indices[
+                #               self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
+                target_var = np.zeros((self.URM_train.shape[1], 1))
+                target_var[test_songs] = 1
+                # target_var[train_songs] = 1
 
-                user_scores = np.zeros((scores_batch.shape[1], self.recommender_number))
+                input_var = np.zeros((self.recommender_number, self.URM_train.shape[1]))
+                for ind, score in enumerate(scores):
+                    input_var[ind, :] = score[user_index]
+                input_var = input_var.T.reshape(-1, 1)
 
+                input_data_tensor.append(Variable(torch.Tensor(input_var)).to(self.device))
+                label_tensor.append(Variable(torch.Tensor(target_var.reshape(1, -1))).to(self.device))
 
-                input_var = []
-                for rec_ind, score in enumerate(scores):
-                    input_var.append(score[user_index].T)
-                #devo creare 1234 1234 e ora ho 1111 2222 3333 4444
+            input_data_tensor = torch.cat(input_data_tensor, dim=1)
+            label_tensor = torch.cat(label_tensor, dim=0)
 
+            if self.training:
+                t = time.time()
+                print("Start training on this batch")
+                # FORWARD pass
+                prediction = self.pyTorchModel(input_data_tensor)
 
-                # print("Seen: {}, negative items: {}".format(seen, negative_items))
-                # print("Shapes {}, {}".format(user_scores[seen, :].shape, user_scores[negative_items, :].shape))
-                if self.training:
-                    input_var = np.concatenate((user_scores[seen, :], user_scores[negative_items, :]))
+                # print("Predictions on ones: {}".format(prediction))
+                # Pass prediction and label removing last empty dimension of prediction
+                loss = self.lossFunction(prediction.t(), label_tensor)
 
-                    input_data_tensor = Variable(torch.Tensor(input_var)).to(self.device)
+                # BACKWARD pass
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
+                print("Training loss: {} and last {} sec, {} sec per user".format(loss.data[0], time.time() - t, (time.time() - t) / len(user_id_array)))
 
-                    '''
-                    label tensor with the WARP loss function should be a vector with 1 in the i-th position if the i-th
-                    item is correctly recommended
-                    '''
-                    label_tensor = Variable(torch.Tensor(target_var)).to(self.device)
-
-                    # FORWARD pass
-                    prediction = self.pyTorchModel(input_data_tensor)
-                    # print("Predictions on ones: {}".format(prediction))
-                    # Pass prediction and label removing last empty dimension of prediction
-                    loss = self.lossFunction(prediction.view(-1), label_tensor)
-
-                    # BACKWARD pass
-                    self.optimizer.zero_grad()
-                    loss.backward()
-                    self.optimizer.step()
-
-                final_prediction = self.pyTorchModel(torch.Tensor(user_scores).to(self.device))
+            if self.training:
+                return np.ones((len(user_id_array), cutoff), dtype=int)
+            else:
+                final_prediction = self.pyTorchModel(input_data_tensor)
                 # print(final_prediction)
-
-                final_score[user_index] = final_prediction.detach().numpy().T
-                final_score[user_index] = self._remove_seen_on_scores(user_id, final_score[user_index, :])
-
+                final_score = final_prediction.detach().numpy().T
 
         else:
             raise NotImplementedError
@@ -675,7 +677,8 @@ class WARP(Function):
 
             while ((sample_score_margin < 0) and (num_trials < max_num_trials)):
                 # randomly sample a negative label
-                neg_idx = random.sample(neg_labels_idx, 1)[0]
+                neg_idx = random.sample(list(neg_labels_idx), 1)
+                neg_idx = neg_idx[0]
                 msk[neg_idx] = False
                 neg_labels_idx = all_labels_idx[msk]
 
@@ -692,8 +695,8 @@ class WARP(Function):
                 negative_indices[i, neg_idx] = 1
 
         loss = L * (1 - torch.sum(positive_indices * input, dim=1) + torch.sum(negative_indices * input, dim=1))
-
-        ctx.save_for_backward(input, target)
+        #
+        # ctx.save_for_backward(input, target)
         ctx.L = L
         ctx.positive_indices = positive_indices
         ctx.negative_indices = negative_indices
@@ -703,7 +706,7 @@ class WARP(Function):
     # This function has only a single output, so it gets only one gradient
     @staticmethod
     def backward(ctx, grad_output):
-        input, target = ctx.saved_variables
+        # input, target = ctx.saved_variables
         L = Variable(torch.unsqueeze(ctx.L, 1), requires_grad=False)
 
         positive_indices = Variable(ctx.positive_indices, requires_grad=False)
@@ -723,7 +726,7 @@ class WARPLoss(torch.nn.Module):
 
 
 class tiedLinear(nn.Module):
-    def __init__(self, in_features, bias=True):
+    def __init__(self, in_features, bias=False):
         super(tiedLinear, self).__init__()
         self.in_features = in_features
         self.weight = Parameter(torch.Tensor(in_features))
@@ -740,7 +743,10 @@ class tiedLinear(nn.Module):
             self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, input):
-        repeated_weight = self.weight.repeat(self.in_features, 1)
+        print("input shape {}".format(input.size()))
+        print(self.weight, self.weight.size())
+        repeated_weight = self.weight.repeat(input.size()[0], int(input.size()[0] / self.in_features))
+        print(repeated_weight, repeated_weight.size())
         return F.linear(input, repeated_weight, self.bias)
 
 
@@ -750,12 +756,12 @@ class Hybridization_PyTorch_model(torch.nn.Module):
 
         self.n_recommenders = n_recommenders
 
-        self.layer_1 = torch.nn.Linear(in_features=self.n_recommenders, out_features=1)
-
+        self.layer_1 = torch.nn.Linear(in_features=self.n_recommenders, out_features=1, bias=False)
+        self.layer_1.weight.data.fill_(1)
         # self.activation_function1 = torch.nn.ReLU()
         self.activation_function2 = torch.nn.Sigmoid()
 
-    def forward(self, input):
+    def forward_old(self, input):
         # if I suppose that the input is [ 8 * 10k]
         # for i in range(0, input.shape[0], self.n_recommenders):
         #     item_input =
@@ -769,190 +775,18 @@ class Hybridization_PyTorch_model(torch.nn.Module):
 
         return prediction
 
-    def forward2(self, input):
-        # if I suppose that the input is [ 8 * 10k]
-        input_empty = np.zeros(input.shape[0])
-        prediction = Variable(torch.Tensor(input_empty))
-        index = 0
-        for i in range(0, input.shape[0], self.n_recommenders):
-            item_input = input[i : i + self.n_recommenders]
-            prediction[index] = self.layer_1(item_input)
+    def forward(self, input):
+        total_predictions, predictions = [], []
+        for user in range(input.size()[1]):
+            predictions = []
+            user_input = input.narrow(1, user, 1).squeeze()
 
-            index += 1
+            for i in range(0, input.shape[0], self.n_recommenders):
+                predictions.append(self.layer_1(user_input.narrow(0, i, self.n_recommenders)))
 
+            user_final_proability = torch.cat(predictions, 0).view(-1, 1)
+            total_predictions.append(torch.div(user_final_proability, user_final_proability.max()))
+
+        prediction = torch.cat(total_predictions, 1)
+        print("Linear model weights: {} and bias: {}".format(self.layer_1.weight, self.layer_1.bias))
         return prediction
-
-
-'''
-class Hybridization_PyTorch_model(Recommender, Incremental_Training_Early_Stopping):
-    RECOMMENDER_NAME = "MF_MSE_PyTorch_Recommender"
-
-    def __init__(self, URM_train, positive_threshold=1, URM_validation=None):
-
-        super(Hybridization_PyTorch_model, self).__init__()
-
-        self.URM_train = URM_train
-        self.n_users = URM_train.shape[0]
-        self.n_items = URM_train.shape[1]
-        self.normalize = False
-
-        self.positive_threshold = positive_threshold
-
-        if URM_validation is not None:
-            self.URM_validation = URM_validation.copy()
-        else:
-            self.URM_validation = None
-
-        self.compute_item_score = self.compute_score_MF
-
-    def compute_score_MF(self, user_id):
-
-        scores_array = np.dot(self.W[user_id], self.H.T)
-
-        return scores_array
-
-    def fit(self, epochs=30, batch_size=1024, num_factors=10,
-            learning_rate=0.001,
-            stop_on_validation=False, lower_validatons_allowed=5, validation_metric="MAP",
-            evaluator_object=None, validation_every_n=1, use_cuda=True):
-
-        if evaluator_object is None and self.URM_validation is not None:
-            from Base.Evaluation.Evaluator import SequentialEvaluator
-
-            evaluator_object = SequentialEvaluator(self.URM_validation, [10])
-
-        self.n_factors = num_factors
-
-        # Select only positive interactions
-        URM_train_positive = self.URM_train.copy()
-
-        URM_train_positive.data = URM_train_positive.data >= self.positive_threshold
-        URM_train_positive.eliminate_zeros()
-
-        self.batch_size = batch_size
-        self.learning_rate = learning_rate
-
-        ########################################################################################################
-        #
-        #                                SETUP PYTORCH MODEL AND DATA READER
-        #
-        ########################################################################################################
-
-        if use_cuda and torch.cuda.is_available():
-            self.device = torch.device('cuda')
-            print("MF_MSE_PyTorch: Using CUDA")
-        else:
-            self.device = torch.device('cpu')
-            print("MF_MSE_PyTorch: Using CPU")
-
-        from MatrixFactorization.PyTorch.MF_MSE_PyTorch_model import MF_MSE_PyTorch_model, DatasetIterator_URM
-
-        n_users, n_items = self.URM_train.shape
-
-        self.pyTorchModel = MF_MSE_PyTorch_model(n_users, n_items, self.n_factors).to(self.device)
-
-        # Choose loss
-        self.lossFunction = torch.nn.MSELoss(size_average=False)
-        # self.lossFunction = torch.nn.BCELoss(size_average=False)
-        self.optimizer = torch.optim.Adagrad(self.pyTorchModel.parameters(), lr=self.learning_rate)
-
-        dataset_iterator = DatasetIterator_URM(self.URM_train)
-
-        self.train_data_loader = DataLoader(dataset=dataset_iterator,
-                                            batch_size=self.batch_size,
-                                            shuffle=True,
-                                            # num_workers = 2,
-                                            )
-
-        ########################################################################################################
-
-
-        self._train_with_early_stopping(epochs, validation_every_n, stop_on_validation,
-                                        validation_metric, lower_validatons_allowed, evaluator_object,
-                                        algorithm_name="MF_MSE_PyTorch")
-
-        self.W = self.W_best.copy()
-        self.H = self.H_best.copy()
-
-        sys.stdout.flush()
-
-    def _initialize_incremental_model(self):
-
-        self.W_incremental = self.pyTorchModel.get_W()
-        self.W_best = self.W_incremental.copy()
-
-        self.H_incremental = self.pyTorchModel.get_H()
-        self.H_best = self.H_incremental.copy()
-
-    def _update_incremental_model(self):
-
-        self.W_incremental = self.pyTorchModel.get_W()
-        self.H_incremental = self.pyTorchModel.get_H()
-
-        self.W = self.W_incremental.copy()
-        self.H = self.H_incremental.copy()
-
-    def _update_best_model(self):
-
-        self.W_best = self.W_incremental.copy()
-        self.H_best = self.H_incremental.copy()
-
-    def _run_epoch(self, num_epoch):
-
-        for num_batch, (input_data, label) in enumerate(self.train_data_loader, 0):
-
-            if num_batch % 1000 == 0:
-                print("num_batch: {}".format(num_batch))
-
-            print("Batch number {} with input data shape: {}".format(num_batch, input_data.shape))
-            # On windows requires int64, on ubuntu int32
-            # input_data_tensor = Variable(torch.from_numpy(np.asarray(input_data, dtype=np.int64))).to(self.device)
-            input_data_tensor = Variable(input_data).to(self.device)
-
-            label_tensor = Variable(label).to(self.device)
-
-            user_coordinates = input_data_tensor[:, 0]
-            item_coordinates = input_data_tensor[:, 1]
-
-            # FORWARD pass
-            prediction = self.pyTorchModel(user_coordinates, item_coordinates)
-
-            # Pass prediction and label removing last empty dimension of prediction
-            loss = self.lossFunction(prediction.view(-1), label_tensor)
-
-            # BACKWARD pass
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
-
-    def writeCurrentConfig(self, currentEpoch, results_run, logFile):
-
-        current_config = {'learn_rate': self.learning_rate,
-                          'num_factors': self.n_factors,
-                          'batch_size': 1,
-                          'epoch': currentEpoch}
-
-        print("Test case: {}\nResults {}\n".format(current_config, results_run))
-
-        sys.stdout.flush()
-
-        if (logFile != None):
-            logFile.write("Test case: {}, Results {}\n".format(current_config, results_run))
-            logFile.flush()
-
-    def saveModel(self, folder_path, file_name=None):
-
-        if file_name is None:
-            file_name = self.RECOMMENDER_NAME
-
-        print("{}: Saving model in file '{}'".format(self.RECOMMENDER_NAME, folder_path + file_name))
-
-        dictionary_to_save = {"W": self.W,
-                              "H": self.H}
-
-        pickle.dump(dictionary_to_save,
-                    open(folder_path + file_name, "wb"),
-                    protocol=pickle.HIGHEST_PROTOCOL)
-
-        np.savez(folder_path + "{}.npz".format(file_name), W=self.W, H=self.H)
-        '''

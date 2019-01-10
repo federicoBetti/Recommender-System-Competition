@@ -1,7 +1,7 @@
 import sys
 
 from Dataset.RS_Data_Loader import RS_Data_Loader
-from KNN.HybridPytorch import HybridPytorch_SLIM
+from KNN.HybridPytorch import HybridPytorch_SLIM, HybridPytorch_WARP
 from KNN.HybridSimilaritiesRecommender import HybridSimilaritiesRecommender
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
@@ -63,7 +63,7 @@ if __name__ == '__main__':
         # TopPop,
         ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
-        ItemKNNCFRecommender,
+        # ItemKNNCFRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
         P3alphaRecommender,
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     logFile = open(output_root_path + "result_all_algorithms.txt", "a")
 
     try:
-        recommender_class = HybridPytorch_SLIM
+        recommender_class = HybridPytorch_WARP
         print("Algorithm: {}".format(recommender_class))
 
         d_weights = []
@@ -110,13 +110,13 @@ if __name__ == '__main__':
         num_factors_2 = 391
 
         recommender.fit(**{
-            "topK": [10, 220, 150, 160, 61, 276],
-            "shrink": [180, 1, 10, 2, -1, -1],
+            "topK": [130, 170, 160, 101, 391],
+             "shrink": [2, 2, 2, -1, -1],
             "pop": [130, 346],
-            "weights": [0.5553160795197877, 0.7757009882288872, 0.5982445930826743, 0.5982445930826743,
+            "weights": [0.5553160795197877, 0.7757009882288872, 0.5982445930826743,
                         0.9945089580422436, 0.19198495537212745],
             "final_weights": [1, 1],
-            "force_compute_sim": True, #not evaluate_algorithm,
+            "force_compute_sim": False, #not evaluate_algorithm,
             "feature_weighting_index": 0,
             "old_similarity_matrix": old_similrity_matrix,
             "epochs": 50,
@@ -125,7 +125,7 @@ if __name__ == '__main__':
             'alphaRP3': [0.8182264529058118],
             'betaRP': [0.3775651302605211],
             'l1_ratio': l1_ratio,
-            'tfidf': [True, False],
+            'tfidf': [True],
             "weights_to_dweights": -1})
 
         num_epochs = 2
@@ -133,7 +133,8 @@ if __name__ == '__main__':
             print("Starting Evaluations epoch {} of {}...".format(i, num_epochs))
             results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
                                                                                                     plot_stats=True,
-                                                                                                    onPop=onPop)
+                                                                                                    onPop=onPop,
+                                                                                                    block_size=50)
 
             print("Algorithm: {}, results: \n{}".format([rec.__class__ for rec in recommender.recommender_list],
                                                         results_run_string))

@@ -44,8 +44,8 @@ def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, UR
     # pay attention that it doesn't finish (it should after n_cases, but now it doens't work)
     # it saves best results in the txt file
     hyperparamethers_range_dictionary = {}
-    hyperparamethers_range_dictionary["topK"] = list(range(40, 450, 10))
-    hyperparamethers_range_dictionary["shrink"] = list(range(0, 150, 2))
+    hyperparamethers_range_dictionary["topK"] = list(range(40, 250, 5))
+    hyperparamethers_range_dictionary["shrink"] = list(range(0, 50, 1))
     hyperparamethers_range_dictionary["similarity"] = [similarity_type]
     hyperparamethers_range_dictionary["normalize"] = [True, False]
 
@@ -63,7 +63,7 @@ def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, UR
         hyperparamethers_range_dictionary["tfidf"] = [True, False]
     else:  # Content Base Filtering Algorithms
         first_dict = [UCM_train, URM_train]
-        if UCM_train.shape[0] < 30000: # Item CB
+        if UCM_train.shape[0] < 30000:  # Item CB
             hyperparamethers_range_dictionary["feature_weighting_index"] = [0, 1, 2]
 
     recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: first_dict,
@@ -77,7 +77,7 @@ def run_KNNCFRecommender_on_similarity_type(similarity_type, parameterSearch, UR
     # questo runna fit del recommender
     best_parameters = parameterSearch.search(recommenderDictionary,
                                              n_cases=n_cases,
-                                             init_points=20,
+                                             init_points=30,
                                              output_root_path=output_root_path_similarity,
                                              metric=metric_to_optimize)
     print(best_parameters)
@@ -438,12 +438,12 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
 
         if recommender_class is UserKNNCFRecommender:
 
-            similarity_type_list = ['cosine', 'jaccard', "asymmetric", "dice", "tversky"]
+            similarity_type_list = ['cosine']#, 'jaccard', "asymmetric", "dice", "tversky"]
 
             run_KNNCFRecommender_on_similarity_type_partial = partial(run_KNNCFRecommender_on_similarity_type,
                                                                       parameterSearch=parameterSearch,
                                                                       URM_train=URM_train,
-                                                                      n_cases=n_cases,
+                                                                      n_cases=40,
                                                                       output_root_path=output_root_path_rec_name,
                                                                       metric_to_optimize=metric_to_optimize)
 
@@ -467,7 +467,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
             run_KNNCFRecommender_on_similarity_type_partial = partial(run_KNNCFRecommender_on_similarity_type,
                                                                       parameterSearch=parameterSearch,
                                                                       URM_train=URM_train,
-                                                                      n_cases=30,  # = n_cases
+                                                                      n_cases=40,  # = n_cases
                                                                       output_root_path=output_root_path_rec_name,
                                                                       metric_to_optimize=metric_to_optimize)
 
@@ -490,9 +490,8 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
             similarity_type_list = ['cosine']  # , 'jaccard', "asymmetric", "dice", "tversky"]
 
             hyperparamethers_range_dictionary = {}
-            hyperparamethers_range_dictionary["topK"] = list(range(30, 250, 10))
-            hyperparamethers_range_dictionary["shrink"] = list(range(0, 10, 1))
-            hyperparamethers_range_dictionary["normalize"] = [True]
+            hyperparamethers_range_dictionary["topK"] = list(range(30, 400, 10))
+            hyperparamethers_range_dictionary["shrink"] = list(range(0, 100, 2))
 
             recommenderDictionary = {DictionaryKeys.CONSTRUCTOR_POSITIONAL_ARGS: [URM_train, URM_page_rank],
                                      DictionaryKeys.CONSTRUCTOR_KEYWORD_ARGS: {},
@@ -782,7 +781,7 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
                                                  n_cases=n_cases,
                                                  output_root_path=output_root_path_rec_name,
                                                  metric=metric_to_optimize,
-                                                 init_points=20
+                                                 init_points=40
                                                  )
 
 
@@ -845,10 +844,10 @@ def read_data_split_and_search():
         # Random,
         # TopPop,
         # ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
+        # UserKNNCBRecommender,
         # P3alphaRecommender,
         # RP3betaRecommender,
-        # ItemKNNCFPageRankRecommender,
+        ItemKNNCFPageRankRecommender,
         # ItemKNNCFRecommender,
         # UserKNNCFRecommender,
         # MatrixFactorization_BPR_Cython,
@@ -953,7 +952,7 @@ def read_data_split_and_search():
                                                                        evaluator_validation_earlystopping=evaluator_validation_earlystopping,
                                                                        evaluator_validation=evaluator_validation,
                                                                        output_root_path=output_root_path,
-                                                                       n_cases=30,
+                                                                       n_cases=60,
                                                                        URM_validation=URM_validation,
                                                                        URM_page_rank=URM_pagerank)
                     runParameterSearch_Collaborative_partial(recommender_class)

@@ -60,7 +60,7 @@ if __name__ == '__main__':
     recommender_list1 = [
         # Random,
         # TopPop,
-        ItemKNNCBFRecommender,
+        # ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
         # ItemKNNCFPageRankRecommender,
         ItemKNNCFRecommender,
@@ -70,7 +70,7 @@ if __name__ == '__main__':
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender
+        SLIMElasticNetRecommender
         # PureSVDRecommender
     ]
 
@@ -84,11 +84,11 @@ if __name__ == '__main__':
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
         P3alphaRecommender,
-        # RP3betaRecommender,
+        RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender
+        SLIMElasticNetRecommender
         # PureSVDRecommender
     ]
 
@@ -133,20 +133,21 @@ if __name__ == '__main__':
 
         recommender.fit(**
                         {
-                            "topK": [130, 170, 160, 101, 601],
-                            "shrink": [2, 2, 2, -1, -1],
+                            "topK": [215, 170, 160, 761, 490],
+                            "shrink": [3, 2, 2, -1, -1],
                             "pop": [280],
-                            "weights": [0.8558368700159882, 0.201498575971369, 1.504181915043752, 1.0295254841780876,
-                                        0.7315500681376081],
+                            "weights": [0.17469582290644048, 0.13088402487148165, 0.4520808701660822,
+                                        0.048423283207938095, 0.69277832363201],
                             "force_compute_sim": False,
-                            "feature_weighting_index": 0,
+                            "feature_weighting_index": 1,
                             "old_similarity_matrix": old_similrity_matrix,
                             "epochs": 50,
                             'lambda_i': [0.0], 'lambda_j': [1.0153577332223556e-08], 'SLIM_lr': [0.1],
                             'alphaP3': [0.7649722376036994],
                             'alphaRP3': [0.8582865731462926],
                             'betaRP': [0.2814208416833668],
-                            'l1_ratio': l1_ratio,
+                            'alpha': 0.0014681984611695231,
+                            'l1_ratio': 3.020408163265306e-06,
                             "weights_to_dweights": -1})
 
         print("TEST")

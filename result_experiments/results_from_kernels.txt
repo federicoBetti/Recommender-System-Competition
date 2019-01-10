@@ -1,5 +1,6 @@
 ICB, ICF; UCF, SLIM, ElasticNet (senza filter on pop)
 BayesianSearch: New best config found. Config: {'weights1': 0.8258274600893389, 'weights2': 1.9975671652651414, 'weights3': 1.959065143105868, 'weights4': 0.6219575699153801, 'weights5': 1.931914114002565} - MAP results: 0.07970124400037785
+{'filter_top_pop_len': 20, 'weights1': 0.6641750893264197, 'weights2': 1.7574684655288033, 'weights3': 1.6509508735648937, 'weights4': 0.5265165765951231, 'weights5': 1.854643122402298} - MAP results: 0.07971474779541425
 
 ICB, ICF, UCF, RP, ElasticNet
 BayesianSearch: New best config found. Config: {'weights1': 0.4137815030431562, 'weights2': 1.922070131521063, 'weights3': 1.1028345152273829, 'weights4': 1.9649071327909962, 'weights5': 1.9804541117239622} - MAP results: 0.07897179491055673
@@ -10,3 +11,8 @@ ICB, UCB, ICF, UCF, RP3, SLIM
 ICB, ICF, UCF, P3, RP3, SLIM, ELasticNet
 Config: {'weights1': 0.6813028511830805, 'weights2': 1.909333168066915, 'weights3': 1.7310872430736808, 'weights4': 0.21366328472310858, 'weights5': 0.119951539373373, 'weights6': 0.4167522979092386, 'weights7': 1.989958133774426} - MAP results: 0.07976400851914833
 
+UCB, ICB, ICF, UCF, SLIM, Elastic con filter Top Pop
+Config: {'filter_top_pop_len': 26, 'weights1': 0.8790382317175656, 'weights2': 0.16258266027500023, 'weights3': 1.9956291208772043, 'weights4': 1.9902079555662993, 'weights5': 0.5952820022758509, 'weights6': 1.941891146368174} - MAP results: 0.07961520592403626
+
+ICF, UCF, P3, SLIM, ElasticNet con filter top pop
+{'filter_top_pop_len': 20, 'weights1': 0.17469582290644048, 'weights2': 0.13088402487148165, 'weights3': 0.4520808701660822, 'weights4': 0.048423283207938095, 'weights5': 0.69277832363201} - MAP results: 0.07752894713718811

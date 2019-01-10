@@ -970,7 +970,7 @@ class SequentialEvaluator(Evaluator):
 
         return results_dict, n_users_evaluated, to_ret
 
-    def evaluateRecommender(self, recommender_object, plot_stats=False, onPop=True):
+    def evaluateRecommender(self, recommender_object, plot_stats=False, onPop=True, block_size=1000):
         """
         :param recommender_object: the trained recommenderURM_validation object, a Recommender subclass
         :param URM_test_list: list of URMs to test the recommender against, or a single URM object
@@ -983,6 +983,7 @@ class SequentialEvaluator(Evaluator):
         results_dict, n_users_evaluated, to_ret_values = self._run_evaluation_on_selected_users(recommender_object,
                                                                                                 self.usersToEvaluate,
                                                                                                 plot_stats=plot_stats,
+                                                                                                block_size=block_size,
                                                                                                 onPop=onPop)
 
         if (n_users_evaluated > 0):

@@ -1290,3 +1290,145 @@ CUTOFF: 10 - ROC_AUC: 0.2837278, PRECISION: 0.1655578, RECALL: 0.1646655, RECALL
 Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
 CUTOFF: 10 - ROC_AUC: 0.2833234, PRECISION: 0.1659450, RECALL: 0.1650769, RECALL_TEST_LEN: 0.1659450, MAP: 0.0788808, MRR: 0.2219538, NDCG: 0.1380325, F1: 0.1655098, HIT_RATE: 0.7488000, ARHR: 0.2787621, NOVELTY: 0.0058261, DIVERSITY_MEAN_INTER_LIST: 0.9929540, DIVERSITY_HERFINDAHL: 0.9992855, COVERAGE_ITEM: 0.3755270, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2851328, SHANNON_ENTROPY: 11.4010041, 
 
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_SLIM'> - Exception: expand(torch.FloatTensor{[6, 1]}, size=[]): the number of sizes provided (0) must be greater or equal to the number of dimensions in the tensor (2)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_SLIM'> - Exception: Knns, Shrinks and recommender list have different lenghts 
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_SLIM'> - Exception: Weights: 6 and recommender list: 5 have different lenghts
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_SLIM'> - Exception: expand(torch.FloatTensor{[5, 1]}, size=[]): the number of sizes provided (0) must be greater or equal to the number of dimensions in the tensor (2)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_SLIM'> - Exception: expand(torch.FloatTensor{[5, 1]}, size=[]): the number of sizes provided (0) must be greater or equal to the number of dimensions in the tensor (2)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_SLIM'> - Exception: expand(torch.FloatTensor{[5, 1]}, size=[]): the number of sizes provided (0) must be greater or equal to the number of dimensions in the tensor (2)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_SLIM'> - Exception: expand(torch.FloatTensor{[5, 1]}, size=[]): the number of sizes provided (0) must be greater or equal to the number of dimensions in the tensor (2)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_SLIM'> - Exception: expand(torch.FloatTensor{[5, 1]}, size=[]): the number of sizes provided (0) must be greater or equal to the number of dimensions in the tensor (2)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_SLIM'> - Exception: expand(torch.FloatTensor{[5, 1]}, size=[]): the number of sizes provided (0) must be greater or equal to the number of dimensions in the tensor (2)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: index 5 is out of bounds for axis 0 with size 5
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: too many indices for tensor of dimension 1
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'> - Exception: 'alpha'
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.2814262, PRECISION: 0.1632605, RECALL: 0.1623765, RECALL_TEST_LEN: 0.1632605, MAP: 0.0774412, MRR: 0.2185011, NDCG: 0.1357243, F1: 0.1628173, HIT_RATE: 0.7377000, ARHR: 0.2746998, NOVELTY: 0.0058529, DIVERSITY_MEAN_INTER_LIST: 0.9929502, DIVERSITY_HERFINDAHL: 0.9992851, COVERAGE_ITEM: 0.3826993, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2846468, SHANNON_ENTROPY: 11.4206525, 
+
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.2866101, PRECISION: 0.1678300, RECALL: 0.1669187, RECALL_TEST_LEN: 0.1678300, MAP: 0.0797361, MRR: 0.2246130, NDCG: 0.1395858, F1: 0.1673731, HIT_RATE: 0.7579000, ARHR: 0.2823632, NOVELTY: 0.0058107, DIVERSITY_MEAN_INTER_LIST: 0.9926442, DIVERSITY_HERFINDAHL: 0.9992545, COVERAGE_ITEM: 0.3615217, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2824204, SHANNON_ENTROPY: 11.3350617, 
+
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: index 1 is out of bounds for dimension 0 with size 1
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: index 2 is out of bounds for dimension 0 with size 2
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: index 2 is out of bounds for dimension 0 with size 2
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: Population must be a sequence or set.  For dicts, use list(d).
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: Population must be a sequence or set.  For dicts, use list(d).
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: Population must be a sequence or set.  For dicts, use list(d).
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: Population must be a sequence or set.  For dicts, use list(d).
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: could not broadcast input array from shape (10) into shape (20635)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: Can't call numpy() on Variable that requires grad. Use var.detach().numpy() instead.
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: could not broadcast input array from shape (103175) into shape (20635)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: 'float' object cannot be interpreted as an integer
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.0000000, PRECISION: 0.0000000, RECALL: 0.0000000, RECALL_TEST_LEN: 0.0000000, MAP: 0.0000000, MRR: 0.0000000, NDCG: 0.0000000, F1: 0.0000000, HIT_RATE: 0.0000000, ARHR: 0.0000000, NOVELTY: 0.0058167, DIVERSITY_MEAN_INTER_LIST: 0.9929689, DIVERSITY_HERFINDAHL: 0.9992870, COVERAGE_ITEM: 0.3560940, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2892342, SHANNON_ENTROPY: 11.3630533, 
+
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: size mismatch, m1: [1 x 103175], m2: [5 x 5] at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensorMath.cpp:940
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: tuple index out of range
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: size mismatch, m1: [1 x 103175], m2: [5 x 103175] at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensorMath.cpp:940
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: t() expects a 2D tensor, but self is 1D
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: invalid argument 3: out of range at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensor.cpp:393
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: invalid argument 3: out of range at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensor.cpp:393
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: invalid argument 3: out of range at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensor.cpp:393
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: size mismatch, m1: [1 x 103175], m2: [1 x 515875] at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensorMath.cpp:940
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: repeat(): argument 'repeats' must be tuple of ints, but found element of type float at pos 2
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: size mismatch, m1: [1 x 103175], m2: [20635 x 5] at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensorMath.cpp:940
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: size mismatch, m1: [1 x 103175], m2: [20635 x 5] at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensorMath.cpp:940
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: invalid argument 3: out of range at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensor.cpp:393
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: size mismatch, m1: [1 x 103175], m2: [1 x 103175] at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensorMath.cpp:940
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: index 3856 is out of bounds for dimension 0 with size 1
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: index 3856 is out of bounds for dimension 0 with size 1
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: index 3856 is out of bounds for dimension 0 with size 1
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: index 3856 is out of bounds for dimension 0 with size 1
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: index 3856 is out of bounds for dimension 0 with size 1
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: index 3856 is out of bounds for dimension 0 with size 5
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: $ Torch: not enough memory: you tried to allocate 39GB. Buy new RAM! at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/THGeneral.cpp:201
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: tuple index out of range
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: index 1 is out of bounds for dimension 0 with size 1
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: index 1 is out of bounds for dimension 0 with size 1
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: could not broadcast input array from shape (20635,2) into shape (20635)
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: expected type torch.FloatTensor but got torch.cuda.FloatTensor
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: expected type torch.FloatTensor but got torch.cuda.FloatTensor
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: expected type torch.FloatTensor but got torch.cuda.FloatTensor
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: size mismatch, m1: [5 x 1], m2: [5 x 1] at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensorMath.cpp:940
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: start (0) + length (5) exceeds dimension size (1).
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: size mismatch, m1: [5 x 1], m2: [5 x 1] at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensorMath.cpp:940
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: size mismatch, m1: [5 x 1], m2: [5 x 1] at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensorMath.cpp:940
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: size mismatch, m1: [5 x 1], m2: [5 x 1] at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensorMath.cpp:940
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: size mismatch, m1: [5 x 1], m2: [5 x 1] at /opt/conda/conda-bld/pytorch_1544174967633/work/aten/src/TH/generic/THTensorMath.cpp:940
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: expected type torch.FloatTensor but got torch.cuda.FloatTensor
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: expected type torch.FloatTensor but got torch.cuda.FloatTensor
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: expected type torch.FloatTensor but got torch.cuda.FloatTensor
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: arrays used as indices must be of integer (or boolean) type
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.4537606, PRECISION: 0.3125624, RECALL: 0.3112799, RECALL_TEST_LEN: 0.3125624, MAP: 0.1872665, MRR: 0.4149493, NDCG: 0.2780562, F1: 0.3119199, HIT_RATE: 1.2916000, ARHR: 0.5626590, NOVELTY: 0.0061414, DIVERSITY_MEAN_INTER_LIST: 0.9955127, DIVERSITY_HERFINDAHL: 0.9995413, COVERAGE_ITEM: 0.4554882, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.3327039, SHANNON_ENTROPY: 11.9445386, 
+
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.2576517, PRECISION: 0.1491582, RECALL: 0.1483325, RECALL_TEST_LEN: 0.1491582, MAP: 0.0734150, MRR: 0.2012557, NDCG: 0.1253501, F1: 0.1487442, HIT_RATE: 0.6645000, ARHR: 0.2538583, NOVELTY: 0.0061805, DIVERSITY_MEAN_INTER_LIST: 0.9955442, DIVERSITY_HERFINDAHL: 0.9995445, COVERAGE_ITEM: 0.4479283, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.3366290, SHANNON_ENTROPY: 11.9417105, 
+
+Algorithm: <class 'KNN.HybridPytorch.HybridPytorch_WARP'> - Exception: 3.3333333333333335
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: Ran out of input
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: tracks_popularity() missing 1 required positional argument: 'URM_train'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: 'NoneType' object is not subscriptable
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: 'HybridRecommenderXGBoost_Fede' object has no attribute 'user_id_XGBoost'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: 'NoneType' object has no attribute 'predict'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: 'NoneType' object has no attribute 'predict'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: 'NoneType' object has no attribute 'predict'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: 'NoneType' object has no attribute 'predict'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: 'numpy.ndarray' object has no attribute 'feature_names'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: index 3 is out of bounds for axis 0 with size 2
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: index 3 is out of bounds for axis 0 with size 2
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: unhashable type: 'numpy.ndarray'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: unhashable type: 'numpy.ndarray'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: could not broadcast input array from shape (2,1) into shape (20)
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: could not broadcast input array from shape (10,1) into shape (20)
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: unhashable type: 'numpy.ndarray'
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.1364376, PRECISION: 0.0947010, RECALL: 0.0941265, RECALL_TEST_LEN: 0.0947010, MAP: 0.0262398, MRR: 0.0825120, NDCG: 0.0615515, F1: 0.0944129, HIT_RATE: 0.4340340, ARHR: 0.0993088, NOVELTY: 0.0064186, DIVERSITY_MEAN_INTER_LIST: 0.9965955, DIVERSITY_HERFINDAHL: 0.9996495, COVERAGE_ITEM: 0.5230434, COVERAGE_USER: 0.1980335, DIVERSITY_GINI: 0.3678060, SHANNON_ENTROPY: 12.2941807, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: 'numpy.ndarray' object is not callable
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.1858060, PRECISION: 0.1093852, RECALL: 0.1087004, RECALL_TEST_LEN: 0.1093852, MAP: 0.0366417, MRR: 0.1245149, NDCG: 0.0791705, F1: 0.1090417, HIT_RATE: 0.5078078, ARHR: 0.1472564, NOVELTY: 0.0061106, DIVERSITY_MEAN_INTER_LIST: 0.9943354, DIVERSITY_HERFINDAHL: 0.9994233, COVERAGE_ITEM: 0.4128907, COVERAGE_USER: 0.1980335, DIVERSITY_GINI: 0.3278431, SHANNON_ENTROPY: 11.7469315, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: too many indices for array
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.1882066, PRECISION: 0.1108055, RECALL: 0.1101450, RECALL_TEST_LEN: 0.1108055, MAP: 0.0381737, MRR: 0.1286550, NDCG: 0.0812432, F1: 0.1104743, HIT_RATE: 0.5153153, ARHR: 0.1533574, NOVELTY: 0.0061424, DIVERSITY_MEAN_INTER_LIST: 0.9942399, DIVERSITY_HERFINDAHL: 0.9994137, COVERAGE_ITEM: 0.3981585, COVERAGE_USER: 0.1980335, DIVERSITY_GINI: 0.3078852, SHANNON_ENTROPY: 11.6287661, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.1882066, PRECISION: 0.1108055, RECALL: 0.1101450, RECALL_TEST_LEN: 0.1108055, MAP: 0.0381737, MRR: 0.1286550, NDCG: 0.0812432, F1: 0.1104743, HIT_RATE: 0.5153153, ARHR: 0.1533574, NOVELTY: 0.0061424, DIVERSITY_MEAN_INTER_LIST: 0.9942399, DIVERSITY_HERFINDAHL: 0.9994137, COVERAGE_ITEM: 0.3981585, COVERAGE_USER: 0.1980335, DIVERSITY_GINI: 0.3078852, SHANNON_ENTROPY: 11.6287661, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.1607229, PRECISION: 0.0962903, RECALL: 0.0956838, RECALL_TEST_LEN: 0.0962903, MAP: 0.0300256, MRR: 0.1031824, NDCG: 0.0676196, F1: 0.0959861, HIT_RATE: 0.4487487, ARHR: 0.1206074, NOVELTY: 0.0062365, DIVERSITY_MEAN_INTER_LIST: 0.9963296, DIVERSITY_HERFINDAHL: 0.9996229, COVERAGE_ITEM: 0.5053065, COVERAGE_USER: 0.1980335, DIVERSITY_GINI: 0.3541438, SHANNON_ENTROPY: 12.1900579, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.1882066, PRECISION: 0.1108055, RECALL: 0.1101450, RECALL_TEST_LEN: 0.1108055, MAP: 0.0381737, MRR: 0.1286550, NDCG: 0.0812432, F1: 0.1104743, HIT_RATE: 0.5153153, ARHR: 0.1533574, NOVELTY: 0.0061424, DIVERSITY_MEAN_INTER_LIST: 0.9942399, DIVERSITY_HERFINDAHL: 0.9994137, COVERAGE_ITEM: 0.3981585, COVERAGE_USER: 0.1980335, DIVERSITY_GINI: 0.3078852, SHANNON_ENTROPY: 11.6287661, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.1607229, PRECISION: 0.0962903, RECALL: 0.0956838, RECALL_TEST_LEN: 0.0962903, MAP: 0.0300256, MRR: 0.1031824, NDCG: 0.0676196, F1: 0.0959861, HIT_RATE: 0.4487487, ARHR: 0.1206074, NOVELTY: 0.0062365, DIVERSITY_MEAN_INTER_LIST: 0.9963296, DIVERSITY_HERFINDAHL: 0.9996229, COVERAGE_ITEM: 0.5053065, COVERAGE_USER: 0.1980335, DIVERSITY_GINI: 0.3541438, SHANNON_ENTROPY: 12.1900579, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.1557399, PRECISION: 0.0941496, RECALL: 0.0935613, RECALL_TEST_LEN: 0.0941496, MAP: 0.0292908, MRR: 0.1013161, NDCG: 0.0661108, F1: 0.0938545, HIT_RATE: 0.4391391, ARHR: 0.1184652, NOVELTY: 0.0062444, DIVERSITY_MEAN_INTER_LIST: 0.9963533, DIVERSITY_HERFINDAHL: 0.9996253, COVERAGE_ITEM: 0.5054519, COVERAGE_USER: 0.1980335, DIVERSITY_GINI: 0.3528478, SHANNON_ENTROPY: 12.1890875, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: index 344 is out of bounds for axis 1 with size 20
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'> - Exception: index 344 is out of bounds for axis 1 with size 20
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.1574328, PRECISION: 0.0955115, RECALL: 0.0949579, RECALL_TEST_LEN: 0.0955115, MAP: 0.0297245, MRR: 0.1039023, NDCG: 0.0671114, F1: 0.0952339, HIT_RATE: 0.4433433, ARHR: 0.1210113, NOVELTY: 0.0062407, DIVERSITY_MEAN_INTER_LIST: 0.9964383, DIVERSITY_HERFINDAHL: 0.9996338, COVERAGE_ITEM: 0.5086988, COVERAGE_USER: 0.1980335, DIVERSITY_GINI: 0.3545876, SHANNON_ENTROPY: 12.2087997, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.1889519, PRECISION: 0.1138876, RECALL: 0.1131622, RECALL_TEST_LEN: 0.1138876, MAP: 0.0392184, MRR: 0.1278689, NDCG: 0.0827775, F1: 0.1135238, HIT_RATE: 0.5334334, ARHR: 0.1554334, NOVELTY: 0.0062356, DIVERSITY_MEAN_INTER_LIST: 0.9962583, DIVERSITY_HERFINDAHL: 0.9996157, COVERAGE_ITEM: 0.5030773, COVERAGE_USER: 0.1980335, DIVERSITY_GINI: 0.3538154, SHANNON_ENTROPY: 12.1817221, 
+
+Algorithm: <class 'KNN.HybridRecommenderXGBoost.HybridRecommenderXGBoost_Fede'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.2211079, PRECISION: 0.1343107, RECALL: 0.1335688, RECALL_TEST_LEN: 0.1343107, MAP: 0.0536475, MRR: 0.1587820, NDCG: 0.1025604, F1: 0.1339387, HIT_RATE: 0.6085085, ARHR: 0.1985865, NOVELTY: 0.0061463, DIVERSITY_MEAN_INTER_LIST: 0.9956139, DIVERSITY_HERFINDAHL: 0.9995510, COVERAGE_ITEM: 0.4571844, COVERAGE_USER: 0.1980335, DIVERSITY_GINI: 0.3372274, SHANNON_ENTROPY: 11.9704417, 
+
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.2893153, PRECISION: 0.1662023, RECALL: 0.1653118, RECALL_TEST_LEN: 0.1662023, MAP: 0.0764245, MRR: 0.2222215, NDCG: 0.1371230, F1: 0.1657558, HIT_RATE: 0.7540000, ARHR: 0.2766252, NOVELTY: 0.0056688, DIVERSITY_MEAN_INTER_LIST: 0.9907048, DIVERSITY_HERFINDAHL: 0.9990606, COVERAGE_ITEM: 0.2960504, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2615719, SHANNON_ENTROPY: 10.9526430, 
+
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.2893758, PRECISION: 0.1660839, RECALL: 0.1652046, RECALL_TEST_LEN: 0.1660839, MAP: 0.0764211, MRR: 0.2223238, NDCG: 0.1370864, F1: 0.1656431, HIT_RATE: 0.7535000, ARHR: 0.2767532, NOVELTY: 0.0056750, DIVERSITY_MEAN_INTER_LIST: 0.9908747, DIVERSITY_HERFINDAHL: 0.9990776, COVERAGE_ITEM: 0.2976012, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2635780, SHANNON_ENTROPY: 10.9735936, 
+
+Algorithm: <class 'KNN.HybridRecommender.HybridRecommender'>, results: 
+CUTOFF: 10 - ROC_AUC: 0.2888975, PRECISION: 0.1662540, RECALL: 0.1653753, RECALL_TEST_LEN: 0.1662540, MAP: 0.0764660, MRR: 0.2219324, NDCG: 0.1371578, F1: 0.1658135, HIT_RATE: 0.7556000, ARHR: 0.2767862, NOVELTY: 0.0056683, DIVERSITY_MEAN_INTER_LIST: 0.9906458, DIVERSITY_HERFINDAHL: 0.9990547, COVERAGE_ITEM: 0.2928520, COVERAGE_USER: 0.1982318, DIVERSITY_GINI: 0.2625535, SHANNON_ENTROPY: 10.9426533, 
+

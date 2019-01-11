@@ -51,7 +51,10 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
         if not force_compute_sim:
             found = True
             try:
-                with open(os.path.join("IntermediateComputations", "ItemCF", "tot={}_tokK={}_shrink={}_tfidf={}.pkl".format(str(len(self.URM_train.data)), str(self.topK), str(self.shrink), str(self.tfidf))),
+                with open(os.path.join("IntermediateComputations", "ItemCF",
+                                       "tot={}_tokK={}_shrink={}_tfidf={}.pkl".format(str(len(self.URM_train.data)),
+                                                                                      str(self.topK), str(self.shrink),
+                                                                                      str(self.tfidf))),
                           'rb') as handle:
                     (topK_new, shrink_new, W_sparse_new) = pickle.load(handle)
             except FileNotFoundError:
@@ -78,7 +81,10 @@ class ItemKNNCFRecommender(SimilarityMatrixRecommender, Recommender):
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
             print('Similarity item based CF computed')
-            with open(os.path.join("IntermediateComputations", "ItemCF", "tot={}_tokK={}_shrink={}_tfidf={}.pkl".format(str(len(self.URM_train.data)), str(self.topK), str(self.shrink), str(self.tfidf))),
+            with open(os.path.join("IntermediateComputations", "ItemCF",
+                                   "tot={}_tokK={}_shrink={}_tfidf={}.pkl".format(str(len(self.URM_train.data)),
+                                                                                  str(self.topK), str(self.shrink),
+                                                                                  str(self.tfidf))),
                       'wb') as handle:
                 pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
                 print("Item CF similarity matrix saved")

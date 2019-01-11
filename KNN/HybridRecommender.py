@@ -97,7 +97,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             weights5=None, weights6=None, weights7=None, weights8=None, pop1=None, pop2=None, similarity='cosine',
             normalize=True,
             old_similarity_matrix=None, epochs=1, top1=None, shrink1=None, filter_top_pop_len=0,
-            force_compute_sim=False, weights_to_dweights=-1, **similarity_args):
+            force_compute_sim=False, weights_to_dweights=-1, feature_weighting_index=1, **similarity_args):
 
         if topK is None:  # IT MEANS THAT I'M TESTING ONE RECOMMENDER ON A SPECIIFC INTERVAL
             topK = [top1]
@@ -184,8 +184,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 rp3bcounter += 1
 
             elif recommender.__class__ in [ItemKNNCBFRecommender]:
-                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
-                # feature_weighting_index=similarity_args["feature_weighting_index"])
+                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
+                                feature_weighting_index=feature_weighting_index)
 
             elif recommender.__class__ in [ItemKNNCFPageRankRecommender]:
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
@@ -285,7 +285,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             remove_top_pop_flag = False
         else:
             remove_top_pop_flag = True
-
 
         if self.sparse_weights:
             scores = []
@@ -572,14 +571,14 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
             normalize=True,
             old_similarity_matrix=None, epochs=1,
             top1=None, shrink1=None, top2=None, shrink2=None, top3=None, shrink3=None, top4=None, shrink4=None,
-            top5=None, shrink5=None, top6=None, shrink6=None,
+            top5=None, shrink5=None, top6=None, shrink6=None, top7=None, shrink7=None,
             filter_top_pop_len=0,
             force_compute_sim=False, weights_to_dweights=-1, **similarity_args):
 
         if topK is None:  # IT MEANS THAT I'M TESTING ONE RECOMMENDER ON A SPECIIFC INTERVAL
-            topK = [top1, top2, top3, top4, top5, top6]
+            topK = [top1, top2, top3, top4, top5, top6, top7]
             topK = [x for x in topK if x is not None]
-            shrink = [shrink1, shrink2, shrink3, shrink4, shrink5, shrink6]
+            shrink = [shrink1, shrink2, shrink3, shrink4, shrink5, shrink6, shrink7]
             shrink = [x for x in shrink if x is not None]
 
         if self.weights is None:
@@ -602,9 +601,8 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
             self.weights), "Weights: {} and recommender list: {} have different lenghts".format(len(self.weights), len(
             self.recommender_list))
 
-        assert len(topK) == len(shrink) == len(self.recommender_list) == len(
-            similarity_args["save_matrix"]), "Knns, Shrinks save matrix and recommender list have " \
-                                             "different lenghts "
+        assert len(topK) == len(shrink) == len(
+            self.recommender_list), "Knns, Shrinks and recommender list have different lenghts "
 
         self.normalize = normalize
         self.topK = topK
@@ -618,9 +616,8 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
         factorCounter = 0
         tfidf_counter = 0
 
-        for knn, shrink, recommender, save_matrix in zip(topK, shrink, self.recommender_list,
-                                                         similarity_args["save_matrix"]):
-            force_compute_sim = save_matrix
+        for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
+
             if recommender.__class__ is SLIM_BPR_Cython:
                 if "lambda_i" in list(similarity_args.keys()):  # lambda i and j provided in args
                     if type(similarity_args["lambda_i"]) is not list:

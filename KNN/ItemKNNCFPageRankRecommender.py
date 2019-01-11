@@ -45,7 +45,10 @@ class ItemKNNCFPageRankRecommender(SimilarityMatrixRecommender, Recommender):
         if not force_compute_sim:
             found = True
             try:
-                with open(os.path.join("IntermediateComputations", "ItemCFPageRankMatrix.pkl"), 'rb') as handle:
+                with open(os.path.join("IntermediateComputations", "ItemPageRank",
+                                       "tot={}_tokK={}_shrink={}.pkl".format(str(len(self.URM_train.data)),
+                                                                             str(self.topK), str(self.shrink))),
+                          'rb') as handle:
                     (topK_new, shrink_new, W_sparse_new) = pickle.load(handle)
             except FileNotFoundError:
                 print("File {} not found".format(os.path.join("IntermediateComputations", "ItemCFPageRankMatrix.pkl")))
@@ -65,7 +68,10 @@ class ItemKNNCFPageRankRecommender(SimilarityMatrixRecommender, Recommender):
 
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
-            with open(os.path.join("IntermediateComputations", "ItemCFPageRankMatrix.pkl"), 'wb') as handle:
+            with open(os.path.join("IntermediateComputations", "ItemPageRank",
+                                   "tot={}_tokK={}_shrink={}.pkl".format(str(len(self.URM_train.data)),
+                                                                         str(self.topK), str(self.shrink))),
+                      'wb') as handle:
                 pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
                 print("Item CF PageRank similarity matrix saved")
         else:

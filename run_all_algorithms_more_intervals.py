@@ -46,7 +46,7 @@ if __name__ == '__main__':
     # else:
     #     print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
     # delete_previous_intermediate_computations()
-    filename = "hybrid_ICB_ICF_UCF_P3_RP3_SLIM_ELASTIC_local_07973.csv"
+    filename = "hybrid_ICB_ICF_UCF_P3_RP3_SLIM_ELASTIC_local_07988.csv"
 
     dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
 
@@ -134,17 +134,17 @@ if __name__ == '__main__':
 
         recommender.fit(**
                         {
-                            "topK": [130, 170, 160, 101, 391, 761, 490],
+                            "topK": [130, 170, 160, 20, 391, 761, 490],
                             "shrink": [2, 2, 2, -1, -1, -1, -1],
                             "pop": [280],
                             "weights": [0.6813028511830805, 1.909333168066915, 1.7310872430736808, 0.21366328472310858,
                                         0.119951539373373, 0.4167522979092386, 1.989958133774426],
                             "final_weights": [1, 1],
                             "force_compute_sim": False,  # not evaluate_algorithm,
-                            "feature_weighting_index": 1,
+                            "feature_weighting_index": 0,
                             "epochs": 50,
                             'lambda_i': [0.0], 'lambda_j': [1.0153577332223556e-08], 'SLIM_lr': [0.1],
-                            'alphaP3': [0.7649722376036994],
+                            'alphaP3': [0.6065173289897832],
                             'alphaRP3': [0.8582865731462926],
                             'betaRP': [0.2814208416833668],
                             'l1_ratio': 3.020408163265306e-06,

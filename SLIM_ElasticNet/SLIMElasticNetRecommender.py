@@ -40,10 +40,18 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
         assert 0 <= l1_ratio <= 1, "SLIM_ElasticNet: l1_ratio must be between 0 and 1, provided value was {}".format(
             l1_ratio)
 
+        self.l1_ratio = l1_ratio
+        self.positive_only = positive_only
+        self.topK = topK
+        self.alpha = alpha
         if not force_compute_sim:
             found = True
             try:
-                with open(os.path.join("IntermediateComputations", "SLIM_ElasticNet_Matrix.pkl"), 'rb') as handle:
+                with open(os.path.join("IntermediateComputations", "SLIM_ElasticNet",
+                                       "totURM={}_topK={}_l1ratio={}_alpha={}.pkl".format(
+                                           str(len(self.URM_train.data)),
+                                           str(self.topK),
+                                           str(self.l1_ratio), str(self.alpha))), 'rb') as handle:
                     (W_sparse_new) = pickle.load(handle)
             except FileNotFoundError:
                 found = False
@@ -52,11 +60,6 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
                 self.W_sparse = W_sparse_new
                 print("Saved ElasticNet SLIM Matrix Used!")
                 return
-
-        self.l1_ratio = l1_ratio
-        self.positive_only = positive_only
-        self.topK = topK
-        self.alpha = alpha
 
         # initialize the ElasticNet model
         self.model = ElasticNet(alpha=self.alpha,
@@ -153,7 +156,11 @@ class SLIMElasticNetRecommender(SimilarityMatrixRecommender, Recommender):
         self.W_sparse = sps.csr_matrix((values[:numCells], (rows[:numCells], cols[:numCells])),
                                        shape=(n_items, n_items), dtype=np.float32)
 
-        with open(os.path.join("IntermediateComputations", "SLIM_ElasticNet_Matrix.pkl"), 'wb') as handle:
+        with open(os.path.join("IntermediateComputations", "SLIM_ElasticNet",
+                               "totURM={}_topK={}_l1ratio={}_alpha={}.pkl".format(
+                                   str(len(self.URM_train.data)),
+                                   str(self.topK),
+                                   str(self.l1_ratio), str(self.alpha))), 'wb') as handle:
             pickle.dump(self.W_sparse, handle,
                         protocol=pickle.HIGHEST_PROTOCOL)
 

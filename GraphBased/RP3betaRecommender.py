@@ -46,7 +46,12 @@ class RP3betaRecommender(SimilarityMatrixRecommender, Recommender):
         if not force_compute_sim:
             found = True
             try:
-                with open(os.path.join("IntermediateComputations", "RP3betaMatrix.pkl"), 'rb') as handle:
+                with open(os.path.join("IntermediateComputations", "RP3beta",
+                                       "totURM={}_topK={}_alpha={}_beta={}_normalize={}.pkl".format(
+                                           str(len(self.URM_train.data)),
+                                           str(self.topK),
+                                           str(self.alpha), str(self.beta), str(self.normalize_similarity))),
+                          'rb') as handle:
                     (topK_new, W_sparse_new) = pickle.load(handle)
             except FileNotFoundError:
                 print("File {} not found".format(os.path.join("IntermediateComputations", "RP3betaMatrix.pkl")))
@@ -163,6 +168,10 @@ class RP3betaRecommender(SimilarityMatrixRecommender, Recommender):
             self.W_sparse = similarityMatrixTopK(self.W, forceSparseOutput=True, k=self.topK)
             self.sparse_weights = True
 
-        with open(os.path.join("IntermediateComputations", "RP3betaMatrix.pkl"), 'wb') as handle:
+        with open(os.path.join("IntermediateComputations", "RP3beta",
+                               "totURM={}_topK={}_alpha={}_beta={}_normalize={}.pkl".format(
+                                   str(len(self.URM_train.data)),
+                                   str(self.topK),
+                                   str(self.alpha), str(self.beta), str(self.normalize_similarity))), 'wb') as handle:
             pickle.dump((self.topK, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
             print("RP3beta similarity matrix saved")

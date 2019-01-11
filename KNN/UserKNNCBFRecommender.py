@@ -40,7 +40,12 @@ class UserKNNCBRecommender(SimilarityMatrixRecommender, Recommender):
         if not force_compute_sim:
             found = True
             try:
-                with open(os.path.join("IntermediateComputations", "UCMCBFSimMatrix.pkl"), 'rb') as handle:
+                with open(os.path.join("IntermediateComputations", "UCB",
+                                       "totURM={}_totUCM={}_topK={}_shrink={}.pkl".format(str(len(self.URM_train.data)),
+                                                                                          str(len(self.UCM_train.data)),
+                                                                                          str(self.topK),
+                                                                                          str(self.shrink))),
+                          'rb') as handle:
                     W_sparse_new = pickle.load(handle)
             except FileNotFoundError:
                 found = False
@@ -55,7 +60,12 @@ class UserKNNCBRecommender(SimilarityMatrixRecommender, Recommender):
 
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
-            with open(os.path.join("IntermediateComputations", "UCMCBFSimMatrix.pkl"), 'wb') as handle:
+            with open(os.path.join("IntermediateComputations", "UCB",
+                                   "totURM={}_totUCM={}_topK={}_shrink={}.pkl".format(str(len(self.URM_train.data)),
+                                                                                      str(len(self.UCM_train.data)),
+                                                                                      str(self.topK),
+                                                                                      str(self.shrink))),
+                      'wb') as handle:
                 pickle.dump(self.W_sparse, handle, protocol=pickle.HIGHEST_PROTOCOL)
         else:
             self.W = similarity.compute_similarity()

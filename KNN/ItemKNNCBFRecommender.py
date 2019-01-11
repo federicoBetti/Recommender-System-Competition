@@ -50,7 +50,10 @@ class ItemKNNCBFRecommender(SimilarityMatrixRecommender, Recommender):
         if not force_compute_sim:
             found = True
             try:
-                with open(os.path.join("IntermediateComputations", "ContentBFMatrix.pkl"), 'rb') as handle:
+                with open(os.path.join("IntermediateComputations", "ICB",
+                                       "tot={}_topK={}_shrink={}_featureweight={}.pkl".format(
+                                               str(len(self.URM_train.data)), str(self.topK), str(self.shrink),
+                                               str(self.feature_weighting_index))), 'rb') as handle:
                     (topK_new, shrink_new, W_sparse_new) = pickle.load(handle)
             except FileNotFoundError:
                 print("File {} not found".format(os.path.join("IntermediateComputations", "ContentBFMatrix.pkl")))
@@ -80,7 +83,11 @@ class ItemKNNCBFRecommender(SimilarityMatrixRecommender, Recommender):
         if self.sparse_weights:
             self.W_sparse = similarity.compute_similarity()
 
-            with open(os.path.join("IntermediateComputations", "ContentBFMatrix.pkl"), 'wb') as handle:
+            with open(os.path.join("IntermediateComputations", "ICB",
+                                   "tot={}_topK={}_shrink={}_featureweight={}.pkl".format(str(len(self.URM_train.data)),
+                                                                                          str(self.topK),
+                                                                                          str(self.shrink), str(
+                                                   self.feature_weighting_index))), 'wb') as handle:
                 pickle.dump((self.topK, self.shrink, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
                 print("CBF similarity matrix saved")
         else:

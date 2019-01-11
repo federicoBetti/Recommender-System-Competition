@@ -45,13 +45,17 @@ class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
         if not force_compute_sim:
             found = True
             try:
-                with open(os.path.join("IntermediateComputations", "P3alphaMatrix.pkl"), 'rb') as handle:
-                    (topK_new, W_sparse_new) = pickle.load(handle)
+                with open(os.path.join("IntermediateComputations", "P3alpha",
+                                       "totURM={}_topK={}_alpha={}_normalize={}.pkl".format(
+                                           str(len(self.URM_train.data)),
+                                           str(self.topK),
+                                           str(self.alpha), str(self.normalize_similarity))), 'rb') as handle:
+                    W_sparse_new = pickle.load(handle)
             except FileNotFoundError:
                 print("File {} not found".format(os.path.join("IntermediateComputations", "P3alphaMatrix.pkl")))
                 found = False
 
-            if found and self.topK == topK_new:
+            if found:
                 self.W_sparse = W_sparse_new
                 print("Saved P3alpha Similarity Matrix Used!")
                 return
@@ -151,6 +155,10 @@ class P3alphaRecommender(SimilarityMatrixRecommender, Recommender):
             self.W_sparse = similarityMatrixTopK(self.W_sparse, forceSparseOutput=True, k=self.topK)
             self.sparse_weights = True
 
-        with open(os.path.join("IntermediateComputations", "P3alphaMatrix.pkl"), 'wb') as handle:
-            pickle.dump((self.topK, self.W_sparse), handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(os.path.join("IntermediateComputations", "P3alpha",
+                               "totURM={}_topK={}_alpha={}_normalize={}.pkl".format(
+                                   str(len(self.URM_train.data)),
+                                   str(self.topK),
+                                   str(self.alpha), str(self.normalize_similarity))), 'wb') as handle:
+            pickle.dump(self.W_sparse, handle, protocol=pickle.HIGHEST_PROTOCOL)
             print("P3alpha similarity matrix saved")

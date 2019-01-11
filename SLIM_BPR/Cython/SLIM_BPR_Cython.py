@@ -98,10 +98,23 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
         :param force_compute_sim:
         :return:
         '''
+
+        self.lambda_i = lambda_i
+        self.lambda_j = lambda_j
+        self.learning_rate = learning_rate
+        self.topK = topK
+        self.epochs = epochs
+
         if not force_compute_sim:
             found = True
             try:
-                with open(os.path.join("IntermediateComputations", "SLIM_BPR_Matrix_.pkl"), 'rb') as handle:
+                with open(os.path.join("IntermediateComputations", "SLIM_BPR",
+                                       "totURM={}_topK={}_lambdai={}_lambdaj={}_lr={}_epochs={}.pkl".format(
+                                           str(len(self.URM_train.data)),
+                                           str(self.topK),
+                                           str(self.lambda_i), str(self.lambda_j), str(self.learning_rate),
+                                           str(self.epochs))),
+                          'rb') as handle:
                     (W_sparse_new) = pickle.load(handle)
             except FileNotFoundError:
                 found = False
@@ -164,7 +177,12 @@ class SLIM_BPR_Cython(SimilarityMatrixRecommender, Recommender, Incremental_Trai
 
         self.get_S_incremental_and_set_W()
         # self.normalized_SLIM()
-        with open(os.path.join("IntermediateComputations", "SLIM_BPR_Matrix_.pkl"), 'wb') as handle:
+        with open(os.path.join("IntermediateComputations", "SLIM_BPR",
+                               "totURM={}_topK={}_lambdai={}_lambdaj={}_lr={}_epochs={}.pkl".format(
+                                   str(len(self.URM_train.data)),
+                                   str(self.topK),
+                                   str(self.lambda_i), str(self.lambda_j), str(self.learning_rate), str(self.epochs))),
+                  'wb') as handle:
             pickle.dump(self.W_sparse, handle,
                         protocol=pickle.HIGHEST_PROTOCOL)
 

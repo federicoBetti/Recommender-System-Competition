@@ -2606,7 +2606,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
         if len(self.filterTopPop_ItemsID) == 0:
             remove_top_pop_flag = False
-
+        else:
+            remove_top_pop_flag = True
         # compute the scores using the dot product
         # noinspection PyUnresolvedReferences
         if self.sparse_weights:
@@ -2907,14 +2908,14 @@ if __name__ == '__main__':
                                                                        "URM_PageRank_train": Page_Rank},
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {
-                                 "topK": [130, 210, 215, 185, 330, 101, 391, 761, 490],
-                                 "shrink": [2, 90, 3, 28, 2, -1, -1, -1, -1],
+                                 "topK": [130, 210, 170, 180, 330, 101, 391, 761, 490],
+                                 "shrink": [2, 90, 2, 2, 2, -1, -1, -1, -1],
                                  "pop": [280],
                                  "weights": [1, 1, 1, 1, 1, 1, 1],
                                  "final_weights": [1, 1],
                                  "force_compute_sim": False,  # not evaluate_algorithm,
                                  "feature_weighting_index": 1,
-                                 "epochs": 150,
+                                 "epochs": 50,
                                  'lambda_i': [0.0], 'lambda_j': [1.0153577332223556e-08], 'SLIM_lr': [0.1],
                                  'alphaP3': [0.7649722376036994],
                                  'alphaRP3': [0.8582865731462926],

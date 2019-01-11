@@ -58,7 +58,7 @@ if __name__ == '__main__':
     recommender_list = [
         # Random,
         # TopPop,
-        # ItemKNNCBFRecommender,
+        ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
         # ItemKNNCFPageRankRecommender,
         ItemKNNCFRecommender,
@@ -67,8 +67,8 @@ if __name__ == '__main__':
         # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
-        SLIMElasticNetRecommender
+        # SLIM_BPR_Cython,
+        # SLIMElasticNetRecommender
         # PureSVDRecommender
     ]
 
@@ -120,8 +120,8 @@ if __name__ == '__main__':
         l1_ratio = 1e-06
         # alpha = [1.9959734038074426, 0.10609858937191907, 0.4608371142966865, 1.905978868103585, 1.6329874929834254, 1.7878599729785276]
         # alpha = [1 / len(recommender_list)]*len(recommender_list)
-        alpha = [1] * len(recommender_list)
-        i = 0
+        alpha = [1 / len(recommender_list)] * len(recommender_list)
+        i = 1
         while i < 80:
             recommender_class = HybridRecommender
             recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=False,
@@ -130,8 +130,8 @@ if __name__ == '__main__':
             MAP = 0
             print("alpha: {}".format(alpha))
             recommender.fit(**{
-                            "topK": [215, 170, 160, 761, 490],
-                            "shrink": [3, 2, 2, -1, -1],
+                            "topK": [130, 215, 170, 160],
+                            "shrink": [2, 3, 2, 2],
                             "pop": [280],
                             "weights": alpha,
                             "force_compute_sim": False,
@@ -207,13 +207,14 @@ if __name__ == '__main__':
             MAE = recommender.MAE / H
             print("MAE: {}, MAP: {},  gradients: {}".format(MAE, MAP / n_users_evaluated, grad))
             # learning rate
-            lr = 0.1
+            lr = 0.01
             # gradient descent
-            alpha = [a + lr * g for a, g in zip(alpha, grad)]
+            alpha = [a - lr * g for a, g in zip(alpha, grad)]
             # decrease learning rate
-            lr /= i
+            # if i % 10 == 0:
+            #     lr /= i
             # normalization
-            alpha = [float(index) / sum(alpha) for index in alpha]
+            # alpha = [float(index) / sum(alpha) for index in alpha]
 
             logFile.write(
                 "Iteration: {}, MAE: {}, MAP: {},  gradients: {}\n".format(i, MAE, MAP / n_users_evaluated, grad))

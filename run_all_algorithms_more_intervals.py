@@ -35,7 +35,7 @@ import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
 if __name__ == '__main__':
-    evaluate_algorithm = True
+    evaluate_algorithm = False
     delete_old_computations = False
     slim_after_hybrid = False
 
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     # else:
     #     print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
     # delete_previous_intermediate_computations()
-    filename = "hybrid_5_algo.csv"
+    filename = "hybrid_ICB_ICF_UCF_SLIM_RP_ELASTIC.csv"
 
     dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
 
@@ -60,18 +60,18 @@ if __name__ == '__main__':
     recommender_list1 = [
         # Random,
         # TopPop,
-        # ItemKNNCBFRecommender,
+        ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
-        # ItemKNNCFPageRankRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        P3alphaRecommender,
-        # RP3betaRecommender,
+        # ItemKNNCFPageRankRecommender,
+        # P3alphaRecommender,
+        RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         SLIM_BPR_Cython,
+        # PureSVDRecommender,
         SLIMElasticNetRecommender
-        # PureSVDRecommender
     ]
 
     # ITEM CB, ITEM CF, USER CF, RP3BETA, PURE SVD
@@ -83,7 +83,7 @@ if __name__ == '__main__':
         # ItemKNNCFPageRankRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        P3alphaRecommender,
+        # P3alphaRecommender,
         RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
@@ -133,14 +133,13 @@ if __name__ == '__main__':
 
         recommender.fit(**
                         {
-                            "topK": [215, 170, 160, 761, 490],
-                            "shrink": [3, 2, 2, -1, -1],
+                            "topK": [130, 170, 180, 391, 761, 490],
+                            "shrink": [2, 2, 2, -1, -1, -1],
                             "pop": [280],
-                            "weights": [0.17469582290644048, 0.13088402487148165, 0.4520808701660822,
-                                        0.048423283207938095, 0.69277832363201],
+                            "weights": [0.36503223650050454, 0.83112926076437, 0.7930753751595545, 0.6847526619355242,
+                                        0.2418366304926498, 0.9966317374868113],
                             "force_compute_sim": False,
                             "feature_weighting_index": 1,
-                            "old_similarity_matrix": old_similrity_matrix,
                             "epochs": 50,
                             'lambda_i': [0.0], 'lambda_j': [1.0153577332223556e-08], 'SLIM_lr': [0.1],
                             'alphaP3': [0.7649722376036994],
@@ -148,7 +147,8 @@ if __name__ == '__main__':
                             'betaRP': [0.2814208416833668],
                             'alpha': 0.0014681984611695231,
                             'l1_ratio': 3.020408163265306e-06,
-                            "weights_to_dweights": -1})
+                            "weights_to_dweights": -1,
+                            "filter_top_pop_len": 0})
 
         print("TEST")
 

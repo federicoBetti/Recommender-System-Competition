@@ -5,6 +5,7 @@ Created on 23/11/18
 
 @author: Federico Betti
 """
+import random
 
 from Base.Recommender import Recommender
 from Base.Recommender_utils import check_matrix
@@ -284,7 +285,6 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             remove_top_pop_flag = False
         else:
             remove_top_pop_flag = True
-        print("remove top pop flag: {} and self.filterTopPop list: {}".format(remove_top_pop_flag, self.filterTopPop_ItemsID))
 
 
         if self.sparse_weights:
@@ -444,6 +444,10 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                     # user profile sono gli 1 nella URM train
                     test_songs = self.URM_validation.indices[
                                  self.URM_validation.indptr[user_id]:self.URM_validation.indptr[user_id + 1]]
+                    all_songs = set(range(self.URM_train.shape[1]))
+                    all_songs.difference(test_songs)
+                    all_songs.difference(user_profile)
+                    negative_samples = list(random.sample(all_songs, (len(user_profile) + len(test_songs)) * 50))
 
                     final_score_line = np.zeros(scores[0].shape[1])
                     for score, weight in zip(scores, weights):
@@ -453,8 +457,11 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                             np.sign(final_score_line[test_songs] - 1) * score[user_index, test_songs])
                         self.gradients[ind] += sum(
                             np.sign(final_score_line[user_profile] - 1) * score[user_index, user_profile])
+                        self.gradients[ind] += sum(
+                            np.sign(final_score_line[negative_samples] - 0) * score[user_index, negative_samples])
                     self.MAE += sum(abs(final_score_line[test_songs] - 1))
                     self.MAE += sum(abs(final_score_line[user_profile] - 1))
+                    self.MAE += sum(abs(final_score_line[negative_samples] - 0))
                     final_score[user_index] = final_score_line
 
         else:
@@ -571,7 +578,9 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
 
         if topK is None:  # IT MEANS THAT I'M TESTING ONE RECOMMENDER ON A SPECIIFC INTERVAL
             topK = [top1, top2, top3, top4, top5, top6]
+            topK = [x for x in topK if x is not None]
             shrink = [shrink1, shrink2, shrink3, shrink4, shrink5, shrink6]
+            shrink = [x for x in shrink if x is not None]
 
         if self.weights is None:
             self.weights = weights
@@ -594,7 +603,7 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
             self.recommender_list))
 
         assert len(topK) == len(shrink) == len(self.recommender_list) == len(
-            similarity_args["save_matrix"]), "Knns, Shrinks and recommender list have " \
+            similarity_args["save_matrix"]), "Knns, Shrinks save matrix and recommender list have " \
                                              "different lenghts "
 
         self.normalize = normalize

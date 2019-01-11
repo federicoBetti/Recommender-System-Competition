@@ -3,6 +3,7 @@ import sys
 import time
 
 from Dataset.RS_Data_Loader import RS_Data_Loader
+from KNN.ItemKNNCFPageRankRecommender import ItemKNNCFPageRankRecommender
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 
@@ -53,6 +54,7 @@ if __name__ == '__main__':
     URM_test = dataReader.get_URM_test()
     ICM = dataReader.get_ICM()
     UCM_tfidf = dataReader.get_tfidf_artists()
+    URM_PageRank_train = dataReader.get_page_rank_URM()
     # _ = dataReader.get_tfidf_album()
 
     recommender_list = [
@@ -60,18 +62,18 @@ if __name__ == '__main__':
         # TopPop,
         ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
-        # ItemKNNCFPageRankRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        P3alphaRecommender,
+        ItemKNNCFPageRankRecommender,
+        # P3alphaRecommender,
         # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
-        # SLIM_BPR_Cython,
-        # SLIMElasticNetRecommender
-        # PureSVDRecommender
+        SLIM_BPR_Cython,
+        # ItemKNNCFRecommenderFAKESLIM,
+        # PureSVDRecommender,
+        SLIMElasticNetRecommender
     ]
-
     from Base.Evaluation.Evaluator import SequentialEvaluator
 
     evaluator = SequentialEvaluator(URM_test, URM_train, exclude_seen=True)
@@ -118,33 +120,38 @@ if __name__ == '__main__':
         old_similrity_matrix = None
         num_factors = 165
         l1_ratio = 1e-06
-        # alpha = [1.9959734038074426, 0.10609858937191907, 0.4608371142966865, 1.905978868103585, 1.6329874929834254, 1.7878599729785276]
-        # alpha = [1 / len(recommender_list)]*len(recommender_list)
+
         alpha = [1 / len(recommender_list)] * len(recommender_list)
+        alpha = [0.7470732244924472, 1.3785496027404176, 1.9958821198025338, 0.07863583826987597,
+                            0.49869178149305293, 1.9272394616005477]
+        alpha = [x / len(recommender_list) for x in alpha]
         i = 1
         while i < 80:
             recommender_class = HybridRecommender
             recommender = recommender_class(URM_train, ICM, recommender_list, UCM_train=UCM_tfidf, dynamic=False,
+                                            URM_PageRank_train=URM_PageRank_train,
                                             # d_weights=d_weights,
                                             URM_validation=URM_validation, onPop=onPop)
             MAP = 0
             print("alpha: {}".format(alpha))
             recommender.fit(**{
-                            "topK": [130, 215, 170, 160],
-                            "shrink": [2, 3, 2, 2],
-                            "pop": [280],
-                            "weights": alpha,
-                            "force_compute_sim": False,
-                            "feature_weighting_index": 1,
-                            "old_similarity_matrix": old_similrity_matrix,
-                            "epochs": 50,
-                            'lambda_i': [0.0], 'lambda_j': [1.0153577332223556e-08], 'SLIM_lr': [0.1],
-                            'alphaP3': [0.7649722376036994],
-                            'alphaRP3': [0.8582865731462926],
-                            'betaRP': [0.2814208416833668],
-                            'alpha': 0.0014681984611695231,
-                            'l1_ratio': 3.020408163265306e-06,
-                            "weights_to_dweights": -1})
+                "topK": [130, 170, 180, 330, 761, 490],
+                "shrink": [2, 2, 2, 2, -1, -1],
+                "pop": [280],
+                "weights": alpha,
+                "final_weights": [1, 1],
+                "force_compute_sim": False,  # not evaluate_algorithm,
+                "feature_weighting_index": 1,
+                "epochs": 50,
+                'lambda_i': [0.0], 'lambda_j': [1.0153577332223556e-08], 'SLIM_lr': [0.1],
+                'alphaP3': [0.7649722376036994],
+                'alphaRP3': [0.8582865731462926],
+                'betaRP': [0.2814208416833668],
+                'l1_ratio': 3.020408163265306e-06,
+                'alpha': 0.0014681984611695231,
+                'tfidf': [True],
+                "weights_to_dweights": -1,
+                "filter_top_pop_len": 0})
 
             print("Starting Evaluations...")
             t = time.time()
@@ -207,7 +214,7 @@ if __name__ == '__main__':
             MAE = recommender.MAE / H
             print("MAE: {}, MAP: {},  gradients: {}".format(MAE, MAP / n_users_evaluated, grad))
             # learning rate
-            lr = 0.01
+            lr = 0.001
             # gradient descent
             alpha = [a - lr * g for a, g in zip(alpha, grad)]
             # decrease learning rate

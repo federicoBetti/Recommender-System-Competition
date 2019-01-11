@@ -294,7 +294,7 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
         # UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
-        P3alphaRecommender,
+        # P3alphaRecommender,
         # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
@@ -310,18 +310,18 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
     parameterSearch = BayesianSearch(recommender_class, evaluator_validation)
 
     hyperparamethers_range_dictionary = {}
-    hyperparamethers_range_dictionary["top1"] = list(range(0, 300, 5))  # [130]
-    hyperparamethers_range_dictionary["top2"] = list(range(0, 300, 5))  # [170]
-    hyperparamethers_range_dictionary["top3"] = list(range(0, 300, 5))  # [160]
-    hyperparamethers_range_dictionary["top4"] = [101]
-    hyperparamethers_range_dictionary["top5"] = [761]
-    hyperparamethers_range_dictionary["top6"] = [490]
-    hyperparamethers_range_dictionary["shrink1"] = list(range(0, 50, 1))  # [2]
-    hyperparamethers_range_dictionary["shrink2"] = [2] # list(range(0, 50, 1))  # [2]
-    hyperparamethers_range_dictionary["shrink3"] = [2] # list(range(0, 50, 1))  # [1]
+    hyperparamethers_range_dictionary["top1"] = [130] #list(range(0, 300, 5))  # [130]
+    hyperparamethers_range_dictionary["top2"] = [170] # list(range(0, 300, 5))  # [170]
+    hyperparamethers_range_dictionary["top3"] = [160] # list(range(0, 300, 5))  # [160]
+    # hyperparamethers_range_dictionary["top4"] = [101]
+    hyperparamethers_range_dictionary["top4"] = [761]
+    hyperparamethers_range_dictionary["top5"] = [490]
+    hyperparamethers_range_dictionary["shrink1"] = [2] #list(range(0, 50, 1))  # [2]
+    hyperparamethers_range_dictionary["shrink2"] = [2]  # list(range(0, 50, 1))  # [2]
+    hyperparamethers_range_dictionary["shrink3"] = [2]  # list(range(0, 50, 1))  # [1]
     hyperparamethers_range_dictionary["shrink4"] = [-1]
     hyperparamethers_range_dictionary["shrink5"] = [-1]
-    hyperparamethers_range_dictionary["shrink6"] = [-1]
+    # hyperparamethers_range_dictionary["shrink6"] = [-1]
 
     dynamic_best = [
         [0.4, 0.03863232277574469, 0.008527738266632112, 0.2560912624445676, 0.7851755932819731, 0.4112843940329439],
@@ -337,8 +337,8 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
                                  # "topK": [130, 170, 160, 101, 761, 490],
                                  # "shrink": [2, 2, 2, -1, -1, -1],
                                  "pop": [280],
-                                 "weights": [0.30452444105955234, 0.6010418028785582, 0.5252911455436969,
-                                             0.9943837285409786, 0.26146121575547365, 0.9651514993587235],
+                                 "weights": [0.6641750893264197, 1.7574684655288033, 1.6509508735648937,
+                                             0.5265165765951231, 1.854643122402298],
                                  "final_weights": [1, 1],
                                  "force_compute_sim": False,  # not evaluate_algorithm,
                                  "feature_weighting_index": 1,
@@ -352,7 +352,7 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
                                  'alpha': 0.0014681984611695231,
                                  'tfidf': [True],
                                  "weights_to_dweights": -1,
-                                 "save_matrix": [True, True, True, False, False, False]},
+                                 "save_matrix": [True, True, True, False, False]},
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
 
     output_root_path_similarity = this_output_root_path

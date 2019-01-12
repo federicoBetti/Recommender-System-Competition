@@ -777,7 +777,7 @@ class RS_Data_Loader(object):
             self.train = pd.read_csv(os.path.join("../Dataset", "train.csv"))
             self.tracks = pd.read_csv(os.path.join("../Dataset", "tracks.csv"))
             self.target_playlist = pd.read_csv(os.path.join("../Dataset", "target_playlists.csv"))
-            self.train_sequential = pd.read_csv(os.path.join("Dataset", "train_sequential.csv"))
+            self.train_sequential = pd.read_csv(os.path.join("../Dataset", "train_sequential.csv"))
         self.ICM = None
 
         try:
@@ -2450,8 +2450,9 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
     RECOMMENDER_NAME = "ItemKNNCFRecommender"
 
-    def __init__(self, URM_train, ICM, recommender_list, UCM_train=None, URM_PageRank_train=None, dynamic=False,
-                 d_weights=None, weights=None,
+    def __init__(self, URM_train, ICM, recommender_list, UCM_train=None,
+                 URM_PageRank_train=None,
+                 dynamic=False, d_weights=None, weights=None,
                  URM_validation=None, sparse_weights=True, onPop=True, moreHybrids=False):
         super(Recommender, self).__init__()
 
@@ -2491,14 +2492,16 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         for recommender in recommender_list:
             if recommender is ItemKNNCBFRecommender:
                 self.recommender_list.append(recommender(ICM, URM_train))
-
+            elif recommender in [SLIMElasticNetRecommender]:
+                self.recommender_list.append(recommender(URM_train))
             elif recommender in [UserKNNCBRecommender]:
                 self.recommender_list.append(recommender(self.UCM_train, URM_train))
-            elif recommender.__class__ in [HybridRecommender]:
-                self.recommender_list.append(recommender)
-
             elif recommender in [ItemKNNCFPageRankRecommender]:
                 self.recommender_list.append(recommender(self.URM_train, URM_PageRank_train))
+
+            # For sake of simplicity the recommender in this case is initialized and fitted outside
+            elif recommender.__class__ in [HybridRecommender]:
+                self.recommender_list.append(recommender)
 
             else:  # UserCF, ItemCF, ItemCBF, P3alpha, RP3beta
                 self.recommender_list.append(recommender(URM_train))
@@ -2508,7 +2511,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             weights5=None, weights6=None, weights7=None, weights8=None, pop1=None, pop2=None, similarity='cosine',
             normalize=True,
             old_similarity_matrix=None, epochs=1, top1=None, shrink1=None, filter_top_pop_len=0,
-            force_compute_sim=False, weights_to_dweights=-1, **similarity_args):
+            force_compute_sim=False, weights_to_dweights=-1, feature_weighting_index=1, **similarity_args):
 
         if topK is None:  # IT MEANS THAT I'M TESTING ONE RECOMMENDER ON A SPECIIFC INTERVAL
             topK = [top1]
@@ -2553,7 +2556,11 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         tfidf_counter = 0
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
-            if recommender.__class__ in [P3alphaRecommender]:
+            if recommender.__class__ in [SLIMElasticNetRecommender]:
+                recommender.fit(topK=knn, l1_ratio=similarity_args["l1_ratio"], alpha=similarity_args["alpha"],
+                                force_compute_sim=force_compute_sim)
+
+            elif recommender.__class__ in [P3alphaRecommender]:
                 if type(similarity_args["alphaP3"]) is not list:
                     similarity_args["alphaP3"] = [similarity_args["alphaP3"]]
                 recommender.fit(topK=knn, alpha=similarity_args["alphaP3"][p3counter], min_rating=0, implicit=True,
@@ -2568,10 +2575,11 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
 
             elif recommender.__class__ in [ItemKNNCBFRecommender]:
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
-                                feature_weighting_index=similarity_args["feature_weighting_index"])
+                                feature_weighting_index=feature_weighting_index)
 
-            elif recommender.__class__ in [SLIMElasticNetRecommender]:
-                recommender.fit(topK=knn, l1_ratio=similarity_args["l1_ratio"], force_compute_sim=force_compute_sim)
+            elif recommender.__class__ in [ItemKNNCFPageRankRecommender]:
+                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
+                # feature_weighting_index=similarity_args["feature_weighting_index"])
 
             elif recommender.__class__ in [ItemKNNCFRecommender]:
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
@@ -2608,8 +2616,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
             remove_top_pop_flag = False
         else:
             remove_top_pop_flag = True
-        # compute the scores using the dot product
-        # noinspection PyUnresolvedReferences
+
         if self.sparse_weights:
             scores = []
             # noinspection PyUnresolvedReferences
@@ -2623,11 +2630,9 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 scores_batch = recommender.compute_item_score(user_id_array)
                 # scores_batch = np.ravel(scores_batch) # because i'm not using batch
 
-                for user_index in range(len(user_id_array)):
-
-                    user_id = user_id_array[user_index]
-
-                    if remove_seen_flag:
+                if remove_seen_flag:
+                    for user_index in range(len(user_id_array)):
+                        user_id = user_id_array[user_index]
                         scores_batch[user_index, :] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
 
                 if remove_top_pop_flag:
@@ -2658,6 +2663,17 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                         for score, weight in zip(scores, weights):
                             final_score_line += score[user_index] * weight
                     final_score[user_index] = final_score_line
+                    #
+                    # predicted_songs = np.argsort(-final_score_line)[:10]
+                    # if np.in1d(predicted_songs, user_profile).any():
+                    #     print("User {}, recommendations: {}\n songs in play: {}".format(user_id,
+                    #                                                                     np.argsort(-final_score_line)[
+                    #                                                                     :10], user_profile))
+                    #
+                    # if user_id < 20:
+                    #     print("User {}, recommendations: {}\n songs in play: {}".format(user_id,
+                    #                                                                     np.argsort(-final_score_line)[
+                    #                                                                     :10], user_profile))
             else:
                 for score, weight in zip(scores, weights):
                     final_score += (score * weight)
@@ -2674,21 +2690,9 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         ranking = relevant_items_partition[
             np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
 
-        # scores = final_score
-        # # relevant_items_partition is block_size x cutoff
-        # relevant_items_partition = (-scores_batch).argpartition(cutoff, axis=1)[:, 0:cutoff]
-        #
-        # relevant_items_partition_original_value = scores_batch[
-        #     np.arange(scores_batch.shape[0])[:, None], relevant_items_partition]
-        # relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
-        # ranking = relevant_items_partition[
-        #     np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
-
         ranking_list = ranking.tolist()
 
         # Creating numpy array for training XGBoost
-
-
 
         # Return single list for one user, instead of list of lists
         if single_user:

@@ -37,7 +37,7 @@ from run_parameter_search import delete_previous_intermediate_computations
 
 
 def run():
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     delete_old_computations = False
     slim_after_hybrid = False
 

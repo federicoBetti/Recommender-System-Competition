@@ -121,7 +121,7 @@ BayesianSearch: Config is suboptimal. Config: {'topK': 614, 'sgd_mode': 'adam', 
 BayesianSearch: Best config is: Config {'topK': 66, 'sgd_mode': 'adagrad', 'lambda_i': 0.06928490242552432, 'lambda_j': 0.9408725374123923, 'epochs': 0, 'max_epochs': 0}, MAP value is 0.0964
 
 
-
+NEW ARTO DIVISION ON THE DATASET
 BayesianSearch: New best config found. Config: {'topK': 616, 'sgd_mode': 'adam', 'lambda_i': 0.1778353887180404, 'lambda_j': 0.8103649308583464, 'epochs': 0, 'max_epochs': 0} - MAP results: 0.06545086901612467 - time: 2019-01-08 11:23:38.730826
 BayesianSearch: New best config found. Config: {'topK': 161, 'lambda_i': 0.5249472517574559, 'lambda_j': 0.9611908368936689, 'learning_rate': 1e-05, 'epochs': 0, 'max_epochs': 0} - MAP results: 0.06591796420697886 - time: 2019-01-08 11:27:49.587108
 BayesianSearch: Config is suboptimal. Config: {'topK': 721, 'lambda_i': 0.22628744700540449, 'lambda_j': 0.6791610801651953, 'learning_rate': 1e-05, 'epochs': 0, 'max_epochs': 0} - MAP results: 0.06476880279982354 - time: 2019-01-08 11:29:42.662199

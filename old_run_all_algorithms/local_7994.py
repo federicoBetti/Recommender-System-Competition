@@ -35,8 +35,7 @@ import traceback, os
 import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
-
-def run():
+if __name__ == '__main__':
     evaluate_algorithm = False
     delete_old_computations = False
     slim_after_hybrid = False
@@ -47,7 +46,7 @@ def run():
     # else:
     #     print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
     # delete_previous_intermediate_computations()
-    filename = "hybrid_ICB_ICF_UCF_SLIM_ELASTIC_local_0804.csv"
+    filename = "hybrid_ICB_ICF_UCF_SLIM_ELASTIC_local_07994.csv"
 
     dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
 
@@ -115,7 +114,7 @@ def run():
         '''
         recommender_list = recommender_list1  # + recommender_list2  # + recommender_list3
 
-        onPop = False
+        onPop = True
 
         # On pop it used to choose if have dynamic weights for
         recommender = recommender_class(URM_train, ICM, recommender_list, URM_PageRank_train=URM_PageRank_train,
@@ -135,11 +134,11 @@ def run():
 
         recommender.fit(**
                         {
-                            "topK": [10, 170, 160, 761, 490],
-                            "shrink": [8, 2, 2, -1, -1],
+                            "topK": [130, 170, 160, 761, 490],
+                            "shrink": [2, 2, 2, -1, -1],
                             "pop": [280],
-                            "weights": [0.33804686720093335, 1.3092081994688194, 0.642288869881126, 0.18883962446529368,
-                                        1.9317211019160747],
+                            "weights": [0.4200814460257849, 1.870640984776053, 0.5637842960767818, 0.21480444098456175,
+                                        1.899120863378956],
                             "final_weights": [1, 1],
                             "force_compute_sim": False,  # not evaluate_algorithm,
                             "feature_weighting_index": 0,
@@ -160,7 +159,7 @@ def run():
         # to indicate if plotting for lenght or for pop
 
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
-                                                                                                plot_stats=True,
+                                                                                                plot_stats=False,
                                                                                                 onPop=onPop)
 
         print("Algorithm: {}, results: \n{}".format([rec.RECOMMENDER_NAME for rec in recommender.recommender_list],
@@ -180,11 +179,6 @@ def run():
         traceback.print_exc()
         logFile.write("Algorithm: {} - Exception: {}\n".format(recommender_class, str(e)))
         logFile.flush()
-
-
 #
 # if not evaluate_algorithm:
 #     delete_previous_intermediate_computations()
-
-if __name__ == '__main__':
-    run()

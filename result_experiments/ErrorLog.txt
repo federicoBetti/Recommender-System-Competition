@@ -41,3 +41,4 @@ On recommender <class 'SLIM_ElasticNet.SLIMElasticNetRecommender.MultiThreadSLIM
 On recommender <class 'SLIM_ElasticNet.SLIMElasticNetRecommender.MultiThreadSLIM_ElasticNet'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
 On recommender <class 'KNN.UserKNNCBFRecommender.UserKNNCBRecommender'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
 On recommender <class 'KNN.UserKNNCBFRecommender.UserKNNCBRecommender'> Exception Input contains NaN, infinity or a value too large for dtype('float64').
+On recommender <class 'KNN.UserKNNCBFRecommender.UserKNNCBRecommender'> Exception Input contains NaN, infinity or a value too large for dtype('float64').

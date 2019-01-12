@@ -768,8 +768,9 @@ class HybridRecommenderXGBoost_Fede(SimilarityMatrixRecommender, Recommender):
                 single_score[user] = score[user, ranking_line]
             scores_list.append(single_score.reshape(-1, 1))
 
-        scores_list.append(ranking.reshape(-1, 1))
-        # elements to add for each song
+        # scores_list.append(ranking.reshape(-1, 1))
+
+
 
         user_list = user_id_array.tolist()
 
@@ -798,8 +799,9 @@ class HybridRecommenderXGBoost_Fede(SimilarityMatrixRecommender, Recommender):
                                     for relevant_line in relevant_items_boost.tolist()]).reshape((-1, 1))
 
         relevant_items_boost = relevant_items_boost.reshape(-1, 1)
-        to_concatenate = [relevant_items_boost, song_pop, playlist_pop, playlist_length,
-                          tracks_duration] + scores_list
+        # to_concatenate = [relevant_items_boost, song_pop, playlist_pop, playlist_length,
+        #                   tracks_duration] + scores_list
+        to_concatenate = scores_list
         newTrainXGBoost = np.concatenate(to_concatenate,  # icm_batch, ucm_batch],
                                          axis=1)
 

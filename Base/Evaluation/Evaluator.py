@@ -814,6 +814,7 @@ def plot(data_stats):
     for i, txt in enumerate(label):
         ax.annotate(txt, (z[i], y[i]))
     fig.show()
+    plt.show()
 
 
 class SequentialEvaluator(Evaluator):

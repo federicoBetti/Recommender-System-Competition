@@ -37,7 +37,7 @@ from run_parameter_search import delete_previous_intermediate_computations
 
 
 def run():
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     delete_old_computations = False
     slim_after_hybrid = False
 
@@ -47,7 +47,7 @@ def run():
     # else:
     #     print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
     # delete_previous_intermediate_computations()
-    filename = "hybrid_ICB_ICF_UCF_SLIM_ELASTIC_local_08052.csv"
+    filename = "hybrid_ICB_ICF_UCF_SLIM_ELASTIC_local_0804.csv"
 
     dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
 
@@ -63,7 +63,7 @@ def run():
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
+        UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
         # P3alphaRecommender,
@@ -135,11 +135,11 @@ def run():
 
         recommender.fit(**
                         {
-                            "topK": [10, 33, 160, 761, 490],
-                            "shrink": [8, 26, 2, -1, -1],
+                            "topK": [130, 210, 170, 160, 761, 490],
+                            "shrink": [2, 90, 2, 2, -1, -1],
                             "pop": [280],
-                            "weights": [0.33804686720093335, 1.3092081994688194, 0.642288869881126, 0.18883962446529368,
-                                        1.9317211019160747],
+                            "weights": [0.4072403264089475, 0.3620398298672548, 1.9873861140726912, 0.7914279785564218,
+                                        0.17679956682053533, 1.9807705271950615],
                             "final_weights": [1, 1],
                             "force_compute_sim": False,  # not evaluate_algorithm,
                             "feature_weighting_index": 0,
@@ -160,12 +160,12 @@ def run():
         # to indicate if plotting for lenght or for pop
 
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
-                                                                                                plot_stats=False,
+                                                                                                plot_stats=True,
                                                                                                 onPop=onPop)
 
         print("Algorithm: {}, results: \n{}".format([rec.RECOMMENDER_NAME for rec in recommender.recommender_list],
                                                     results_run_string))
-        logFile.write("Algorithm: {}, results: \n{} time: {}".format(
+        logFile.write("Algorithm: {}, results: \n{} time: {} \n".format(
             [rec.RECOMMENDER_NAME for rec in recommender.recommender_list], results_run_string, time.time()))
         logFile.flush()
 

@@ -140,6 +140,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         slim_counter = 0
         factorCounter = 0
         tfidf_counter = 0
+        feature_we_index = 0
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
             if recommender.__class__ is SLIM_BPR_Cython:
@@ -187,8 +188,18 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 rp3bcounter += 1
 
             elif recommender.__class__ in [ItemKNNCBFRecommender]:
+                if type(feature_weighting_index) is not list:
+                    feature_weighting_index = [feature_weighting_index]
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
-                                feature_weighting_index=feature_weighting_index)
+                                feature_weighting_index=feature_weighting_index[feature_we_index])
+                feature_we_index += 1
+
+            elif recommender.__class__ in [UserKNNCBRecommender]:
+                if type(feature_weighting_index) is not list:
+                    feature_weighting_index = [feature_weighting_index]
+                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
+                                feature_weighting_index=feature_weighting_index[feature_we_index])
+                feature_we_index += 1
 
             elif recommender.__class__ in [ItemKNNCFPageRankRecommender]:
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
@@ -568,7 +579,7 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
             top1=None, shrink1=None, top2=None, shrink2=None, top3=None, shrink3=None, top4=None, shrink4=None,
             top5=None, shrink5=None, top6=None, shrink6=None, top7=None, shrink7=None,
             filter_top_pop_len=0,
-            force_compute_sim=False, weights_to_dweights=-1, **similarity_args):
+            force_compute_sim=False, weights_to_dweights=-1, feature_weighting_index=0, **similarity_args):
 
         if topK is None:  # IT MEANS THAT I'M TESTING ONE RECOMMENDER ON A SPECIIFC INTERVAL
             topK = [top1, top2, top3, top4, top5, top6, top7]
@@ -610,6 +621,7 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
         slim_counter = 0
         factorCounter = 0
         tfidf_counter = 0
+        feature_we_index = 0
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
 
@@ -658,8 +670,21 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
                 rp3bcounter += 1
 
             elif recommender.__class__ in [ItemKNNCBFRecommender]:
-                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
-                # feature_weighting_index=similarity_args["feature_weighting_index"])
+                if type(feature_weighting_index) is not list:
+                    # feature_weighting_index = [feature_weighting_index]
+                    feature_weighting_index = [0] #todo TOGLIERE QUESTA COSA!!!!!!!
+                    feature_we_index -= 1
+
+                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
+                                feature_weighting_index=feature_weighting_index[feature_we_index])
+                feature_we_index += 1
+
+            elif recommender.__class__ in [UserKNNCBRecommender]:
+                if type(feature_weighting_index) is not list:
+                    feature_weighting_index = [feature_weighting_index]
+                recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
+                                feature_weighting_index=feature_weighting_index[feature_we_index])
+                feature_we_index += 1
 
             elif recommender.__class__ in [ItemKNNCFPageRankRecommender]:
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)

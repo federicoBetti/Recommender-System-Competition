@@ -37,7 +37,7 @@ class UserKNNCBRecommender(SimilarityMatrixRecommender, Recommender):
         self.compute_item_score = self.compute_score_user_based
 
     def fit(self, topK=350, shrink=10, similarity='cosine', normalize=True, force_compute_sim=True,
-            feature_weighting_index=0, **similarity_args):
+            feature_weighting_index=2, **similarity_args):
 
         self.topK = topK
         self.shrink = shrink
@@ -52,7 +52,7 @@ class UserKNNCBRecommender(SimilarityMatrixRecommender, Recommender):
                                            str(len(self.URM_train.data)),
                                            str(len(self.UCM_train.data)),
                                            str(self.topK),
-                                           str(self.shrink)), self.feature_weighting_index),
+                                           str(self.shrink), str(self.feature_weighting_index))),
                           'rb') as handle:
                     W_sparse_new = pickle.load(handle)
             except FileNotFoundError:
@@ -86,7 +86,7 @@ class UserKNNCBRecommender(SimilarityMatrixRecommender, Recommender):
                                        str(len(self.URM_train.data)),
                                        str(len(self.UCM_train.data)),
                                        str(self.topK),
-                                       str(self.shrink), self.feature_weighting_index)),
+                                       str(self.shrink), str(self.feature_weighting_index))),
                       'wb') as handle:
                 pickle.dump(self.W_sparse, handle, protocol=pickle.HIGHEST_PROTOCOL)
         else:

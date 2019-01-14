@@ -170,10 +170,10 @@ if __name__ == '__main__':
         # On pop it used to choose if have dynamic weights for
         recommender = recommender_class(URM_train)
 
-        recommender.fit(**{"num_factors": 270,
-                           "reg": 0.09415577889447235,
-                           "iters": 15,
-                           "scaling": 'linear',
+        recommender.fit(**{"num_factors": 290,
+                           "reg": 0.001,
+                           "iters": 6,
+                           "scaling": 'log',
                            "alpha": 40})
 
         print("TEST")

@@ -331,6 +331,7 @@ class IALS_numpy(Recommender):
 
         super(IALS_numpy, self).__init__()
 
+        self.URM_train = URM_train
         self.dataset = URM_train.astype(int)
         self.epsilon = epsilon
         self.init_mean = init_mean
@@ -414,16 +415,29 @@ class IALS_numpy(Recommender):
             pickle.dump((self.X, self.Y), handle, protocol=pickle.HIGHEST_PROTOCOL)
             print("IALS matrices saved")
 
+    def compute_item_score(self, user_id_array):
+        final_score = np.zeros((len(user_id_array), self.URM_train.shape[1]))
+        for user_index, user_id in enumerate(user_id_array):
+            final_score[user_index] = np.dot(self.X[user_id], self.Y.T)
+        return final_score
+
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
-        ranking = np.zeros((len(user_id_array), cutoff))
+        final_score = np.zeros((len(user_id_array), self.URM_train.shape[1]))
         for user_index, user_id in enumerate(user_id_array):
             scores = np.dot(self.X[user_id], self.Y.T)
-            ranking_user = scores.argsort()[::-1]
-            # rank items
             if remove_seen_flag:
-                ranking_user = self._filter_seen(user_id, ranking_user)
-            ranking[user_index, :] = np.asarray(ranking_user[:cutoff])
+                scores = self._filter_seen(user_id, scores)
+            final_score[user_index] = scores
+        # rank items
+        relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
+
+        relevant_items_partition_original_value = final_score[
+            np.arange(final_score.shape[0])[:, None], relevant_items_partition]
+        relevant_items_partition_sorting = np.argsort(-relevant_items_partition_original_value, axis=1)
+        ranking = relevant_items_partition[
+            np.arange(relevant_items_partition.shape[0])[:, None], relevant_items_partition_sorting]
+
         return ranking
 
     def _lsq_solver(self, C, X, Y, reg):
@@ -485,10 +499,11 @@ class IALS_numpy(Recommender):
         return self.dataset[:, item_id]
 
     def _filter_seen(self, user_id, ranking):
-        user_profile = self._get_user_ratings(user_id)
-        seen = user_profile.indices
-        unseen_mask = np.in1d(ranking, seen, assume_unique=True, invert=True)
-        return ranking[unseen_mask]
+        assert self.URM_train.getformat() == "csr"
+        user_profile = self.URM_train.indices[
+                       self.URM_train.indptr[user_id]:self.URM_train.indptr[user_id + 1]]
+        ranking[user_profile] = -np.inf
+        return ranking
 
 
 class BPRMF(Recommender):

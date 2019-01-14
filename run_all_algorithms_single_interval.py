@@ -7,6 +7,7 @@ from scipy import sparse
 from Dataset.RS_Data_Loader import RS_Data_Loader
 from KNN.HybridRecommenderXGBoost import HybridRecommenderXGBoost
 from KNN.ItemKNNCFPageRankRecommender import ItemKNNCFPageRankRecommender
+from MatrixFactorization.MatrixFactorization_RMSE import IALS_numpy
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
 
@@ -47,7 +48,7 @@ def run():
     # else:
     #     print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
     # delete_previous_intermediate_computations()
-    filename = "hybrid_ICB_ICF_UCF_SLIM_ELASTIC_local_080759.csv"
+    filename = "hybrid_ICB_ICF_UCF_IALS_SLIM_ELASTIC_local_08147.csv"
 
     dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
 
@@ -70,28 +71,11 @@ def run():
         # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
+        IALS_numpy,
         SLIM_BPR_Cython,
         # ItemKNNCFRecommenderFAKESLIM,
         # PureSVDRecommender,
         SLIMElasticNetRecommender
-    ]
-
-    # ITEM CB, ITEM CF, USER CF, RP3BETA, PURE SVD
-    recommender_list2 = [
-        # Random,
-        # TopPop,
-        ItemKNNCBFRecommender,
-        # UserKNNCBRecommender,
-        # ItemKNNCFPageRankRecommender,
-        ItemKNNCFRecommender,
-        UserKNNCFRecommender,
-        # P3alphaRecommender,
-        # RP3betaRecommender,
-        # MatrixFactorization_BPR_Cython,
-        # MatrixFactorization_FunkSVD_Cython,
-        SLIM_BPR_Cython,
-        SLIMElasticNetRecommender
-        # PureSVDRecommender
     ]
 
     from Base.Evaluation.Evaluator import SequentialEvaluator
@@ -135,11 +119,11 @@ def run():
 
         recommender.fit(**
                         {
-                            "topK": [10, 33, 160, 761, 490],
-                            "shrink": [8, 26, 2, -1, -1],
+                            "topK": [10, 33, 160, -1, 761, 490],
+                            "shrink": [8, 26, 2, -1, -1, -1],
                             "pop": [280],
-                            "weights": [0.31104686720093333, 1.2092081994688195, 0.592288869881126, 0.15283962446529364,
-                                        2.075721101916075],
+                            "weights": [0.4144102812948438, 1.2692622265271245, 0.5932754240083344, 1.156343707405323,
+                                        0.16827512618992413, 1.095104406726166],
                             "final_weights": [1, 1],
                             "force_compute_sim": False,  # not evaluate_algorithm,
                             "feature_weighting_index": 0,
@@ -152,6 +136,11 @@ def run():
                             'alpha': 0.0014681984611695231,
                             'tfidf': [True],
                             "weights_to_dweights": -1,
+                            "IALS_num_factors": 290,
+                            "IALS_reg": 0.001,
+                            "IALS_iters": 6,
+                            "IALS_scaling": 'log',
+                            "IALS_alpha": 40,
                             "filter_top_pop_len": 0})
 
         print("TEST")

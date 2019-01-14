@@ -199,7 +199,7 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
         # Random,
         # TopPop,
         ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
+        # UserKNNCBRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
         # ItemKNNCFPageRankRecommender,
@@ -207,12 +207,13 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
         # RP3betaRecommender,
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
+        IALS_numpy,
         SLIM_BPR_Cython,
         SLIMElasticNetRecommender
         # PureSVDRecommender
     ]
 
-    this_output_root_path = output_root_path + "/Hybrid_:" + "{}".format(
+    this_output_root_path = output_root_path + "/Hybrid_top:" + "{}".format(
         "_".join([x.RECOMMENDER_NAME for x in recommender_list]))
 
     # since test and validation are the same for now, here I don't pass the evaluator test (otherwise it also crash)
@@ -220,11 +221,11 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
 
     hyperparamethers_range_dictionary = {}
     hyperparamethers_range_dictionary["weights1"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights2"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights2"] = range(1, 2)
     hyperparamethers_range_dictionary["weights3"] = range(0, 2)
     hyperparamethers_range_dictionary["weights4"] = range(0, 2)
-    hyperparamethers_range_dictionary["weights5"] = range(0, 2)
-    hyperparamethers_range_dictionary["weights6"] = range(0, 2)
+    hyperparamethers_range_dictionary["weights5"] = range(0, 1)
+    hyperparamethers_range_dictionary["weights6"] = range(1, 2)
     # hyperparamethers_range_dictionary["weights7"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights8"] = range(0, 1)
 
@@ -237,8 +238,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                                                                        },
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {
-                                 "topK": [130, 210, 170, 160, 761, 490],
-                                 "shrink": [2, 90, 2, 2, -1, -1],
+                                 "topK": [10, 33, 160, -1, 761, 490],
+                                 "shrink": [8, 26, 2, -1, -1, -1],
                                  "pop": [280],
                                  "weights": [1, 1, 1, 1, 1, 1],
                                  "final_weights": [1, 1],
@@ -253,6 +254,11 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                                  'alpha': 0.0014681984611695231,
                                  'tfidf': [True],
                                  "weights_to_dweights": -1,
+                                 "IALS_num_factors": 290,
+                                 "IALS_reg": 0.001,
+                                 "IALS_iters": 6,
+                                 "IALS_scaling": 'log',
+                                 "IALS_alpha": 40,
                                  # "filter_top_pop_len": 0
                              },
                              DictionaryKeys.FIT_RANGE_KEYWORD_ARGS: hyperparamethers_range_dictionary}
@@ -340,7 +346,7 @@ def runParameterSearch_Hybrid_partial_single(recommender_class, URM_train, ICM, 
                                  # "top5": 82,
                                  "top5": 761,
                                  "top6": 490,
-                                 "top7":-1,
+                                 "top7": -1,
                                  "shrink1": 8,
                                  "shrink2": 26,
                                  "shrink3": 2,
@@ -614,7 +620,6 @@ def runParameterSearch_Collaborative(recommender_class, URM_train, ICM=None, met
         ##########################################################################################################
 
         if recommender_class is IALS_numpy:
-
             hyperparamethers_range_dictionary = {}
             hyperparamethers_range_dictionary["num_factors"] = list(range(10, 300, 20))
             hyperparamethers_range_dictionary["reg"] = list(np.linspace(0.001, 0.3, 200))  # range(0, 2)
@@ -847,7 +852,7 @@ def read_data_split_and_search():
         # Random,
         # TopPop,
         # ItemKNNCBFRecommender,
-        UserKNNCBRecommender,
+        # UserKNNCBRecommender,
         # P3alphaRecommender,
         # RP3betaRecommender,
         # ItemKNNCFPageRankRecommender,
@@ -932,7 +937,7 @@ def read_data_split_and_search():
                         transfer_matrix = None
 
                     # runna single algorithm
-                    single = True
+                    single = False
                     if single is False:
                         # old similarity matrix is the starting matrix for the SLIM recommender
                         runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recommender_list,

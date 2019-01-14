@@ -174,7 +174,11 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 elastic_index += 1
 
             elif recommender.__class__ in [PureSVDRecommender]:
+                if type(similarity_args["num_factors"]) is not list:
+                    similarity_args["num_factors"] = [similarity_args["num_factors"]]
+                    similarity_args["PureSVD_iter"] = [similarity_args["PureSVD_iter"]]
                 recommender.fit(num_factors=similarity_args["num_factors"][factorCounter],
+                                n_iter=similarity_args["PureSVD_iter"][factorCounter],
                                 force_compute_sim=force_compute_sim)
                 factorCounter += 1
 
@@ -669,7 +673,9 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
             elif recommender.__class__ in [PureSVDRecommender]:
                 if type(similarity_args["num_factors"]) is not list:
                     similarity_args["num_factors"] = [similarity_args["num_factors"]]
+                    similarity_args["PureSVD_iter"] = [similarity_args["PureSVD_iter"]]
                 recommender.fit(num_factors=similarity_args["num_factors"][factorCounter],
+                                n_iter=similarity_args["PureSVD_iter"][factorCounter],
                                 force_compute_sim=force_compute_sim)
                 factorCounter += 1
 

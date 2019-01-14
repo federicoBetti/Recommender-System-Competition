@@ -5,7 +5,6 @@ import time
 from scipy import sparse
 
 from Dataset.RS_Data_Loader import RS_Data_Loader
-from KNN.HybridRecommenderXGBoost import HybridRecommenderXGBoost
 from KNN.ItemKNNCFPageRankRecommender import ItemKNNCFPageRankRecommender
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from SLIM_ElasticNet.SLIMElasticNetRecommender import SLIMElasticNetRecommender
@@ -27,7 +26,6 @@ from KNN.UserKNNCBFRecommender import UserKNNCBRecommender
 import Support_functions.get_evaluate_data as ged
 from GraphBased.RP3betaRecommender import RP3betaRecommender
 from GraphBased.P3alphaRecommender import P3alphaRecommender
-import xgboost as xgb
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import make_classification
 import traceback, os
@@ -35,9 +33,8 @@ import traceback, os
 import Support_functions.manage_data as md
 from run_parameter_search import delete_previous_intermediate_computations
 
-
 def run():
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     delete_old_computations = False
     slim_after_hybrid = False
 
@@ -115,23 +112,13 @@ def run():
         '''
         recommender_list = recommender_list1  # + recommender_list2  # + recommender_list3
 
-        onPop = False
+        onPop = True
 
         # On pop it used to choose if have dynamic weights for
         recommender = recommender_class(URM_train, ICM, recommender_list, URM_PageRank_train=URM_PageRank_train,
                                         dynamic=False, UCM_train=UCM_tfidf,
                                         URM_validation=URM_validation, onPop=onPop)
 
-        lambda_i = 0.1
-        lambda_j = 0.05
-        old_similrity_matrix = None
-        num_factors = 395
-        l1_ratio = 1e-06
-
-        # Variabili secondo intervallo
-        alphaRP3_2 = 0.9223827655310622
-        betaRP3_2 = 0.2213306613226453
-        num_factors_2 = 391
 
         recommender.fit(**
                         {

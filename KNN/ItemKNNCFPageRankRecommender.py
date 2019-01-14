@@ -56,7 +56,7 @@ class ItemKNNCFPageRankRecommender(SimilarityMatrixRecommender, Recommender):
 
             if found and self.topK == topK_new and self.shrink == shrink_new:
                 self.W_sparse = W_sparse_new
-                print("Saved Item CF Similarity Matrix Used!")
+                print("Saved Item CF PageRank Similarity Matrix Used!")
                 return
 
         sim_matrix_pre = self.URM_PageRank_train

@@ -238,3 +238,4 @@ BayesianSearch: Config is suboptimal. Config: {'topK': 160, 'shrink': 49, 'simil
 BayesianSearch: Config is suboptimal. Config: {'topK': 160, 'shrink': 29, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 1} - MAP results: 0.06222293825585783 - time: 2019-01-11 23:06:39.505013
 BayesianSearch: Config is suboptimal. Config: {'topK': 160, 'shrink': 4, 'similarity': 'cosine', 'normalize': True, 'feature_weighting_index': 1} - MAP results: 0.06301876122763894 - time: 2019-01-11 23:07:20.421616
 BayesianSearch: Testing config: {'topK': 225, 'shrink': 49, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 0} - Exception [Errno 28] No space left on device
+BayesianSearch: New best config found. Config: {'topK': 170, 'shrink': 4, 'similarity': 'cosine', 'normalize': False, 'feature_weighting_index': 0} - MAP results: 0.009514353284832454 - time: 2019-01-13 15:33:02.732553

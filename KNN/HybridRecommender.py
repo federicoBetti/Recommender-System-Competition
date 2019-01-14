@@ -166,6 +166,8 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                                 force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [PureSVDRecommender]:
+                if type(similarity_args["num_factors"]) is not list:
+                    similarity_args["num_factors"] = [similarity_args["num_factors"]]
                 recommender.fit(num_factors=similarity_args["num_factors"][factorCounter],
                                 force_compute_sim=force_compute_sim)
                 factorCounter += 1
@@ -637,7 +639,8 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
                                 force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [PureSVDRecommender]:
-                recommender.fit(num_factors=similarity_args["num_factors"][factorCounter],
+                recommender.fit(num_factors=[similarity_args["num_factors"]],
+                                n_iter=[similarity_args["n_iter"]],
                                 force_compute_sim=force_compute_sim)
                 factorCounter += 1
 
@@ -666,6 +669,8 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
                 # feature_weighting_index=similarity_args["feature_weighting_index"])
 
             elif recommender.__class__ in [ItemKNNCFRecommender]:
+                if type(similarity_args["tfidf"]) is not list:
+                    similarity_args["tfidf"] = [similarity_args["tfidf"]]
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
                                 tfidf=similarity_args["tfidf"][tfidf_counter])
                 tfidf_counter += 1

@@ -48,7 +48,7 @@ def run():
     # else:
     #     print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
     # delete_previous_intermediate_computations()
-    filename = "hybrid_ICB_ICF_UCF_IALS_SLIM_ELASTIC_local_081794.csv"
+    filename = "hybrid_ICB_ICF_UCF_IALS_SLIM_ELASTIC_local_08147.csv"
 
     dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
 
@@ -122,8 +122,8 @@ def run():
                             "topK": [10, 33, 160, -1, 761, 490],
                             "shrink": [8, 26, 2, -1, -1, -1],
                             "pop": [280],
-                            "weights": [0.5032196234225264, 1.3453249314253413, 0.6847073349494252, 1.539799322940071,
-                                        0.21040606724203276, 2.0149963375872995],
+                            "weights": [0.4144102812948438, 1.2692622265271245, 0.5932754240083344, 1.156343707405323,
+                                        0.16827512618992413, 1.095104406726166],
                             "final_weights": [1, 1],
                             "force_compute_sim": False,  # not evaluate_algorithm,
                             "feature_weighting_index": 0,

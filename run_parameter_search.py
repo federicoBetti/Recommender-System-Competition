@@ -220,12 +220,21 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     parameterSearch = BayesianSearch(recommender_class, evaluator_validation)
 
     hyperparamethers_range_dictionary = {}
-    hyperparamethers_range_dictionary["weights1"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights2"] = range(1, 2)
-    hyperparamethers_range_dictionary["weights3"] = range(0, 2)
-    hyperparamethers_range_dictionary["weights4"] = range(0, 2)
-    hyperparamethers_range_dictionary["weights5"] = range(0, 1)
-    hyperparamethers_range_dictionary["weights6"] = range(1, 2)
+    weights = [0.5032196234225264, 1.3453249314253413, 0.6847073349494252, 1.539799322940071,
+               0.21040606724203276, 2.0149963375872995]
+    hyperparamethers_range_dictionary["weights1"] = list(np.linspace(weights[0] - 0.1, weights[0] + 0.1, 200))
+    hyperparamethers_range_dictionary["weights2"] = list(np.linspace(weights[1] - 0.1, weights[1] + 0.1, 200))
+    hyperparamethers_range_dictionary["weights3"] = list(np.linspace(weights[2] - 0.1, weights[2] + 0.1, 200))
+    hyperparamethers_range_dictionary["weights4"] = list(np.linspace(weights[3] - 0.1, weights[3] + 0.1, 200))
+    hyperparamethers_range_dictionary["weights5"] = list(np.linspace(weights[4] - 0.1, weights[4] + 0.1, 200))
+    hyperparamethers_range_dictionary["weights6"] = list(np.linspace(weights[5] - 0.1, weights[5] + 0.1, 200))
+
+    # hyperparamethers_range_dictionary["weights1"] = range(0, 1)
+    # hyperparamethers_range_dictionary["weights2"] = range(0, 2)
+    # hyperparamethers_range_dictionary["weights3"] = range(0, 2)
+    # hyperparamethers_range_dictionary["weights4"] = range(0, 2)
+    # hyperparamethers_range_dictionary["weights5"] = range(0, 2)
+    # hyperparamethers_range_dictionary["weights6"] = range(0, 2)
     # hyperparamethers_range_dictionary["weights7"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights8"] = range(0, 1)
 

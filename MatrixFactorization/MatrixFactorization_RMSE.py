@@ -416,20 +416,17 @@ class IALS_numpy(Recommender):
             print("IALS matrices saved")
 
     def compute_item_score(self, user_id_array):
-        final_score = np.zeros((len(user_id_array), self.URM_train.shape[1]))
-        for user_index, user_id in enumerate(user_id_array):
-            final_score[user_index] = np.dot(self.X[user_id], self.Y.T)
+        final_score = np.dot(self.X[user_id_array], self.Y.T)
         return final_score
 
     def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
                   remove_CustomItems_flag=False):
-        final_score = np.zeros((len(user_id_array), self.URM_train.shape[1]))
+
+        final_score = np.dot(self.X[user_id_array], self.Y.T)
+
         for user_index, user_id in enumerate(user_id_array):
-            scores = np.dot(self.X[user_id], self.Y.T)
-            if remove_seen_flag:
-                scores = self._filter_seen(user_id, scores)
-            final_score[user_index] = scores
-        # rank items
+            final_score[user_index] = self._filter_seen(user_id, final_score[user_index])
+
         relevant_items_partition = (-final_score).argpartition(cutoff, axis=1)[:, 0:cutoff]
 
         relevant_items_partition_original_value = final_score[

@@ -667,6 +667,8 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
                                 force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [PureSVDRecommender]:
+                if type(similarity_args["num_factors"]) is not list:
+                    similarity_args["num_factors"] = [similarity_args["num_factors"]]
                 recommender.fit(num_factors=similarity_args["num_factors"][factorCounter],
                                 force_compute_sim=force_compute_sim)
                 factorCounter += 1

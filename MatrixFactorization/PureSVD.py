@@ -37,19 +37,21 @@ class PureSVDRecommender(Recommender):
 
     def fit(self, num_factors=100, n_iter=5, force_compute_sim=True):
 
-        if not force_compute_sim:
-            found = True
-            try:
-                with open(os.path.join("IntermediateComputations", "PureSVDMatrices.pkl"), 'rb') as handle:
-                    (U, s_Vt) = pickle.load(handle)
-            except FileNotFoundError:
-                found = False
+        self.num_factors = num_factors
+        self.n_iter = n_iter
+        try:
+            with open(os.path.join("IntermediateComputations", "PureSVD",
+                                   "tot={}_factors={}_iter={}.pkl".format(str(len(self.URM_train.data)),
+                                                                          str(self.num_factors), str(self.n_iter))),
+                      'rb') as handle:
+                (U, s_Vt) = pickle.load(handle)
 
-            if found:
                 self.U = U
                 self.s_Vt = s_Vt
                 print("Saved Pure SVD Matrices Used!")
                 return
+        except FileNotFoundError:
+            found = False
 
         from sklearn.utils.extmath import randomized_svd
 
@@ -64,18 +66,21 @@ class PureSVDRecommender(Recommender):
 
         print(self.RECOMMENDER_NAME + " Computing SVD decomposition... Done!")
 
-        with open(os.path.join("IntermediateComputations", "PureSVDMatrices.pkl"), 'wb') as handle:
+        with open(os.path.join("IntermediateComputations", "PureSVD",
+                               "tot={}_factors={}_iter={}.pkl".format(str(len(self.URM_train.data)),
+                                                                      str(self.num_factors), str(self.n_iter))),
+                  'wb') as handle:
             pickle.dump((self.U, self.s_Vt), handle,
                         protocol=pickle.HIGHEST_PROTOCOL)
 
-        # It's a wrapper aroung randomized_svd
-        # truncatedSVD = TruncatedSVD(n_components = num_factors)
-        #
-        # truncatedSVD.fit(self.URM_train)
-        #
-        # truncatedSVD
-        #
-        # U, s, Vt =
+            # It's a wrapper aroung randomized_svd
+            # truncatedSVD = TruncatedSVD(n_components = num_factors)
+            #
+            # truncatedSVD.fit(self.URM_train)
+            #
+            # truncatedSVD
+            #
+            # U, s, Vt =
 
     def compute_score_SVD(self, user_id_array):
 

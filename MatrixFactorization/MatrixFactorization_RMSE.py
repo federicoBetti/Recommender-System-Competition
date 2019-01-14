@@ -9,6 +9,8 @@ Created on 23/10/17
 import logging
 
 import numpy as np
+import time, os, pickle
+
 from Base.Recommender_utils import check_matrix
 
 from Base.Recommender import Recommender
@@ -18,8 +20,6 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s: %(name)s: %(levelname)s: %(message)s")
-
-
 
 
 class FunkSVD(Recommender):
@@ -43,24 +43,22 @@ class FunkSVD(Recommender):
 
         self.URM_train = check_matrix(URM_train, 'csr', dtype=np.float32)
 
-
-
     def __str__(self):
         return "FunkSVD(num_factors={}, lrate={}, reg={}, iters={}, init_mean={}, " \
                "init_std={}, lrate_decay={}, rnd_seed={})".format(
-            self.num_factors, self.learning_rate, self.reg, self.epochs, self.init_mean, self.init_std, self.lrate_decay,
+            self.num_factors, self.learning_rate, self.reg, self.epochs, self.init_mean, self.init_std,
+            self.lrate_decay,
             self.rnd_seed
         )
 
-
     def fit(self, num_factors=50,
-                 learning_rate=0.01,
-                 reg=0.015,
-                 epochs=10,
-                 init_mean=0.0,
-                 init_std=0.1,
-                 lrate_decay=1.0,
-                 rnd_seed=42):
+            learning_rate=0.01,
+            reg=0.015,
+            epochs=10,
+            init_mean=0.0,
+            init_std=0.1,
+            lrate_decay=1.0,
+            rnd_seed=42):
         """
 
         Initialize the model
@@ -83,7 +81,8 @@ class FunkSVD(Recommender):
         self.lrate_decay = lrate_decay
         self.rnd_seed = rnd_seed
 
-        self.U, self.V = FunkSVD_sgd(self.URM_train, self.num_factors, self.learning_rate, self.reg, self.epochs, self.init_mean,
+        self.U, self.V = FunkSVD_sgd(self.URM_train, self.num_factors, self.learning_rate, self.reg, self.epochs,
+                                     self.init_mean,
                                      self.init_std,
                                      self.lrate_decay, self.rnd_seed)
 
@@ -113,7 +112,7 @@ class FunkSVD(Recommender):
 
 
 
-    def recommendBatch(self, users_in_batch, n=None, exclude_seen=True, filterTopPop = False, filterCustomItems = False):
+    def recommendBatch(self, users_in_batch, n=None, exclude_seen=True, filterTopPop=False, filterCustomItems=False):
 
         # compute the scores using the dot product
         user_profile_batch = self.URM_train[users_in_batch]
@@ -130,18 +129,17 @@ class FunkSVD(Recommender):
             scores_array[user_profile_batch.nonzero()] = -np.inf
 
         if filterTopPop:
-            scores_array[:,self.filterTopPop_ItemsID] = -np.inf
+            scores_array[:, self.filterTopPop_ItemsID] = -np.inf
 
         if filterCustomItems:
             scores_array[:, self.filterCustomItems_ItemsID] = -np.inf
 
-
         # rank items and mirror column to obtain a ranking in descending score
-        #ranking = (-scores_array).argsort(axis=1)
-        #ranking = np.fliplr(ranking)
-        #ranking = ranking[:,0:n]
+        # ranking = (-scores_array).argsort(axis=1)
+        # ranking = np.fliplr(ranking)
+        # ranking = ranking[:,0:n]
 
-        ranking = np.zeros((scores_array.shape[0],n), dtype=np.int)
+        ranking = np.zeros((scores_array.shape[0], n), dtype=np.int)
 
         for row_index in range(scores_array.shape[0]):
             scores = scores_array[row_index]
@@ -150,22 +148,18 @@ class FunkSVD(Recommender):
             relevant_items_partition_sorting = np.argsort(-scores[relevant_items_partition])
             ranking[row_index] = relevant_items_partition[relevant_items_partition_sorting]
 
-
         return ranking
 
+    def recommend(self, user_id, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
+                  remove_CustomItems=False):
 
-
-    def recommend(self, user_id, cutoff=None, remove_seen_flag=True, remove_top_pop_flag = False, remove_CustomItems = False):
-
-
-        if cutoff==None:
-            cutoff= self.URM_train.shape[1] - 1
+        if cutoff == None:
+            cutoff = self.URM_train.shape[1] - 1
 
         scores_array = np.dot(self.U[user_id], self.V.T)
 
         if self.normalize:
             raise ValueError("Not implemented")
-
 
         if remove_seen_flag:
             scores = self._remove_seen_on_scores(user_id, scores_array)
@@ -176,10 +170,9 @@ class FunkSVD(Recommender):
         if remove_CustomItems:
             scores = self._remove_CustomItems_on_scores(scores_array)
 
-
         # rank items and mirror column to obtain a ranking in descending score
-        #ranking = scores.argsort()
-        #ranking = np.flip(ranking, axis=0)
+        # ranking = scores.argsort()
+        # ranking = np.flip(ranking, axis=0)
 
         # Sorting is done in three steps. Faster then plain np.argsort for higher number of items
         # - Partition the data to extract the set of relevant items
@@ -189,12 +182,9 @@ class FunkSVD(Recommender):
         relevant_items_partition_sorting = np.argsort(-scores_array[relevant_items_partition])
         ranking = relevant_items_partition[relevant_items_partition_sorting]
 
-
         return ranking
 
-
-
-    def saveModel(self, folderPath, namePrefix = None, forceSparse = True):
+    def saveModel(self, folderPath, namePrefix=None, forceSparse=True):
 
         print("{}: Saving model in folder '{}'".format(self.RECOMMENDER_NAME, folderPath))
 
@@ -203,12 +193,9 @@ class FunkSVD(Recommender):
 
         namePrefix += "_"
 
-        np.savez(folderPath + "{}.npz".format(namePrefix), W = self.U, H = self.V)
+        np.savez(folderPath + "{}.npz".format(namePrefix), W=self.U, H=self.V)
 
-
-
-    def loadModel(self, folderPath, namePrefix = None, forceSparse = True):
-
+    def loadModel(self, folderPath, namePrefix=None, forceSparse=True):
 
         print("{}: Loading model from folder '{}'".format(self.RECOMMENDER_NAME, folderPath))
 
@@ -220,8 +207,7 @@ class FunkSVD(Recommender):
         npzfile = np.load(folderPath + "{}.npz".format(namePrefix))
 
         for attrib_name in npzfile.files:
-             self.__setattr__(attrib_name, npzfile[attrib_name])
-
+            self.__setattr__(attrib_name, npzfile[attrib_name])
 
 
 class AsySVD(Recommender):
@@ -295,20 +281,17 @@ class AsySVD(Recommender):
             ranking = self._filter_seen(user_id, ranking)
         return ranking[:cutoff]
 
-
     def _get_user_ratings(self, user_id):
         return self.dataset[user_id]
 
     def _get_item_ratings(self, item_id):
         return self.dataset[:, item_id]
 
-
     def _filter_seen(self, user_id, ranking):
         user_profile = self._get_user_ratings(user_id)
         seen = user_profile.indices
         unseen_mask = np.in1d(ranking, seen, assume_unique=True, invert=True)
         return ranking[unseen_mask]
-
 
 
 class IALS_numpy(Recommender):
@@ -325,13 +308,10 @@ class IALS_numpy(Recommender):
     \operatornamewithlimits{argmin}\limits_{x*,y*}\frac{1}{2}\sum_{i,j}{c_{ij}(p_{ij}-x_i^T y_j) + \lambda(\sum_{i}{||x_i||^2} + \sum_{j}{||y_j||^2})}
     '''
 
+    RECOMMENDER_NAME = "IALS_MF"
+
     # TODO: Add support for multiple confidence scaling functions (e.g. linear and log scaling)
-    def __init__(self,
-                 num_factors=50,
-                 reg=0.015,
-                 iters=10,
-                 scaling='linear',
-                 alpha=40,
+    def __init__(self, URM_train,
                  epsilon=1.0,
                  init_mean=0.0,
                  init_std=0.1,
@@ -350,13 +330,8 @@ class IALS_numpy(Recommender):
         '''
 
         super(IALS_numpy, self).__init__()
-        assert scaling in ['linear', 'log'], 'Unsupported scaling: {}'.format(scaling)
 
-        self.num_factors = num_factors
-        self.reg = reg
-        self.iters = iters
-        self.scaling = scaling
-        self.alpha = alpha
+        self.dataset = URM_train.astype(int)
         self.epsilon = epsilon
         self.init_mean = init_mean
         self.init_std = init_std
@@ -372,7 +347,8 @@ class IALS_numpy(Recommender):
     def _linear_scaling(self, R):
         C = R.copy().tocsr()
         C.data *= self.alpha
-        C.data += 1.0
+        np.add(C.data, 1.0, out=C.data, casting="unsafe")
+        # C.data += 1.0
         return C
 
     def _log_scaling(self, R):
@@ -380,16 +356,43 @@ class IALS_numpy(Recommender):
         C.data = 1.0 + self.alpha * np.log(1.0 + C.data / self.epsilon)
         return C
 
-    def fit(self, R):
-        self.dataset = R
+    def fit(self,
+            num_factors=50,
+            reg=0.015,
+            iters=10,
+            scaling='linear',
+            alpha=40):
+        assert scaling in ['linear', 'log'], 'Unsupported scaling: {}'.format(scaling)
+
+        self.num_factors = num_factors
+        self.reg = reg
+        self.iters = iters
+        self.scaling = scaling
+        self.alpha = alpha
         # compute the confidence matrix
         if self.scaling == 'linear':
-            C = self._linear_scaling(R)
+            C = self._linear_scaling(self.dataset)
         else:
-            C = self._log_scaling(R)
+            C = self._log_scaling(self.dataset)
+
+        try:
+            with open(os.path.join("IntermediateComputations", "IALS",
+                                   "tot={}_numfacotrs={}_reg={}_iters={}_scaling={}_alpha={}.pkl".format(
+                                       str(len(self.dataset.data)), str(self.num_factors), str(self.reg),
+                                       str(self.iters), str(self.scaling), str(self.alpha))), 'rb') as handle:
+                (self.X, self.Y) = pickle.load(handle)
+                print("Saved Matrix of IALS used")
+                return
+
+        except FileNotFoundError:
+            print("File {} not found".format(
+                os.path.join("IntermediateComputations", "IALS",
+                             "tot={}_numfacotrs={}_reg={}_iters={}_scaling={}_alpha={}.pkl".format(
+                                 str(len(self.dataset.data)), str(self.num_factors), str(self.reg),
+                                 str(self.iters), str(self.scaling), str(self.alpha)))))
 
         Ct = C.T.tocsr()
-        M, N = R.shape
+        M, N = self.dataset.shape
 
         # set the seed
         np.random.seed(self.rnd_seed)
@@ -401,15 +404,27 @@ class IALS_numpy(Recommender):
         for it in range(self.iters):
             self.X = self._lsq_solver_fast(C, self.X, self.Y, self.reg)
             self.Y = self._lsq_solver_fast(Ct, self.Y, self.X, self.reg)
-            logger.debug('Finished iter {}'.format(it + 1))
+            print('Finished iter {}'.format(it + 1))
 
-    def recommend(self, user_id, cutoff=None, remove_seen_flag=True):
-        scores = np.dot(self.X[user_id], self.Y.T)
-        ranking = scores.argsort()[::-1]
-        # rank items
-        if remove_seen_flag:
-            ranking = self._filter_seen(user_id, ranking)
-        return ranking[:cutoff]
+        with open(os.path.join("IntermediateComputations", "IALS",
+                               "tot={}_numfacotrs={}_reg={}_iters={}_scaling={}_alpha={}.pkl".format(
+                                   str(len(self.dataset.data)), str(self.num_factors), str(self.reg),
+                                   str(self.iters), str(self.scaling), str(self.alpha))),
+                  'wb') as handle:
+            pickle.dump((self.X, self.Y), handle, protocol=pickle.HIGHEST_PROTOCOL)
+            print("IALS matrices saved")
+
+    def recommend(self, user_id_array, dict_pop=None, cutoff=None, remove_seen_flag=True, remove_top_pop_flag=False,
+                  remove_CustomItems_flag=False):
+        ranking = np.zeros((len(user_id_array), cutoff))
+        for user_index, user_id in enumerate(user_id_array):
+            scores = np.dot(self.X[user_id], self.Y.T)
+            ranking_user = scores.argsort()[::-1]
+            # rank items
+            if remove_seen_flag:
+                ranking_user = self._filter_seen(user_id, ranking_user)
+            ranking[user_index, :] = np.asarray(ranking_user[:cutoff])
+        return ranking
 
     def _lsq_solver(self, C, X, Y, reg):
         # precompute YtY
@@ -435,8 +450,13 @@ class IALS_numpy(Recommender):
         # precompute YtY
         rows, factors = X.shape
         YtY = np.dot(Y.T, Y)
-
+        start_time = time.time()
+        prints_num = 1
         for i in range(rows):
+            if time.time() - start_time > 30 * prints_num:
+                prints_num += 1
+                time_passed = time.time() - start_time
+                print("Time passed: {}, rows per second: {}".format(time_passed, i / time_passed))
             # accumulate YtCiY + reg*I in A
             A = YtY + reg * np.eye(factors)
 
@@ -458,20 +478,17 @@ class IALS_numpy(Recommender):
         for i in range(R.indptr[row], R.indptr[row + 1]):
             yield (R.indices[i], R.data[i])
 
-
     def _get_user_ratings(self, user_id):
         return self.dataset[user_id]
 
     def _get_item_ratings(self, item_id):
         return self.dataset[:, item_id]
 
-
     def _filter_seen(self, user_id, ranking):
         user_profile = self._get_user_ratings(user_id)
         seen = user_profile.indices
         unseen_mask = np.in1d(ranking, seen, assume_unique=True, invert=True)
         return ranking[unseen_mask]
-
 
 
 class BPRMF(Recommender):
@@ -572,18 +589,14 @@ class BPRMF(Recommender):
             ranking = self._filter_seen(user_id, ranking)
         return ranking[:cutoff]
 
-
-
     def _get_user_ratings(self, user_id):
         return self.dataset[user_id]
 
     def _get_item_ratings(self, item_id):
         return self.dataset[:, item_id]
 
-
     def _filter_seen(self, user_id, ranking):
         user_profile = self._get_user_ratings(user_id)
         seen = user_profile.indices
         unseen_mask = np.in1d(ranking, seen, assume_unique=True, invert=True)
         return ranking[unseen_mask]
-

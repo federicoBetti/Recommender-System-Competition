@@ -15,6 +15,10 @@ import Support_functions.get_evaluate_data as ged
 from Base.Evaluation.metrics import roc_auc, precision, recall, recall_min_test_len, map, ndcg, rr, arhr, \
     Novelty, Coverage_Item, Metrics_Object, Coverage_User, Gini_Diversity, Shannon_Entropy, Diversity_MeanInterList, \
     Diversity_Herfindahl
+import plotly.plotly as py
+import plotly
+import plotly.graph_objs as go
+
 
 
 class Metrics_Object(object):
@@ -808,13 +812,27 @@ def plot(data_stats):
         label.append(str(lenght))
 
     z, y = list(data_stats.keys()), list(data_stats.values())
-    fig, ax = plt.subplots()
-    ax.scatter(z, y)
+    trace = go.Scatter(
+        x=z,
+        y=y,
+        text=label,
+        mode='markers'
+    )
 
-    for i, txt in enumerate(label):
-        ax.annotate(txt, (z[i], y[i]))
-    fig.show()
-    plt.show()
+    data = [trace]
+
+    # Plot and embed in ipython notebook!
+    plotly.offline.plot({
+        "data": data,
+        "layout": go.Layout(title="hello world")
+    }, auto_open=True)
+    # fig, ax = plt.subplots()
+    # ax.scatter(z, y)
+    #
+    # for i, txt in enumerate(label):
+    #     ax.annotate(txt, (z[i], y[i]))
+    # fig.show()
+    # plt.show()
 
 
 class SequentialEvaluator(Evaluator):

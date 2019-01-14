@@ -19,6 +19,7 @@ from KNN.ItemKNNCFPageRankRecommender import ItemKNNCFPageRankRecommender
 from KNN.ItemKNNCFRecommender import ItemKNNCFRecommender
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython, \
     MatrixFactorization_FunkSVD_Cython, MatrixFactorization_AsySVD_Cython
+from MatrixFactorization.MatrixFactorization_RMSE import IALS_numpy
 from MatrixFactorization.PureSVD import PureSVDRecommender
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 import Support_functions.get_evaluate_data as ged
@@ -141,6 +142,7 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
         factorCounter = 0
         tfidf_counter = 0
         feature_we_index = 0
+        elastic_index = 0
 
         for knn, shrink, recommender in zip(topK, shrink, self.recommender_list):
             if recommender.__class__ is SLIM_BPR_Cython:
@@ -163,8 +165,13 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 recommender.fit(epochs=epochs, force_compute_sim=force_compute_sim)
 
             elif recommender.__class__ in [SLIMElasticNetRecommender]:
-                recommender.fit(topK=knn, l1_ratio=similarity_args["l1_ratio"], alpha=similarity_args["alpha"],
+                if type(similarity_args["l1_ratio"]) is not list:
+                    similarity_args["l1_ratio"] = [similarity_args["l1_ratio"]]
+                    similarity_args["alpha"] = [similarity_args["alpha"]]
+                recommender.fit(topK=knn, l1_ratio=similarity_args["l1_ratio"][elastic_index],
+                                alpha=similarity_args["alpha"][elastic_index],
                                 force_compute_sim=force_compute_sim)
+                elastic_index += 1
 
             elif recommender.__class__ in [PureSVDRecommender]:
                 recommender.fit(num_factors=similarity_args["num_factors"][factorCounter],
@@ -211,6 +218,15 @@ class HybridRecommender(SimilarityMatrixRecommender, Recommender):
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
                                 tfidf=similarity_args["tfidf"][tfidf_counter])
                 tfidf_counter += 1
+
+            elif recommender.__class__ in [IALS_numpy]:
+                recommender.fit(
+                    num_factors=similarity_args["IALS_num_factors"],
+                    reg=similarity_args["IALS_reg"],
+                    iters=similarity_args["IALS_iters"],
+                    scaling=similarity_args["IALS_scaling"],
+                    alpha=similarity_args["IALS_alpha"])
+
 
             else:  # ItemCF, UserCF, ItemCBF, UserCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
@@ -630,6 +646,8 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
                     if type(similarity_args["lambda_i"]) is not list:
                         similarity_args["lambda_i"] = [similarity_args["lambda_i"]]
                         similarity_args["lambda_j"] = [similarity_args["lambda_j"]]
+                        similarity_args["SLIM_lr"] = [similarity_args["SLIM_lr"]]
+
                     recommender.fit(old_similarity_matrix=old_similarity_matrix, epochs=epochs,
                                     force_compute_sim=force_compute_sim, topK=knn,
                                     lambda_i=similarity_args["lambda_i"][slim_counter],
@@ -671,9 +689,7 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
 
             elif recommender.__class__ in [ItemKNNCBFRecommender]:
                 if type(feature_weighting_index) is not list:
-                    # feature_weighting_index = [feature_weighting_index]
-                    feature_weighting_index = [0] #todo TOGLIERE QUESTA COSA!!!!!!!
-                    feature_we_index -= 1
+                    feature_weighting_index = [feature_weighting_index]
 
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim,
                                 feature_weighting_index=feature_weighting_index[feature_we_index])

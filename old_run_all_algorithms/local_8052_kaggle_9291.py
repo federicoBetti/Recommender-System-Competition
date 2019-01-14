@@ -37,7 +37,7 @@ from run_parameter_search import delete_previous_intermediate_computations
 
 
 def run():
-    evaluate_algorithm = True
+    evaluate_algorithm = False
     delete_old_computations = False
     slim_after_hybrid = False
 
@@ -82,6 +82,7 @@ def run():
         # TopPop,
         ItemKNNCBFRecommender,
         # UserKNNCBRecommender,
+        # ItemKNNCFPageRankRecommender,
         ItemKNNCFRecommender,
         UserKNNCFRecommender,
         # P3alphaRecommender,
@@ -89,9 +90,8 @@ def run():
         # MatrixFactorization_BPR_Cython,
         # MatrixFactorization_FunkSVD_Cython,
         SLIM_BPR_Cython,
-        # ItemKNNCFRecommenderFAKESLIM,
-        # PureSVDRecommender,
         SLIMElasticNetRecommender
+        # PureSVDRecommender
     ]
 
     from Base.Evaluation.Evaluator import SequentialEvaluator
@@ -113,40 +113,44 @@ def run():
         '''
         Our optimal run
         '''
-        recommender_list = recommender_list1 + recommender_list2  # + recommender_list3
-
-        d_weights = [
-            [0.5469789514168496, 1.5598358421050373, 1.1505851198615593, 0.2540023047558251, 0.9403502151872645] + [
-                0] * len(recommender_list2),
-            [0] * len(recommender_list1) + [0.5205017325111618, 1.6831295912149837, 1.6560707664775454,
-                                            0.3144197724407203, 1.9912784665282535]
-        ]
+        recommender_list = recommender_list1  # + recommender_list2  # + recommender_list3
 
         onPop = False
 
         # On pop it used to choose if have dynamic weights for
         recommender = recommender_class(URM_train, ICM, recommender_list, URM_PageRank_train=URM_PageRank_train,
-                                        dynamic=True, UCM_train=UCM_tfidf, d_weights=d_weights,
+                                        dynamic=False, UCM_train=UCM_tfidf,
                                         URM_validation=URM_validation, onPop=onPop)
+
+        lambda_i = 0.1
+        lambda_j = 0.05
+        old_similrity_matrix = None
+        num_factors = 395
+        l1_ratio = 1e-06
+
+        # Variabili secondo intervallo
+        alphaRP3_2 = 0.9223827655310622
+        betaRP3_2 = 0.2213306613226453
+        num_factors_2 = 391
 
         recommender.fit(**
                         {
-                            "topK": [10, 33, 160, 761, 490] + [10, 33, 160, 761, 490],
-                            "shrink": [8, 26, 2, -1, -1] + [8, 26, 2, -1, -1],
-                            "pop": [30],
-                            "weights": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                            "topK": [10, 33, 160, 761, 490],
+                            "shrink": [8, 26, 2, -1, -1],
+                            "pop": [280],
+                            "weights": [0.33804686720093335, 1.3092081994688194, 0.642288869881126, 0.18883962446529368,
+                                        1.9317211019160747],
                             "final_weights": [1, 1],
                             "force_compute_sim": False,  # not evaluate_algorithm,
-                            "feature_weighting_index": [0, 0],
+                            "feature_weighting_index": 0,
                             "epochs": 150,
-                            'lambda_i': [0.0, 0.0], 'lambda_j': [1.0153577332223556e-08, 1.0153577332223556e-08],
-                            'SLIM_lr': [0.1, 0.1],
+                            'lambda_i': [0.0], 'lambda_j': [1.0153577332223556e-08], 'SLIM_lr': [0.1],
                             'alphaP3': [0.4121720883248633],
                             'alphaRP3': [0.8582865731462926],
                             'betaRP': [0.2814208416833668],
-                            'l1_ratio': [3.020408163265306e-06, 3.020408163265306e-06],
-                            'alpha': [0.0014681984611695231, 0.0014681984611695231],
-                            'tfidf': [True, True],
+                            'l1_ratio': 3.020408163265306e-06,
+                            'alpha': 0.0014681984611695231,
+                            'tfidf': [True],
                             "weights_to_dweights": -1,
                             "filter_top_pop_len": 0})
 
@@ -156,12 +160,12 @@ def run():
         # to indicate if plotting for lenght or for pop
 
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
-                                                                                                plot_stats=True,
+                                                                                                plot_stats=False,
                                                                                                 onPop=onPop)
 
         print("Algorithm: {}, results: \n{}".format([rec.RECOMMENDER_NAME for rec in recommender.recommender_list],
                                                     results_run_string))
-        logFile.write("Algorithm: {}, results: \n{} time: {} \n".format(
+        logFile.write("Algorithm: {}, results: \n{} time: {}".format(
             [rec.RECOMMENDER_NAME for rec in recommender.recommender_list], results_run_string, time.time()))
         logFile.flush()
 

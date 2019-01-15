@@ -38,7 +38,7 @@ from run_parameter_search import delete_previous_intermediate_computations
 
 
 def run():
-    evaluate_algorithm = False
+    evaluate_algorithm = True
     delete_old_computations = False
     slim_after_hybrid = False
 
@@ -149,7 +149,7 @@ def run():
         # to indicate if plotting for lenght or for pop
 
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
-                                                                                                plot_stats=False,
+                                                                                                plot_stats=True,
                                                                                                 onPop=onPop)
 
         print("Algorithm: {}, results: \n{}".format([rec.RECOMMENDER_NAME for rec in recommender.recommender_list],

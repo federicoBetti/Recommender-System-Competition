@@ -719,6 +719,14 @@ class HybridRecommender_Test_Not_Weights(SimilarityMatrixRecommender, Recommende
                                 tfidf=similarity_args["tfidf"][tfidf_counter])
                 tfidf_counter += 1
 
+            elif recommender.__class__ in [IALS_numpy]:
+                recommender.fit(
+                    num_factors=similarity_args["IALS_num_factors"],
+                    reg=similarity_args["IALS_reg"],
+                    iters=similarity_args["IALS_iters"],
+                    scaling=similarity_args["IALS_scaling"],
+                    alpha=similarity_args["IALS_alpha"])
+
             else:  # ItemCF, UserCF, ItemCBF, UserCBF
                 recommender.fit(knn, shrink, force_compute_sim=force_compute_sim)
 

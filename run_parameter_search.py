@@ -220,14 +220,14 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     parameterSearch = BayesianSearch(recommender_class, evaluator_validation)
 
     hyperparamethers_range_dictionary = {}
-    weights = [0.5032196234225264, 1.3453249314253413, 0.6847073349494252, 1.539799322940071,
-               0.21040606724203276, 2.0149963375872995]
-    hyperparamethers_range_dictionary["weights1"] = list(np.linspace(weights[0] - 0.1, weights[0] + 0.1, 200))
-    hyperparamethers_range_dictionary["weights2"] = list(np.linspace(weights[1] - 0.1, weights[1] + 0.1, 200))
-    hyperparamethers_range_dictionary["weights3"] = list(np.linspace(weights[2] - 0.1, weights[2] + 0.1, 200))
-    hyperparamethers_range_dictionary["weights4"] = list(np.linspace(weights[3] - 0.1, weights[3] + 0.1, 200))
-    hyperparamethers_range_dictionary["weights5"] = list(np.linspace(weights[4] - 0.1, weights[4] + 0.1, 200))
-    hyperparamethers_range_dictionary["weights6"] = list(np.linspace(weights[5] - 0.1, weights[5] + 0.1, 200))
+    weights = [0.5017146067001184, 1.297666068549087, 0.7554431209026025, 1.661705677455121,
+               0.20789770603801933, 2.1198458359150587]
+    hyperparamethers_range_dictionary["weights1"] = list(np.linspace(weights[0] - 0.15, weights[0] + 0.15, 300))
+    hyperparamethers_range_dictionary["weights2"] = list(np.linspace(weights[1] - 0.15, weights[1] + 0.15, 300))
+    hyperparamethers_range_dictionary["weights3"] = list(np.linspace(weights[2] - 0.15, weights[2] + 0.15, 300))
+    hyperparamethers_range_dictionary["weights4"] = list(np.linspace(weights[3] - 0.15, weights[3] + 0.15, 300))
+    hyperparamethers_range_dictionary["weights5"] = list(np.linspace(weights[4] - 0.15, weights[4] + 0.15, 300))
+    hyperparamethers_range_dictionary["weights6"] = list(np.linspace(weights[5] - 0.15, weights[5] + 0.15, 300))
 
     # hyperparamethers_range_dictionary["weights1"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights2"] = range(0, 2)
@@ -275,10 +275,10 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     output_root_path_similarity = this_output_root_path
 
     best_parameters = parameterSearch.search(recommenderDictionary,
-                                             n_cases=90,
+                                             n_cases=200,
                                              output_root_path=output_root_path_similarity,
                                              metric=metric_to_optimize,
-                                             init_points=60
+                                             init_points=80
                                              )
     print(best_parameters)
 

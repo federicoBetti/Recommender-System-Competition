@@ -275,10 +275,10 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     output_root_path_similarity = this_output_root_path
 
     best_parameters = parameterSearch.search(recommenderDictionary,
-                                             n_cases=200,
+                                             n_cases=90,
                                              output_root_path=output_root_path_similarity,
                                              metric=metric_to_optimize,
-                                             init_points=80
+                                             init_points=60
                                              )
     print(best_parameters)
 

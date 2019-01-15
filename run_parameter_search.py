@@ -232,9 +232,9 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
     # hyperparamethers_range_dictionary["weights1"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights2"] = range(0, 2)
     # hyperparamethers_range_dictionary["weights3"] = range(0, 2)
-    # hyperparamethers_range_dictionary["weights4"] = range(0, 2)
-    # hyperparamethers_range_dictionary["weights5"] = range(0, 2)
-    # hyperparamethers_range_dictionary["weights6"] = range(0, 2)
+    # hyperparamethers_range_dictionary["weights4"] = range(1, 3)
+    # hyperparamethers_range_dictionary["weights5"] = range(1, 3)
+    # # hyperparamethers_range_dictionary["weights6"] = range(0, 2)
     # hyperparamethers_range_dictionary["weights7"] = range(0, 1)
     # hyperparamethers_range_dictionary["weights8"] = range(0, 1)
 
@@ -247,8 +247,8 @@ def runParameterSearch_Hybrid_partial(recommender_class, URM_train, ICM, recomme
                                                                        },
                              DictionaryKeys.FIT_POSITIONAL_ARGS: dict(),
                              DictionaryKeys.FIT_KEYWORD_ARGS: {
-                                 "topK": [10, 33, 160, -1, 761, 490],
-                                 "shrink": [8, 26, 2, -1, -1, -1],
+                                 "topK": [10, 181, 160, -1, 761, 490],
+                                 "shrink": [8, 0, 2, -1, -1, -1],
                                  "pop": [280],
                                  "weights": [1, 1, 1, 1, 1, 1],
                                  "final_weights": [1, 1],

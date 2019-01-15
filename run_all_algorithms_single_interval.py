@@ -48,7 +48,7 @@ def run():
     # else:
     #     print("ATTENTION: old intermediate computations kept, pay attention if running with all_train")
     # delete_previous_intermediate_computations()
-    filename = "hybrid_ICB_ICF_UCF_IALS_SLIM_ELASTIC_local_081814.csv"
+    filename = "hybrid_ICB_ICF_UCF_IALS_SLIM_ELASTIC_local_081962.csv"
 
     dataReader = RS_Data_Loader(all_train=not evaluate_algorithm)
 
@@ -106,24 +106,13 @@ def run():
                                         dynamic=False, UCM_train=UCM_tfidf,
                                         URM_validation=URM_validation, onPop=onPop)
 
-        lambda_i = 0.1
-        lambda_j = 0.05
-        old_similrity_matrix = None
-        num_factors = 395
-        l1_ratio = 1e-06
-
-        # Variabili secondo intervallo
-        alphaRP3_2 = 0.9223827655310622
-        betaRP3_2 = 0.2213306613226453
-        num_factors_2 = 391
-
         recommender.fit(**
                         {
-                            "topK": [10, 33, 160, -1, 761, 490],
-                            "shrink": [8, 26, 2, -1, -1, -1],
+                            "topK": [10, 181, 82, -1, 761, 490],
+                            "shrink": [8, 0, 3, -1, -1, -1],
                             "pop": [280],
-                            "weights": [0.5017146067001184, 1.297666068549087, 0.7554431209026025, 1.661705677455121,
-                                        0.20789770603801933, 2.1198458359150587],
+                            "weights": [0.47412263345597117, 1.3864620551711606, 0.6224999770898935, 1.5498327677561246,
+                                        0.1993692779443738, 2.113324096784624],
                             "final_weights": [1, 1],
                             "force_compute_sim": False,  # not evaluate_algorithm,
                             "feature_weighting_index": 0,
@@ -149,7 +138,7 @@ def run():
         # to indicate if plotting for lenght or for pop
 
         results_run, results_run_string, target_recommendations = evaluator.evaluateRecommender(recommender,
-                                                                                                plot_stats=True,
+                                                                                                plot_stats=False,
                                                                                                 onPop=onPop)
 
         print("Algorithm: {}, results: \n{}".format([rec.RECOMMENDER_NAME for rec in recommender.recommender_list],
